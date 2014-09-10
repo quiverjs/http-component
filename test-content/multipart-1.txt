@@ -1,0 +1,10 @@
+--AaB03x
+Content-Disposition: form-data; name="username"
+
+john
+--AaB03x
+Content-Disposition: form-data; name="files"; filename="file1.txt"
+Content-Type: text/plain
+
+Hello World
+--AaB03x--
