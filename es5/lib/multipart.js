@@ -147,14 +147,12 @@ var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $_
     while (true)
       switch ($ctx.state) {
         case 0:
-          readStream = pushbackStream(readStream);
           startBoundary = new Buffer('\r\n--' + boundary);
           formData = {};
           serializedStreams = [];
-          console.log('extracting stream head');
-          $ctx.state = 69;
+          $ctx.state = 65;
           break;
-        case 69:
+        case 65:
           $__15 = extractStreamHead(readStream, startBoundary);
           $ctx.state = 6;
           break;
@@ -174,15 +172,11 @@ var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $_
           $ctx.state = 8;
           break;
         case 8:
-          console.log('head:', head.toString());
-          $ctx.state = 71;
+          $ctx.pushTry(55, null);
+          $ctx.state = 58;
           break;
-        case 71:
-          $ctx.pushTry(59, null);
-          $ctx.state = 62;
-          break;
-        case 62:
-          $ctx.state = (true) ? 13 : 58;
+        case 58:
+          $ctx.state = (true) ? 13 : 54;
           break;
         case 13:
           $__19 = endBoundary(readStream);
@@ -211,10 +205,6 @@ var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $_
           $ctx.state = -2;
           break;
         case 18:
-          console.log('extracting headers');
-          $ctx.state = 55;
-          break;
-        case 55:
           $__23 = extractHttpHeaders(readStream);
           $ctx.state = 25;
           break;
@@ -234,25 +224,19 @@ var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $_
           $ctx.state = 27;
           break;
         case 27:
-          console.log('handling multipart stream', headers);
           dispositionHeader = headers[$traceurRuntime.toProperty('content-disposition')];
           if (!dispositionHeader)
             throw error(400, 'missing Content-Disposition header');
           $__7 = parseSubheaders(dispositionHeader), disposition = $__7[0], $__8 = $__7[1], name = $__8.name, filename = $__8.filename;
-          console.log('disposition:', disposition, name, filename);
-          $ctx.state = 57;
+          $ctx.state = 53;
           break;
-        case 57:
-          $ctx.state = (disposition == 'form-data') ? 50 : 51;
+        case 53:
+          $ctx.state = (disposition == 'form-data') ? 48 : 49;
           break;
-        case 50:
-          $ctx.state = (filename) ? 36 : 44;
+        case 48:
+          $ctx.state = (filename) ? 32 : 42;
           break;
-        case 36:
-          console.log('streaming multipart file', filename);
-          $ctx.state = 37;
-          break;
-        case 37:
+        case 32:
           $__31 = function(partStream) {
             return $__27 = streamToStreamable(partStream), $__28 = serializerHandler({}, $__27), $__29 = $__28.then, $__30 = $__29.call($__28, streamableToJson), $__30;
           };
@@ -275,56 +259,54 @@ var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $_
           $ctx.state = 35;
           break;
         case 35:
-          console.log('serialized result:', serialized);
           serializedStreams.push(serialized);
-          $ctx.state = 62;
+          $ctx.state = 58;
           break;
-        case 44:
+        case 42:
           $__36 = handleMultipart(readStream, startBoundary, streamToText);
-          $ctx.state = 45;
-          break;
-        case 45:
-          $ctx.state = 41;
-          return $__36;
-        case 41:
-          $__37 = $ctx.sent;
           $ctx.state = 43;
           break;
         case 43:
+          $ctx.state = 39;
+          return $__36;
+        case 39:
+          $__37 = $ctx.sent;
+          $ctx.state = 41;
+          break;
+        case 41:
           $__7 = $__37;
           $__38 = $__7[0];
           value = $__38;
           $__39 = $__7[1];
           readStream = $__39;
-          $ctx.state = 47;
+          $ctx.state = 45;
           break;
-        case 47:
-          console.log('multipart form:', name, value);
+        case 45:
           if (name) {
             if (formData[$traceurRuntime.toProperty(name)])
               throw error(400, 'repeated multipart field');
             $traceurRuntime.setProperty(formData, name, value);
           }
-          $ctx.state = 62;
+          $ctx.state = 58;
           break;
-        case 51:
+        case 49:
           if (disposition == 'file') {
             throw error(501, 'Not Implemented');
           } else {
             throw error(400, 'Bad Content-Disposition');
           }
-          $ctx.state = 62;
+          $ctx.state = 58;
           break;
-        case 58:
+        case 54:
           $ctx.popTry();
           $ctx.state = -2;
           break;
-        case 59:
+        case 55:
           $ctx.popTry();
           err = $ctx.storedException;
-          $ctx.state = 65;
+          $ctx.state = 61;
           break;
-        case 65:
+        case 61:
           readStream.closeRead(err);
           throw err;
           $ctx.state = -2;
@@ -368,7 +350,6 @@ var multipartSerializeFilter = (function(serializerHandler) {
               if (requestHead && requestHead.method != 'POST')
                 throw error(405, 'Method Not Allowed');
               boundary = parseBoundary(contentType);
-              console.log('boundary:', boundary);
               $ctx.state = 21;
               break;
             case 21:

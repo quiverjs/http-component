@@ -22,7 +22,6 @@ describe('multipart test', () => {
   it('single file test', async(function*() {
     var serializer = simpleHandler(
       (args, text) => {
-        console.log('serializing part stream', args, text)
         text.should.equal('Hello World')
         return {
           name: 'hello.txt'
@@ -30,7 +29,6 @@ describe('multipart test', () => {
       }, 'text', 'json')
 
     var main = simpleHandler(args => {
-      console.log('main', args)
       var { formData, serializedStreams } = args
 
       formData.username.should.equal('john')

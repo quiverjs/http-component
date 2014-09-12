@@ -29,12 +29,10 @@ describe('multipart test', (function() {
         switch ($ctx.state) {
           case 0:
             serializer = simpleHandler((function(args, text) {
-              console.log('serializing part stream', args, text);
               text.should.equal('Hello World');
               return {name: 'hello.txt'};
             }), 'text', 'json');
             main = simpleHandler((function(args) {
-              console.log('main', args);
               var $__6 = args,
                   formData = $__6.formData,
                   serializedStreams = $__6.serializedStreams;
