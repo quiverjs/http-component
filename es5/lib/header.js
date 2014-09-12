@@ -1,5 +1,11 @@
 "use strict";
 Object.defineProperties(exports, {
+  parseHeader: {get: function() {
+      return parseHeader;
+    }},
+  parseSubheaders: {get: function() {
+      return parseSubheaders;
+    }},
   parseHttpHeaders: {get: function() {
       return parseHttpHeaders;
     }},
@@ -36,6 +42,21 @@ var parseHeader = (function(header) {
   key = key.trim().toLowerCase();
   value = value.trim().replace(/\s+/g, ' ');
   return [key, value];
+});
+var parseSubheaders = (function(field) {
+  var subheaders = {};
+  var fields = field.split(';');
+  var main = fields.shift();
+  fields.forEach((function(subfield) {
+    var $__3 = subfield.trim().split('='),
+        key = $__3[0],
+        value = $__3[1];
+    if (!value)
+      return;
+    value = value.replace(/^"/, '').replace(/"$/, '');
+    $traceurRuntime.setProperty(subheaders, key, value);
+  }));
+  return [main, subheaders];
 });
 var parseHttpHeaders = (function(headerText) {
   if (invalidCharacters.test(headerText))

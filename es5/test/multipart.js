@@ -19,7 +19,7 @@ var chaiAsPromised = ($__chai_45_as_45_promised__ = require("chai-as-promised"),
 chai.use(chaiAsPromised);
 var should = chai.should();
 describe('multipart test', (function() {
-  it('single file test', async($traceurRuntime.initGeneratorFunction(function $__7() {
+  it.skip('single file test', async($traceurRuntime.initGeneratorFunction(function $__7() {
     var serializer,
         main,
         handler,
