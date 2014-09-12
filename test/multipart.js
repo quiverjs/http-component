@@ -19,11 +19,11 @@ chai.use(chaiAsPromised)
 var should = chai.should()
 
 describe('multipart test', () => {
-  it.skip('single file test', async(function*() {
+  it('single file test', async(function*() {
     var serializer = simpleHandler(
       (args, text) => {
-        console.log('serializing', args, text)
-        //text.should.equal('Hello World')
+        console.log('serializing part stream', args, text)
+        text.should.equal('Hello World')
         return {
           name: 'hello.txt'
         }

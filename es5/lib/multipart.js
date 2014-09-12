@@ -19,8 +19,7 @@ var $__1 = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_pro
     timeout = $__1.timeout;
 var $__2 = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45_component__ && $__quiver_45_component__.__esModule && $__quiver_45_component__ || {default: $__quiver_45_component__}),
     streamFilter = $__2.streamFilter,
-    simpleHandlerLoader = $__2.simpleHandlerLoader,
-    streamHandlerLoader = $__2.streamHandlerLoader,
+    loadStreamHandler = $__2.loadStreamHandler,
     inputHandlerMiddleware = $__2.inputHandlerMiddleware;
 var $__3 = ($__quiver_45_stream_45_util__ = require("quiver-stream-util"), $__quiver_45_stream_45_util__ && $__quiver_45_stream_45_util__.__esModule && $__quiver_45_stream_45_util__ || {default: $__quiver_45_stream_45_util__}),
     pipeStream = $__3.pipeStream,
@@ -41,18 +40,75 @@ var parseBoundary = (function(contentType) {
   var boundary = parseSubheaders(contentType)[1].boundary;
   if (!boundary)
     throw errror(400, 'no boundary specified');
-  var startBoundary = new Buffer('\r\n--' + boundary + '\r\n');
-  var endBoundary = new Buffer('\r\n--' + boundary + '--\r\n');
-  return [startBoundary, endBoundary];
+  return boundary;
 });
-var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $__9(serializerHandler, readStream, boundaries) {
+var newLine = new Buffer('\r\n');
+var endBoundary = async($traceurRuntime.initGeneratorFunction(function $__9(readStream) {
   var $__7,
-      startBoundary,
-      endBoundary,
+      headBuffer,
+      readStream,
+      ending,
+      $__10,
+      $__11,
+      $__12,
+      $__13;
+  return $traceurRuntime.createGeneratorInstance(function($ctx) {
+    while (true)
+      switch ($ctx.state) {
+        case 0:
+          $__10 = extractStreamHead(readStream, newLine);
+          $ctx.state = 6;
+          break;
+        case 6:
+          $ctx.state = 2;
+          return $__10;
+        case 2:
+          $__11 = $ctx.sent;
+          $ctx.state = 4;
+          break;
+        case 4:
+          $__7 = $__11;
+          $__12 = $__7[0];
+          headBuffer = $__12;
+          $__13 = $__7[1];
+          readStream = $__13;
+          $ctx.state = 8;
+          break;
+        case 8:
+          ending = headBuffer.toString().trim();
+          $ctx.state = 16;
+          break;
+        case 16:
+          $ctx.state = (ending == '') ? 9 : 10;
+          break;
+        case 9:
+          $ctx.returnValue = [false, readStream];
+          $ctx.state = -2;
+          break;
+        case 10:
+          $ctx.state = (ending = '--') ? 12 : 13;
+          break;
+        case 12:
+          $ctx.returnValue = [true, readStream];
+          $ctx.state = -2;
+          break;
+        case 13:
+          throw error(400, 'Bad Request');
+          $ctx.state = -2;
+          break;
+        default:
+          return $ctx.end();
+      }
+  }, $__9, this);
+}));
+var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $__14(serializerHandler, readStream, boundary) {
+  var startBoundary,
       formData,
       serializedStreams,
-      closed,
+      $__7,
+      head,
       readStream,
+      ended,
       headers,
       dispositionHeader,
       disposition,
@@ -61,11 +117,6 @@ var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $_
       filename,
       serialized,
       value,
-      $__10,
-      $__11,
-      $__12,
-      $__13,
-      $__14,
       $__15,
       $__16,
       $__17,
@@ -84,180 +135,226 @@ var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $_
       $__30,
       $__31,
       $__32,
-      $__33;
+      $__33,
+      $__34,
+      $__35,
+      $__36,
+      $__37,
+      $__38,
+      $__39,
+      err;
   return $traceurRuntime.createGeneratorInstance(function($ctx) {
     while (true)
       switch ($ctx.state) {
         case 0:
-          $__7 = boundaries, startBoundary = $__7[0], endBoundary = $__7[1];
           readStream = pushbackStream(readStream);
+          startBoundary = new Buffer('\r\n--' + boundary);
           formData = {};
           serializedStreams = [];
-          $ctx.state = 56;
+          console.log('extracting stream head');
+          $ctx.state = 69;
           break;
-        case 56:
-          $ctx.state = (true) ? 5 : -2;
-          break;
-        case 5:
-          $__10 = readStream.peak;
-          $__11 = $__10.call(readStream);
+        case 69:
+          $__15 = extractStreamHead(readStream, startBoundary);
           $ctx.state = 6;
           break;
         case 6:
           $ctx.state = 2;
-          return $__11;
+          return $__15;
         case 2:
-          $__12 = $ctx.sent;
+          $__16 = $ctx.sent;
           $ctx.state = 4;
           break;
         case 4:
-          $__13 = $__12.closed;
-          closed = $__13;
+          $__7 = $__16;
+          $__17 = $__7[0];
+          head = $__17;
+          $__18 = $__7[1];
+          readStream = $__18;
           $ctx.state = 8;
           break;
         case 8:
-          $ctx.state = (closed) ? 9 : 10;
+          console.log('head:', head.toString());
+          $ctx.state = 71;
           break;
-        case 9:
+        case 71:
+          $ctx.pushTry(59, null);
+          $ctx.state = 62;
+          break;
+        case 62:
+          $ctx.state = (true) ? 13 : 58;
+          break;
+        case 13:
+          $__19 = endBoundary(readStream);
+          $ctx.state = 14;
+          break;
+        case 14:
+          $ctx.state = 10;
+          return $__19;
+        case 10:
+          $__20 = $ctx.sent;
+          $ctx.state = 12;
+          break;
+        case 12:
+          $__7 = $__20;
+          $__21 = $__7[0];
+          ended = $__21;
+          $__22 = $__7[1];
+          readStream = $__22;
+          $ctx.state = 16;
+          break;
+        case 16:
+          $ctx.state = (ended) ? 17 : 18;
+          break;
+        case 17:
           $ctx.returnValue = [formData, serializedStreams];
           $ctx.state = -2;
           break;
-        case 10:
-          $__14 = extractStreamHead(readStream, startBoundary);
-          $ctx.state = 17;
+        case 18:
+          console.log('extracting headers');
+          $ctx.state = 55;
           break;
-        case 17:
-          $ctx.state = 13;
-          return $__14;
-        case 13:
-          $__15 = $ctx.sent;
-          $ctx.state = 15;
-          break;
-        case 15:
-          $__16 = $__15[1];
-          readStream = $__16;
-          $ctx.state = 19;
-          break;
-        case 19:
-          $__17 = extractHttpHeaders(readStream);
+        case 55:
+          $__23 = extractHttpHeaders(readStream);
           $ctx.state = 25;
           break;
         case 25:
           $ctx.state = 21;
-          return $__17;
+          return $__23;
         case 21:
-          $__18 = $ctx.sent;
+          $__24 = $ctx.sent;
           $ctx.state = 23;
           break;
         case 23:
-          $__7 = $__18;
-          $__19 = $__7[0];
-          headers = $__19;
-          $__20 = $__7[1];
-          readStream = $__20;
+          $__7 = $__24;
+          $__25 = $__7[0];
+          headers = $__25;
+          $__26 = $__7[1];
+          readStream = $__26;
           $ctx.state = 27;
           break;
         case 27:
+          console.log('handling multipart stream', headers);
           dispositionHeader = headers[$traceurRuntime.toProperty('content-disposition')];
           if (!dispositionHeader)
             throw error(400, 'missing Content-Disposition header');
           $__7 = parseSubheaders(dispositionHeader), disposition = $__7[0], $__8 = $__7[1], name = $__8.name, filename = $__8.filename;
-          $ctx.state = 53;
+          console.log('disposition:', disposition, name, filename);
+          $ctx.state = 57;
           break;
-        case 53:
-          $ctx.state = (disposition == 'form-data') ? 48 : 49;
+        case 57:
+          $ctx.state = (disposition == 'form-data') ? 50 : 51;
           break;
-        case 48:
-          $ctx.state = (filename) ? 32 : 42;
+        case 50:
+          $ctx.state = (filename) ? 36 : 44;
           break;
-        case 32:
-          $__25 = function(partStream) {
-            return $__21 = streamToStreamable(partStream), $__22 = serializerHandler({}, $__21), $__23 = $__22.then, $__24 = $__23.call($__22, streamableToJson), $__24;
+        case 36:
+          console.log('streaming multipart file', filename);
+          $ctx.state = 37;
+          break;
+        case 37:
+          $__31 = function(partStream) {
+            return $__27 = streamToStreamable(partStream), $__28 = serializerHandler({}, $__27), $__29 = $__28.then, $__30 = $__29.call($__28, streamableToJson), $__30;
           };
-          $__26 = handleMultipart(readStream, boundary, $__25);
+          $__32 = handleMultipart(readStream, startBoundary, $__31);
           $ctx.state = 33;
           break;
         case 33:
           $ctx.state = 29;
-          return $__26;
+          return $__32;
         case 29:
-          $__27 = $ctx.sent;
+          $__33 = $ctx.sent;
           $ctx.state = 31;
           break;
         case 31:
-          $__7 = $__27;
-          $__28 = $__7[0];
-          serialized = $__28;
-          $__29 = $__7[1];
-          readStream = $__29;
+          $__7 = $__33;
+          $__34 = $__7[0];
+          serialized = $__34;
+          $__35 = $__7[1];
+          readStream = $__35;
           $ctx.state = 35;
           break;
         case 35:
+          console.log('serialized result:', serialized);
           serializedStreams.push(serialized);
-          $ctx.state = 56;
+          $ctx.state = 62;
           break;
-        case 42:
-          $__30 = handleMultipart(readStream, boundary, streamToText);
-          $ctx.state = 43;
-          break;
-        case 43:
-          $ctx.state = 39;
-          return $__30;
-        case 39:
-          $__31 = $ctx.sent;
-          $ctx.state = 41;
-          break;
-        case 41:
-          $__7 = $__31;
-          $__32 = $__7[0];
-          value = $__32;
-          $__33 = $__7[1];
-          readStream = $__33;
+        case 44:
+          $__36 = handleMultipart(readStream, startBoundary, streamToText);
           $ctx.state = 45;
           break;
         case 45:
+          $ctx.state = 41;
+          return $__36;
+        case 41:
+          $__37 = $ctx.sent;
+          $ctx.state = 43;
+          break;
+        case 43:
+          $__7 = $__37;
+          $__38 = $__7[0];
+          value = $__38;
+          $__39 = $__7[1];
+          readStream = $__39;
+          $ctx.state = 47;
+          break;
+        case 47:
+          console.log('multipart form:', name, value);
           if (name) {
             if (formData[$traceurRuntime.toProperty(name)])
               throw error(400, 'repeated multipart field');
             $traceurRuntime.setProperty(formData, name, value);
           }
-          $ctx.state = 56;
+          $ctx.state = 62;
           break;
-        case 49:
+        case 51:
           if (disposition == 'file') {
             throw error(501, 'Not Implemented');
           } else {
             throw error(400, 'Bad Content-Disposition');
           }
-          $ctx.state = 56;
+          $ctx.state = 62;
+          break;
+        case 58:
+          $ctx.popTry();
+          $ctx.state = -2;
+          break;
+        case 59:
+          $ctx.popTry();
+          err = $ctx.storedException;
+          $ctx.state = 65;
+          break;
+        case 65:
+          readStream.closeRead(err);
+          throw err;
+          $ctx.state = -2;
           break;
         default:
           return $ctx.end();
       }
-  }, $__9, this);
+  }, $__14, this);
 }));
-var multipartSerializeFilter = (function(serializeHandler) {
+var multipartSerializeFilter = (function(serializerHandler) {
   return streamFilter((function(config, handler) {
     var serializerHandler = config.serializerHandler;
-    return async($traceurRuntime.initGeneratorFunction(function $__34(args, streamable) {
+    return async($traceurRuntime.initGeneratorFunction(function $__40(args, streamable) {
       var requestHead,
           contentType,
-          boundaries,
+          boundary,
           readStream,
           $__7,
           formData,
-          serialized,
-          $__35,
-          $__36,
-          $__37,
-          $__38;
+          serializedStreams,
+          $__41,
+          $__42,
+          $__43,
+          $__44;
       return $traceurRuntime.createGeneratorInstance(function($ctx) {
         while (true)
           switch ($ctx.state) {
             case 0:
               requestHead = args.requestHead;
               contentType = streamable.contentType;
-              console.log('filtering multipart', args, streamable);
               $ctx.state = 19;
               break;
             case 19:
@@ -270,7 +367,8 @@ var multipartSerializeFilter = (function(serializeHandler) {
             case 2:
               if (requestHead && requestHead.method != 'POST')
                 throw error(405, 'Method Not Allowed');
-              boundaries = parseBoundary(contentType);
+              boundary = parseBoundary(contentType);
+              console.log('boundary:', boundary);
               $ctx.state = 21;
               break;
             case 21:
@@ -281,22 +379,22 @@ var multipartSerializeFilter = (function(serializeHandler) {
               $ctx.state = 7;
               break;
             case 7:
-              $__35 = serializeMultipart(serializerHandler, readStream, contentType);
+              $__41 = serializeMultipart(serializerHandler, readStream, boundary);
               $ctx.state = 13;
               break;
             case 13:
               $ctx.state = 9;
-              return $__35;
+              return $__41;
             case 9:
-              $__36 = $ctx.sent;
+              $__42 = $ctx.sent;
               $ctx.state = 11;
               break;
             case 11:
-              $__7 = $__36;
-              $__37 = $__7.formData;
-              formData = $__37;
-              $__38 = $__7.serialized;
-              serialized = $__38;
+              $__7 = $__42;
+              $__43 = $__7[0];
+              formData = $__43;
+              $__44 = $__7[1];
+              serializedStreams = $__44;
               $ctx.state = 15;
               break;
             case 15:
@@ -311,7 +409,7 @@ var multipartSerializeFilter = (function(serializeHandler) {
             default:
               return $ctx.end();
           }
-      }, $__34, this);
+      }, $__40, this);
     }));
-  })).addMiddleware(inputHandlerMiddleware(serializeHandler, 'serializerHandler', {handlerLoader: streamHandlerLoader}));
+  })).addMiddleware(inputHandlerMiddleware(serializerHandler, 'serializerHandler', {loader: loadStreamHandler}));
 });

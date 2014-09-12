@@ -22,7 +22,7 @@ var $__2 = ($__quiver_45_stream_45_util__ = require("quiver-stream-util"), $__qu
 var indexOf = (function(getByte, bufferLength, boundary, boundaryLength) {
   var lastBegin = bufferLength - boundaryLength;
   var firstByte = boundary[0];
-  first: for (var i = 0; i < lastBegin; i++) {
+  first: for (var i = 0; i <= lastBegin; i++) {
     if (getByte(i) != firstByte)
       continue;
     for (var j = 1; j < boundaryLength; j++) {

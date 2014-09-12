@@ -27,7 +27,7 @@ describe('pipe multipart test', (function() {
         switch ($ctx.state) {
           case 0:
             boundary = new Buffer('--boundary--');
-            testBoundary = async($traceurRuntime.initGeneratorFunction(function $__7(testBuffers) {
+            testBoundary = async($traceurRuntime.initGeneratorFunction(function $__7(testBuffers, partContent, restContent) {
               var wholeStream,
                   $__5,
                   partContent,
@@ -63,12 +63,12 @@ describe('pipe multipart test', (function() {
                       $ctx.state = 8;
                       break;
                     case 8:
-                      partContent.should.equal('hello');
+                      partContent.should.equal(partContent);
                       $ctx.state = 16;
                       break;
                     case 16:
                       $ctx.state = 10;
-                      return streamToText(restStream).should.eventually.equal('goodbye');
+                      return streamToText(restStream).should.eventually.equal(restContent);
                     case 10:
                       $ctx.maybeThrow();
                       $ctx.state = -2;
@@ -78,33 +78,61 @@ describe('pipe multipart test', (function() {
                   }
               }, $__7, this);
             }));
-            $ctx.state = 18;
+            $ctx.state = 34;
             break;
-          case 18:
+          case 34:
             $ctx.state = 2;
-            return testBoundary(['hello', '--boundary--', 'goodbye']);
+            return testBoundary(['hello', '--boundary--', 'goodbye'], 'hello', 'goodbye');
           case 2:
             $ctx.maybeThrow();
             $ctx.state = 4;
             break;
           case 4:
             $ctx.state = 6;
-            return testBoundary(['hello--b', 'oundar', 'y--goodbye']);
+            return testBoundary(['hello--b', 'oundar', 'y--goodbye'], 'hello', 'goodbye');
           case 6:
             $ctx.maybeThrow();
             $ctx.state = 8;
             break;
           case 8:
             $ctx.state = 10;
-            return testBoundary(['he', 'll', 'o--boundary--g', 'ood', 'bye']);
+            return testBoundary(['he', 'll', 'o--boundary--g', 'ood', 'bye'], 'hello', 'goodbye');
           case 10:
             $ctx.maybeThrow();
             $ctx.state = 12;
             break;
           case 12:
             $ctx.state = 14;
-            return testBoundary(['he', 'll', 'o--b', 'oun', 'dary--g', 'ood', 'bye']);
+            return testBoundary(['he', 'll', 'o--b', 'oun', 'dary--g', 'ood', 'bye'], 'hello', 'goodbye');
           case 14:
+            $ctx.maybeThrow();
+            $ctx.state = 16;
+            break;
+          case 16:
+            $ctx.state = 18;
+            return testBoundary(['--boundary--', 'goodbye'], '', 'goodbye');
+          case 18:
+            $ctx.maybeThrow();
+            $ctx.state = 20;
+            break;
+          case 20:
+            $ctx.state = 22;
+            return testBoundary(['--b', 'oundar', 'y--go', 'odbye'], '', 'goodbye');
+          case 22:
+            $ctx.maybeThrow();
+            $ctx.state = 24;
+            break;
+          case 24:
+            $ctx.state = 26;
+            return testBoundary(['hello', '--boundary--'], 'hello', '');
+          case 26:
+            $ctx.maybeThrow();
+            $ctx.state = 28;
+            break;
+          case 28:
+            $ctx.state = 30;
+            return testBoundary(['hel', 'lo--b', 'ound', 'ary--'], 'hello', '');
+          case 30:
             $ctx.maybeThrow();
             $ctx.state = -2;
             break;

@@ -19,7 +19,7 @@ var chaiAsPromised = ($__chai_45_as_45_promised__ = require("chai-as-promised"),
 chai.use(chaiAsPromised);
 var should = chai.should();
 describe('multipart test', (function() {
-  it.skip('single file test', async($traceurRuntime.initGeneratorFunction(function $__7() {
+  it('single file test', async($traceurRuntime.initGeneratorFunction(function $__7() {
     var serializer,
         main,
         handler,
@@ -29,7 +29,8 @@ describe('multipart test', (function() {
         switch ($ctx.state) {
           case 0:
             serializer = simpleHandler((function(args, text) {
-              console.log('serializing', args, text);
+              console.log('serializing part stream', args, text);
+              text.should.equal('Hello World');
               return {name: 'hello.txt'};
             }), 'text', 'json');
             main = simpleHandler((function(args) {
