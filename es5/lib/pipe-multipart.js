@@ -12,6 +12,9 @@ Object.defineProperties(exports, {
   extractMultipart: {get: function() {
       return extractMultipart;
     }},
+  extractAllMultipart: {get: function() {
+      return extractAllMultipart;
+    }},
   __esModule: {value: true}
 });
 var $__quiver_45_error__,
@@ -279,13 +282,12 @@ var handleMultipart = (function(wholeStream, boundary, partHandler) {
   }));
   return Promise.all([handlePart(), pipeMultipart(wholeStream, writeStream, boundary)]);
 });
-var newLine = new Buffer('\r\n');
+var newLineBuffer = new Buffer('\r\n');
 var extractMultipart = async($traceurRuntime.initGeneratorFunction(function $__12(readStream, startBoundary, partHandler) {
   var $__5,
       headers,
       readStream,
       partContent,
-      restStream,
       headBuffer,
       ending,
       ended,
@@ -344,11 +346,11 @@ var extractMultipart = async($traceurRuntime.initGeneratorFunction(function $__1
           $__23 = $__5[0];
           partContent = $__23;
           $__24 = $__5[1];
-          restStream = $__24;
+          readStream = $__24;
           $ctx.state = 16;
           break;
         case 16:
-          $__25 = extractStreamHead(readStream, newLine);
+          $__25 = extractStreamHead(readStream, newLineBuffer);
           $ctx.state = 22;
           break;
         case 22:
@@ -379,11 +381,109 @@ var extractMultipart = async($traceurRuntime.initGeneratorFunction(function $__1
           $ctx.state = 28;
           break;
         case 28:
-          $ctx.returnValue = [partContent, restStream, ended];
+          $ctx.returnValue = [partContent, readStream, ended];
           $ctx.state = -2;
           break;
         default:
           return $ctx.end();
       }
   }, $__12, this);
+}));
+var extractAllMultipart = async($traceurRuntime.initGeneratorFunction(function $__29(readStream, startBoundary, partHandler) {
+  var parts,
+      beginBoundary,
+      readStream,
+      $__5,
+      partContent,
+      ended,
+      $__30,
+      $__31,
+      $__32,
+      $__33,
+      $__34,
+      $__35,
+      $__36,
+      $__37,
+      err;
+  return $traceurRuntime.createGeneratorInstance(function($ctx) {
+    while (true)
+      switch ($ctx.state) {
+        case 0:
+          $ctx.pushTry(25, null);
+          $ctx.state = 28;
+          break;
+        case 28:
+          parts = [];
+          beginBoundary = Buffer.concat([startBoundary, newLineBuffer]);
+          $ctx.state = 24;
+          break;
+        case 24:
+          $__30 = extractStreamHead(readStream, beginBoundary);
+          $ctx.state = 6;
+          break;
+        case 6:
+          $ctx.state = 2;
+          return $__30;
+        case 2:
+          $__31 = $ctx.sent;
+          $ctx.state = 4;
+          break;
+        case 4:
+          $__32 = $__31[1];
+          readStream = $__32;
+          $ctx.state = 8;
+          break;
+        case 8:
+          $ctx.state = (true) ? 13 : 22;
+          break;
+        case 13:
+          $__33 = extractMultipart(readStream, startBoundary, partHandler);
+          $ctx.state = 14;
+          break;
+        case 14:
+          $ctx.state = 10;
+          return $__33;
+        case 10:
+          $__34 = $ctx.sent;
+          $ctx.state = 12;
+          break;
+        case 12:
+          $__5 = $__34;
+          $__35 = $__5[0];
+          partContent = $__35;
+          $__36 = $__5[1];
+          readStream = $__36;
+          $__37 = $__5[2];
+          ended = $__37;
+          $ctx.state = 16;
+          break;
+        case 16:
+          parts.push(partContent);
+          $ctx.state = 21;
+          break;
+        case 21:
+          $ctx.state = (ended) ? 17 : 8;
+          break;
+        case 17:
+          $ctx.returnValue = parts;
+          $ctx.state = -2;
+          break;
+        case 22:
+          $ctx.popTry();
+          $ctx.state = -2;
+          break;
+        case 25:
+          $ctx.popTry();
+          err = $ctx.storedException;
+          $ctx.state = 31;
+          break;
+        case 31:
+          readStream.closeRead(err);
+          throw err;
+          $ctx.state = -2;
+          break;
+        default:
+          return $ctx.end();
+      }
+  }, $__29, this);
 }));
