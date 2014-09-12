@@ -29,15 +29,17 @@ describe('multipart test', (function() {
         switch ($ctx.state) {
           case 0:
             serializer = simpleHandler((function(args, text) {
+              args.name.should.equal('files');
+              args.filename.should.equal('file1.txt');
               text.should.equal('Hello World');
               return {name: 'hello.txt'};
             }), 'text', 'json');
             main = simpleHandler((function(args) {
               var $__6 = args,
                   formData = $__6.formData,
-                  serializedStreams = $__6.serializedStreams;
+                  serializedParts = $__6.serializedParts;
               formData.username.should.equal('john');
-              serializedStreams[0].name.should.equal('hello.txt');
+              serializedParts.files.name.should.equal('hello.txt');
             }), 'void', 'void').addMiddleware(multipartSerializeFilter(serializer));
             $ctx.state = 14;
             break;

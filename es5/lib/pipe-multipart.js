@@ -17,13 +17,15 @@ Object.defineProperties(exports, {
 var $__quiver_45_error__,
     $__quiver_45_promise__,
     $__quiver_45_stream_45_util__,
-    $__quiver_45_stream_45_component__;
+    $__quiver_45_stream_45_component__,
+    $__header_46_js__;
 var error = ($__quiver_45_error__ = require("quiver-error"), $__quiver_45_error__ && $__quiver_45_error__.__esModule && $__quiver_45_error__ || {default: $__quiver_45_error__}).error;
 var async = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_promise__ && $__quiver_45_promise__.__esModule && $__quiver_45_promise__ || {default: $__quiver_45_promise__}).async;
 var $__2 = ($__quiver_45_stream_45_util__ = require("quiver-stream-util"), $__quiver_45_stream_45_util__ && $__quiver_45_stream_45_util__.__esModule && $__quiver_45_stream_45_util__ || {default: $__quiver_45_stream_45_util__}),
     createChannel = $__2.createChannel,
     pushbackStream = $__2.pushbackStream;
 var extractStreamHead = ($__quiver_45_stream_45_component__ = require("quiver-stream-component"), $__quiver_45_stream_45_component__ && $__quiver_45_stream_45_component__.__esModule && $__quiver_45_stream_45_component__ || {default: $__quiver_45_stream_45_component__}).extractStreamHead;
+var extractHttpHeaders = ($__header_46_js__ = require("./header.js"), $__header_46_js__ && $__header_46_js__.__esModule && $__header_46_js__ || {default: $__header_46_js__}).extractHttpHeaders;
 var indexOf = (function(getByte, bufferLength, boundary, boundaryLength) {
   var lastBegin = bufferLength - boundaryLength;
   var firstByte = boundary[0];
@@ -102,20 +104,20 @@ var createBufferQueue = (function(boundaryLength) {
     }
   };
 });
-var pipeMultipart = async($traceurRuntime.initGeneratorFunction(function $__5(readStream, writeStream, boundary) {
+var pipeMultipart = async($traceurRuntime.initGeneratorFunction(function $__6(readStream, writeStream, boundary) {
   var boundaryLength,
       bufferQueue,
-      $__4,
+      $__5,
       closed,
       data,
       index,
       lastBuffers,
       nextBuffers,
-      $__6,
       $__7,
       $__8,
       $__9,
       $__10,
+      $__11,
       err;
   return $traceurRuntime.createGeneratorInstance(function($ctx) {
     while (true)
@@ -142,23 +144,23 @@ var pipeMultipart = async($traceurRuntime.initGeneratorFunction(function $__5(re
           $ctx.state = (true) ? 9 : 32;
           break;
         case 9:
-          $__6 = readStream.read;
-          $__7 = $__6.call(readStream);
+          $__7 = readStream.read;
+          $__8 = $__7.call(readStream);
           $ctx.state = 10;
           break;
         case 10:
           $ctx.state = 6;
-          return $__7;
+          return $__8;
         case 6:
-          $__8 = $ctx.sent;
+          $__9 = $ctx.sent;
           $ctx.state = 8;
           break;
         case 8:
-          $__4 = $__8;
-          $__9 = $__4.closed;
-          closed = $__9;
-          $__10 = $__4.data;
-          data = $__10;
+          $__5 = $__9;
+          $__10 = $__5.closed;
+          closed = $__10;
+          $__11 = $__5.data;
+          data = $__11;
           $ctx.state = 12;
           break;
         case 12:
@@ -192,7 +194,7 @@ var pipeMultipart = async($traceurRuntime.initGeneratorFunction(function $__5(re
           $ctx.state = 4;
           break;
         case 22:
-          $__4 = bufferQueue.sliceBoundary(index), lastBuffers = $__4[0], nextBuffers = $__4[1];
+          $__5 = bufferQueue.sliceBoundary(index), lastBuffers = $__5[0], nextBuffers = $__5[1];
           lastBuffers.forEach((function(buffer) {
             return writeStream.write(buffer);
           }));
@@ -224,15 +226,15 @@ var pipeMultipart = async($traceurRuntime.initGeneratorFunction(function $__5(re
         default:
           return $ctx.end();
       }
-  }, $__5, this);
+  }, $__6, this);
 }));
 var handleMultipart = (function(wholeStream, boundary, partHandler) {
-  var $__4 = createChannel(),
-      partStream = $__4.readStream,
-      writeStream = $__4.writeStream;
-  var handlePart = async($traceurRuntime.initGeneratorFunction(function $__11() {
-    var $__12,
-        $__13,
+  var $__5 = createChannel(),
+      partStream = $__5.readStream,
+      writeStream = $__5.writeStream;
+  var handlePart = async($traceurRuntime.initGeneratorFunction(function $__12() {
+    var $__13,
+        $__14,
         err;
     return $traceurRuntime.createGeneratorInstance(function($ctx) {
       while (true)
@@ -242,18 +244,18 @@ var handleMultipart = (function(wholeStream, boundary, partHandler) {
             $ctx.state = 12;
             break;
           case 12:
-            $__12 = partHandler(partStream);
+            $__13 = partHandler(partStream);
             $ctx.state = 6;
             break;
           case 6:
             $ctx.state = 2;
-            return $__12;
+            return $__13;
           case 2:
-            $__13 = $ctx.sent;
+            $__14 = $ctx.sent;
             $ctx.state = 4;
             break;
           case 4:
-            $ctx.returnValue = $__13;
+            $ctx.returnValue = $__14;
             $ctx.state = -2;
             break;
           case 8:
@@ -273,69 +275,98 @@ var handleMultipart = (function(wholeStream, boundary, partHandler) {
           default:
             return $ctx.end();
         }
-    }, $__11, this);
+    }, $__12, this);
   }));
   return Promise.all([handlePart(), pipeMultipart(wholeStream, writeStream, boundary)]);
 });
 var newLine = new Buffer('\r\n');
-var extractMultipart = async($traceurRuntime.initGeneratorFunction(function $__11(wholeStream, startBoundary, partHandler) {
-  var $__4,
+var extractMultipart = async($traceurRuntime.initGeneratorFunction(function $__12(readStream, startBoundary, partHandler) {
+  var $__5,
+      headers,
+      readStream,
       partContent,
       restStream,
       headBuffer,
-      readStream,
       ending,
       ended,
-      $__14,
       $__15,
       $__16,
       $__17,
       $__18,
       $__19,
       $__20,
-      $__21;
+      $__21,
+      $__22,
+      $__23,
+      $__24,
+      $__25,
+      $__26,
+      $__27,
+      $__28;
   return $traceurRuntime.createGeneratorInstance(function($ctx) {
     while (true)
       switch ($ctx.state) {
         case 0:
-          $__14 = handleMultipart(wholeStream, startBoundary, partHandler);
+          $__15 = extractHttpHeaders(readStream);
           $ctx.state = 6;
           break;
         case 6:
           $ctx.state = 2;
-          return $__14;
+          return $__15;
         case 2:
-          $__15 = $ctx.sent;
+          $__16 = $ctx.sent;
           $ctx.state = 4;
           break;
         case 4:
-          $__4 = $__15;
-          $__16 = $__4[0];
-          partContent = $__16;
-          $__17 = $__4[1];
-          restStream = $__17;
+          $__5 = $__16;
+          $__17 = $__5[0];
+          headers = $__17;
+          $__18 = $__5[1];
+          readStream = $__18;
           $ctx.state = 8;
           break;
         case 8:
-          $__18 = extractStreamHead(readStream, newLine);
+          $__20 = function(partStream) {
+            return $__19 = partHandler(headers, partStream), $__19;
+          };
+          $__21 = handleMultipart(readStream, startBoundary, $__20);
           $ctx.state = 14;
           break;
         case 14:
           $ctx.state = 10;
-          return $__18;
+          return $__21;
         case 10:
-          $__19 = $ctx.sent;
+          $__22 = $ctx.sent;
           $ctx.state = 12;
           break;
         case 12:
-          $__4 = $__19;
-          $__20 = $__4[0];
-          headBuffer = $__20;
-          $__21 = $__4[1];
-          readStream = $__21;
+          $__5 = $__22;
+          $__23 = $__5[0];
+          partContent = $__23;
+          $__24 = $__5[1];
+          restStream = $__24;
           $ctx.state = 16;
           break;
         case 16:
+          $__25 = extractStreamHead(readStream, newLine);
+          $ctx.state = 22;
+          break;
+        case 22:
+          $ctx.state = 18;
+          return $__25;
+        case 18:
+          $__26 = $ctx.sent;
+          $ctx.state = 20;
+          break;
+        case 20:
+          $__5 = $__26;
+          $__27 = $__5[0];
+          headBuffer = $__27;
+          $__28 = $__5[1];
+          readStream = $__28;
+          $ctx.state = 24;
+          break;
+        case 24:
           ending = headBuffer.toString().trim();
           ended = false;
           if (ending == '') {
@@ -345,14 +376,14 @@ var extractMultipart = async($traceurRuntime.initGeneratorFunction(function $__1
           } else {
             throw error(400, 'Bad Request');
           }
-          $ctx.state = 20;
+          $ctx.state = 28;
           break;
-        case 20:
+        case 28:
           $ctx.returnValue = [partContent, restStream, ended];
           $ctx.state = -2;
           break;
         default:
           return $ctx.end();
       }
-  }, $__11, this);
+  }, $__12, this);
 }));

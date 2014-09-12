@@ -22,6 +22,9 @@ describe('multipart test', () => {
   it('single file test', async(function*() {
     var serializer = simpleHandler(
       (args, text) => {
+        args.name.should.equal('files')
+        args.filename.should.equal('file1.txt')
+
         text.should.equal('Hello World')
         return {
           name: 'hello.txt'
@@ -29,10 +32,10 @@ describe('multipart test', () => {
       }, 'text', 'json')
 
     var main = simpleHandler(args => {
-      var { formData, serializedStreams } = args
+      var { formData, serializedParts } = args
 
       formData.username.should.equal('john')
-      serializedStreams[0].name.should.equal('hello.txt')
+      serializedParts.files.name.should.equal('hello.txt')
     }, 'void', 'void')
     .addMiddleware(multipartSerializeFilter(serializer))
 
