@@ -1,0 +1,21 @@
+--AaB03x
+Content-Disposition: form-data; name="user-field"
+
+John
+--AaB03x
+Content-Disposition: form-data; name="upload-files"
+Content-Type: multipart/mixed; boundary=BbC04y
+
+--BbC04y
+Content-Disposition: file; filename="foo.txt"
+Content-Type: text/plain
+
+Foo Content
+--BbC04y
+Content-Disposition: file; filename="bar.gif"
+Content-Type: image/gif
+Content-Transfer-Encoding: binary
+
+Bar Content
+--BbC04y--
+--AaB03x--

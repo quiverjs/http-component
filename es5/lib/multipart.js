@@ -47,8 +47,6 @@ var parseMultipartHeaders = (function(headers) {
   var $__7 = parseSubheaders(dispositionHeader),
       disposition = $__7[0],
       dispositionHeaders = $__7[1];
-  if (disposition != 'form-data')
-    throw error(400, 'Invalid Content-Disposition');
   var contentTypeHeader = headers[$traceurRuntime.toProperty('content-type')] || 'text/plain';
   var $__7 = parseSubheaders(contentTypeHeader),
       contentType = $__7[0],
@@ -61,67 +59,112 @@ var parseMultipartHeaders = (function(headers) {
   };
 });
 var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $__9(serializerHandler, readStream, boundary) {
-  var beginBoundary,
-      startBoundary,
-      formData,
+  var formData,
       serializedParts,
+      mixedPartHandler,
       handlePartStream;
   return $traceurRuntime.createGeneratorInstance(function($ctx) {
     while (true)
       switch ($ctx.state) {
         case 0:
-          beginBoundary = new Buffer('\r\n--' + boundary + '\r\n');
-          startBoundary = new Buffer('\r\n--' + boundary);
           formData = {};
           serializedParts = {};
+          mixedPartHandler = (function(name) {
+            return async($traceurRuntime.initGeneratorFunction(function $__10(headers, partStream) {
+              var $__7,
+                  disposition,
+                  dispositionHeaders,
+                  contentType,
+                  contentTypeHeaders,
+                  filename;
+              return $traceurRuntime.createGeneratorInstance(function($ctx) {
+                while (true)
+                  switch ($ctx.state) {
+                    case 0:
+                      $__7 = parseMultipartHeaders(headers), disposition = $__7.disposition, dispositionHeaders = $__7.dispositionHeaders, contentType = $__7.contentType, contentTypeHeaders = $__7.contentTypeHeaders;
+                      if (disposition != 'file')
+                        throw error(400, 'Invalid Content-Disposition');
+                      filename = dispositionHeaders.filename;
+                      if (!filename)
+                        throw error(400, 'Missing upload file name');
+                      $ctx.state = 4;
+                      break;
+                    case 4:
+                      $ctx.returnValue = serializerHandler({
+                        name: name,
+                        filename: filename,
+                        contentType: contentType
+                      }, streamToStreamable(partStream)).then(streamableToJson);
+                      $ctx.state = -2;
+                      break;
+                    default:
+                      return $ctx.end();
+                  }
+              }, $__10, this);
+            }));
+          });
           handlePartStream = async($traceurRuntime.initGeneratorFunction(function $__10(headers, partStream) {
             var $__7,
+                disposition,
                 dispositionHeaders,
                 contentType,
                 contentTypeHeaders,
                 name,
                 filename,
+                boundary,
                 serialized;
             return $traceurRuntime.createGeneratorInstance(function($ctx) {
               while (true)
                 switch ($ctx.state) {
                   case 0:
-                    $__7 = parseMultipartHeaders(headers), dispositionHeaders = $__7.dispositionHeaders, contentType = $__7.contentType, contentTypeHeaders = $__7.contentTypeHeaders;
+                    $__7 = parseMultipartHeaders(headers), disposition = $__7.disposition, dispositionHeaders = $__7.dispositionHeaders, contentType = $__7.contentType, contentTypeHeaders = $__7.contentTypeHeaders;
+                    if (disposition != 'form-data')
+                      throw error(400, 'Invalid Content-Disposition');
                     $__7 = dispositionHeaders, name = $__7.name, filename = $__7.filename;
                     if (!name)
                       throw error(400, 'Missing name field in Content-Disposition');
                     if (formData[$traceurRuntime.toProperty(name)])
                       throw error(400, 'duplicate multipart field');
-                    $ctx.state = 16;
+                    $ctx.state = 20;
                     break;
-                  case 16:
-                    $ctx.state = (contentType == 'multipart/mixed') ? 12 : 11;
+                  case 20:
+                    $ctx.state = (contentType == 'multipart/mixed') ? 5 : 17;
                     break;
-                  case 12:
-                    throw error(501, 'Not Implemented');
-                    $ctx.state = -2;
+                  case 5:
+                    boundary = contentTypeHeaders[$traceurRuntime.toProperty('boundary')];
+                    if (!boundary)
+                      throw error(400, 'Missing multipart boundary');
+                    $ctx.state = 6;
                     break;
-                  case 11:
-                    $ctx.state = (filename) ? 1 : 7;
-                    break;
-                  case 1:
+                  case 6:
                     $ctx.state = 2;
-                    return serializerHandler({
-                      name: name,
-                      filename: filename
-                    }, streamToStreamable(partStream)).then(streamableToJson);
+                    return extractAllMultipart(partStream, boundary, mixedPartHandler(name));
                   case 2:
-                    serialized = $ctx.sent;
-                    $ctx.state = 4;
-                    break;
-                  case 4:
-                    $traceurRuntime.setProperty(serializedParts, name, serialized);
+                    $traceurRuntime.setProperty(serializedParts, name, $ctx.sent);
                     $ctx.state = -2;
+                    break;
+                  case 17:
+                    $ctx.state = (filename) ? 7 : 13;
                     break;
                   case 7:
                     $ctx.state = 8;
-                    return streamToText(partStream);
+                    return serializerHandler({
+                      name: name,
+                      filename: filename,
+                      contentType: contentType
+                    }, streamToStreamable(partStream)).then(streamableToJson);
                   case 8:
+                    serialized = $ctx.sent;
+                    $ctx.state = 10;
+                    break;
+                  case 10:
+                    $traceurRuntime.setProperty(serializedParts, name, serialized);
+                    $ctx.state = -2;
+                    break;
+                  case 13:
+                    $ctx.state = 14;
+                    return streamToText(partStream);
+                  case 14:
                     $traceurRuntime.setProperty(formData, name, $ctx.sent);
                     $ctx.state = -2;
                     break;
@@ -134,7 +177,7 @@ var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $_
           break;
         case 8:
           $ctx.state = 2;
-          return extractAllMultipart(readStream, startBoundary, handlePartStream);
+          return extractAllMultipart(readStream, boundary, handlePartStream);
         case 2:
           $ctx.maybeThrow();
           $ctx.state = 4;

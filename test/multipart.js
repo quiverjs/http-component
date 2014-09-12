@@ -47,4 +47,42 @@ describe('multipart test', () => {
 
     yield handler({}, streamable)
   }))
+
+  it('multipart/mixed files test', async(function*() {
+    var serializer = simpleHandler(
+    (args, text) => {
+      var { name, filename } = args
+
+      name.should.equal('upload-files')
+      if(filename=='foo.txt') {
+        text.should.equal('Foo Content')
+        return { id: 'foo' }
+      } else if(filename == 'bar.gif') {
+        text.should.equal('Bar Content')
+        return { id: 'bar' }
+      } else {
+        throw new Error('Unexpected filename')
+      }
+    }, 'text', 'json')
+
+    var main = simpleHandler(args => {
+      var { formData, serializedParts } = args
+
+      formData['user-field'].should.equal('John')
+      var files = serializedParts['upload-files']
+
+      files[0].id.should.equal('foo')
+      files[1].id.should.equal('bar')
+
+    }, 'void', 'void')
+    .addMiddleware(multipartSerializeFilter(serializer))
+
+    var handler = yield loadStreamHandler({}, main)
+    var streamable = yield fileStreamable(
+      './test-content/multipart-2.txt')
+
+    streamable.contentType = 'multipart/form-data; boundary=AaB03x'
+
+    yield handler({}, streamable)
+  }))
 })

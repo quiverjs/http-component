@@ -73,4 +73,69 @@ describe('multipart test', (function() {
         }
     }, $__7, this);
   })));
+  it('multipart/mixed files test', async($traceurRuntime.initGeneratorFunction(function $__8() {
+    var serializer,
+        main,
+        handler,
+        streamable;
+    return $traceurRuntime.createGeneratorInstance(function($ctx) {
+      while (true)
+        switch ($ctx.state) {
+          case 0:
+            serializer = simpleHandler((function(args, text) {
+              var $__6 = args,
+                  name = $__6.name,
+                  filename = $__6.filename;
+              name.should.equal('upload-files');
+              if (filename == 'foo.txt') {
+                text.should.equal('Foo Content');
+                return {id: 'foo'};
+              } else if (filename == 'bar.gif') {
+                text.should.equal('Bar Content');
+                return {id: 'bar'};
+              } else {
+                throw new Error('Unexpected filename');
+              }
+            }), 'text', 'json');
+            main = simpleHandler((function(args) {
+              var $__6 = args,
+                  formData = $__6.formData,
+                  serializedParts = $__6.serializedParts;
+              formData[$traceurRuntime.toProperty('user-field')].should.equal('John');
+              var files = serializedParts[$traceurRuntime.toProperty('upload-files')];
+              files[0].id.should.equal('foo');
+              files[1].id.should.equal('bar');
+            }), 'void', 'void').addMiddleware(multipartSerializeFilter(serializer));
+            $ctx.state = 14;
+            break;
+          case 14:
+            $ctx.state = 2;
+            return loadStreamHandler({}, main);
+          case 2:
+            handler = $ctx.sent;
+            $ctx.state = 4;
+            break;
+          case 4:
+            $ctx.state = 6;
+            return fileStreamable('./test-content/multipart-2.txt');
+          case 6:
+            streamable = $ctx.sent;
+            $ctx.state = 8;
+            break;
+          case 8:
+            streamable.contentType = 'multipart/form-data; boundary=AaB03x';
+            $ctx.state = 16;
+            break;
+          case 16:
+            $ctx.state = 10;
+            return handler({}, streamable);
+          case 10:
+            $ctx.maybeThrow();
+            $ctx.state = -2;
+            break;
+          default:
+            return $ctx.end();
+        }
+    }, $__8, this);
+  })));
 }));

@@ -27,7 +27,9 @@ var async = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_pr
 var $__2 = ($__quiver_45_stream_45_util__ = require("quiver-stream-util"), $__quiver_45_stream_45_util__ && $__quiver_45_stream_45_util__.__esModule && $__quiver_45_stream_45_util__ || {default: $__quiver_45_stream_45_util__}),
     createChannel = $__2.createChannel,
     pushbackStream = $__2.pushbackStream;
-var extractStreamHead = ($__quiver_45_stream_45_component__ = require("quiver-stream-component"), $__quiver_45_stream_45_component__ && $__quiver_45_stream_45_component__.__esModule && $__quiver_45_stream_45_component__ || {default: $__quiver_45_stream_45_component__}).extractStreamHead;
+var $__3 = ($__quiver_45_stream_45_component__ = require("quiver-stream-component"), $__quiver_45_stream_45_component__ && $__quiver_45_stream_45_component__.__esModule && $__quiver_45_stream_45_component__ || {default: $__quiver_45_stream_45_component__}),
+    extractStreamHead = $__3.extractStreamHead,
+    extractFixedStreamHead = $__3.extractFixedStreamHead;
 var extractHttpHeaders = ($__header_46_js__ = require("./header.js"), $__header_46_js__ && $__header_46_js__.__esModule && $__header_46_js__ || {default: $__header_46_js__}).extractHttpHeaders;
 var indexOf = (function(getByte, bufferLength, boundary, boundaryLength) {
   var lastBegin = bufferLength - boundaryLength;
@@ -288,9 +290,9 @@ var extractMultipart = async($traceurRuntime.initGeneratorFunction(function $__1
       headers,
       readStream,
       partContent,
-      headBuffer,
+      endBuffer,
       ending,
-      ended,
+      headBuffer,
       $__15,
       $__16,
       $__17,
@@ -304,7 +306,11 @@ var extractMultipart = async($traceurRuntime.initGeneratorFunction(function $__1
       $__25,
       $__26,
       $__27,
-      $__28;
+      $__28,
+      $__29,
+      $__30,
+      $__31,
+      $__32;
   return $traceurRuntime.createGeneratorInstance(function($ctx) {
     while (true)
       switch ($ctx.state) {
@@ -350,7 +356,7 @@ var extractMultipart = async($traceurRuntime.initGeneratorFunction(function $__1
           $ctx.state = 16;
           break;
         case 16:
-          $__25 = extractStreamHead(readStream, newLineBuffer);
+          $__25 = extractFixedStreamHead(readStream, 2);
           $ctx.state = 22;
           break;
         case 22:
@@ -363,25 +369,56 @@ var extractMultipart = async($traceurRuntime.initGeneratorFunction(function $__1
         case 20:
           $__5 = $__26;
           $__27 = $__5[0];
-          headBuffer = $__27;
+          endBuffer = $__27;
           $__28 = $__5[1];
           readStream = $__28;
           $ctx.state = 24;
           break;
         case 24:
-          ending = headBuffer.toString().trim();
-          ended = false;
-          if (ending == '') {
-            ended = false;
-          } else if (ending = '--') {
-            ended = true;
-          } else {
-            throw error(400, 'Bad Request');
-          }
-          $ctx.state = 28;
+          ending = endBuffer.toString();
+          $ctx.state = 44;
           break;
-        case 28:
-          $ctx.returnValue = [partContent, readStream, ended];
+        case 44:
+          $ctx.state = (ending == '--') ? 25 : 26;
+          break;
+        case 25:
+          $ctx.returnValue = [partContent, readStream, true];
+          $ctx.state = -2;
+          break;
+        case 26:
+          $ctx.state = (ending != '\r\n') ? 36 : 39;
+          break;
+        case 36:
+          readStream = pushbackStream(readStream, [endBuffer]);
+          $ctx.state = 37;
+          break;
+        case 37:
+          $__29 = extractStreamHead(readStream, newLineBuffer);
+          $ctx.state = 33;
+          break;
+        case 33:
+          $ctx.state = 29;
+          return $__29;
+        case 29:
+          $__30 = $ctx.sent;
+          $ctx.state = 31;
+          break;
+        case 31:
+          $__5 = $__30;
+          $__31 = $__5[0];
+          headBuffer = $__31;
+          $__32 = $__5[1];
+          readStream = $__32;
+          $ctx.state = 35;
+          break;
+        case 35:
+          ending = headBuffer.toString().trim();
+          if (ending != '')
+            throw error(400, 'Bad Request');
+          $ctx.state = 39;
+          break;
+        case 39:
+          $ctx.returnValue = [partContent, readStream, false];
           $ctx.state = -2;
           break;
         default:
@@ -389,21 +426,24 @@ var extractMultipart = async($traceurRuntime.initGeneratorFunction(function $__1
       }
   }, $__12, this);
 }));
-var extractAllMultipart = async($traceurRuntime.initGeneratorFunction(function $__29(readStream, startBoundary, partHandler) {
+var extractAllMultipart = async($traceurRuntime.initGeneratorFunction(function $__33(readStream, boundary, partHandler) {
   var parts,
       beginBoundary,
-      readStream,
+      startBoundary,
       $__5,
+      head,
+      readStream,
       partContent,
       ended,
-      $__30,
-      $__31,
-      $__32,
-      $__33,
       $__34,
       $__35,
       $__36,
       $__37,
+      $__38,
+      $__39,
+      $__40,
+      $__41,
+      $__42,
       err;
   return $traceurRuntime.createGeneratorInstance(function($ctx) {
     while (true)
@@ -414,47 +454,51 @@ var extractAllMultipart = async($traceurRuntime.initGeneratorFunction(function $
           break;
         case 28:
           parts = [];
-          beginBoundary = Buffer.concat([startBoundary, newLineBuffer]);
+          beginBoundary = new Buffer('--' + boundary + '\r\n');
+          startBoundary = new Buffer('\r\n--' + boundary);
           $ctx.state = 24;
           break;
         case 24:
-          $__30 = extractStreamHead(readStream, beginBoundary);
+          $__34 = extractStreamHead(readStream, beginBoundary);
           $ctx.state = 6;
           break;
         case 6:
           $ctx.state = 2;
-          return $__30;
+          return $__34;
         case 2:
-          $__31 = $ctx.sent;
+          $__35 = $ctx.sent;
           $ctx.state = 4;
           break;
         case 4:
-          $__32 = $__31[1];
-          readStream = $__32;
+          $__5 = $__35;
+          $__36 = $__5[0];
+          head = $__36;
+          $__37 = $__5[1];
+          readStream = $__37;
           $ctx.state = 8;
           break;
         case 8:
           $ctx.state = (true) ? 13 : 22;
           break;
         case 13:
-          $__33 = extractMultipart(readStream, startBoundary, partHandler);
+          $__38 = extractMultipart(readStream, startBoundary, partHandler);
           $ctx.state = 14;
           break;
         case 14:
           $ctx.state = 10;
-          return $__33;
+          return $__38;
         case 10:
-          $__34 = $ctx.sent;
+          $__39 = $ctx.sent;
           $ctx.state = 12;
           break;
         case 12:
-          $__5 = $__34;
-          $__35 = $__5[0];
-          partContent = $__35;
-          $__36 = $__5[1];
-          readStream = $__36;
-          $__37 = $__5[2];
-          ended = $__37;
+          $__5 = $__39;
+          $__40 = $__5[0];
+          partContent = $__40;
+          $__41 = $__5[1];
+          readStream = $__41;
+          $__42 = $__5[2];
+          ended = $__42;
           $ctx.state = 16;
           break;
         case 16:
@@ -485,5 +529,5 @@ var extractAllMultipart = async($traceurRuntime.initGeneratorFunction(function $
         default:
           return $ctx.end();
       }
-  }, $__29, this);
+  }, $__33, this);
 }));
