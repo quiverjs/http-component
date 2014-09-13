@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperties(exports, {
-  indexOf: {get: function() {
-      return indexOf;
+  createBufferQueue: {get: function() {
+      return createBufferQueue;
     }},
   pipeMultipart: {get: function() {
       return pipeMultipart;
@@ -31,20 +31,6 @@ var $__3 = ($__quiver_45_stream_45_component__ = require("quiver-stream-componen
     extractStreamHead = $__3.extractStreamHead,
     extractFixedStreamHead = $__3.extractFixedStreamHead;
 var extractHttpHeaders = ($__header_46_js__ = require("./header.js"), $__header_46_js__ && $__header_46_js__.__esModule && $__header_46_js__ || {default: $__header_46_js__}).extractHttpHeaders;
-var indexOf = (function(getByte, bufferLength, boundary, boundaryLength) {
-  var lastBegin = bufferLength - boundaryLength;
-  var firstByte = boundary[0];
-  first: for (var i = 0; i <= lastBegin; i++) {
-    if (getByte(i) != firstByte)
-      continue;
-    for (var j = 1; j < boundaryLength; j++) {
-      if (getByte(i + j) != boundary[$traceurRuntime.toProperty(j)])
-        continue first;
-    }
-    return i;
-  }
-  return -1;
-});
 var createBufferQueue = (function(boundaryLength) {
   var buffers = [];
   var bufferLength = 0;
@@ -91,6 +77,20 @@ var createBufferQueue = (function(boundaryLength) {
   var canPop = (function() {
     return ((bufferLength - buffers[0].length) > boundaryLength);
   });
+  var indexOf = (function(boundary) {
+    var lastBegin = bufferLength - boundaryLength;
+    var firstByte = boundary[0];
+    first: for (var i = 0; i <= lastBegin; i++) {
+      if (getByte(i) != firstByte)
+        continue;
+      for (var j = 1; j < boundaryLength; j++) {
+        if (getByte(i + j) != boundary[$traceurRuntime.toProperty(j)])
+          continue first;
+      }
+      return i;
+    }
+    return -1;
+  });
   var sliceBoundary = (function(index) {
     var lastBuffers = sliceBuffers(index);
     var boundaryBuffers = sliceBuffers(boundaryLength);
@@ -104,6 +104,7 @@ var createBufferQueue = (function(boundaryLength) {
     sliceBuffers: sliceBuffers,
     sliceBoundary: sliceBoundary,
     canPop: canPop,
+    indexOf: indexOf,
     get length() {
       return bufferLength;
     }
@@ -178,7 +179,7 @@ var pipeMultipart = async($traceurRuntime.initGeneratorFunction(function $__6(re
           $ctx.state = (bufferQueue.length < boundaryLength) ? 4 : 26;
           break;
         case 26:
-          index = indexOf(bufferQueue.getByte, bufferQueue.length, boundary, boundaryLength);
+          index = bufferQueue.indexOf(boundary);
           $ctx.state = 31;
           break;
         case 31:
@@ -428,7 +429,7 @@ var extractMultipart = async($traceurRuntime.initGeneratorFunction(function $__1
 }));
 var extractAllMultipart = async($traceurRuntime.initGeneratorFunction(function $__33(readStream, boundary, partHandler) {
   var parts,
-      beginBoundary,
+      firstBoundary,
       startBoundary,
       $__5,
       head,
@@ -454,12 +455,12 @@ var extractAllMultipart = async($traceurRuntime.initGeneratorFunction(function $
           break;
         case 28:
           parts = [];
-          beginBoundary = new Buffer('--' + boundary + '\r\n');
+          firstBoundary = new Buffer('--' + boundary + '\r\n');
           startBoundary = new Buffer('\r\n--' + boundary);
           $ctx.state = 24;
           break;
         case 24:
-          $__34 = extractStreamHead(readStream, beginBoundary);
+          $__34 = extractStreamHead(readStream, firstBoundary);
           $ctx.state = 6;
           break;
         case 6:

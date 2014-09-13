@@ -2,7 +2,7 @@
 var $__traceur_64_0_46_0_46_58__,
     $__quiver_45_promise__,
     $__quiver_45_stream_45_util__,
-    $___46__46__47_lib_47_pipe_45_multipart_46_js__,
+    $___46__46__47_lib_47_multipart_45_stream_46_js__,
     $__chai__,
     $__chai_45_as_45_promised__;
 ($__traceur_64_0_46_0_46_58__ = require("traceur"), $__traceur_64_0_46_0_46_58__ && $__traceur_64_0_46_0_46_58__.__esModule && $__traceur_64_0_46_0_46_58__ || {default: $__traceur_64_0_46_0_46_58__});
@@ -11,14 +11,14 @@ var $__1 = ($__quiver_45_stream_45_util__ = require("quiver-stream-util"), $__qu
     streamToText = $__1.streamToText,
     createChannel = $__1.createChannel,
     buffersToStream = $__1.buffersToStream;
-var $__2 = ($___46__46__47_lib_47_pipe_45_multipart_46_js__ = require("../lib/pipe-multipart.js"), $___46__46__47_lib_47_pipe_45_multipart_46_js__ && $___46__46__47_lib_47_pipe_45_multipart_46_js__.__esModule && $___46__46__47_lib_47_pipe_45_multipart_46_js__ || {default: $___46__46__47_lib_47_pipe_45_multipart_46_js__}),
+var $__2 = ($___46__46__47_lib_47_multipart_45_stream_46_js__ = require("../lib/multipart-stream.js"), $___46__46__47_lib_47_multipart_45_stream_46_js__ && $___46__46__47_lib_47_multipart_45_stream_46_js__.__esModule && $___46__46__47_lib_47_multipart_45_stream_46_js__ || {default: $___46__46__47_lib_47_multipart_45_stream_46_js__}),
     pipeMultipart = $__2.pipeMultipart,
     handleMultipart = $__2.handleMultipart;
 var chai = ($__chai__ = require("chai"), $__chai__ && $__chai__.__esModule && $__chai__ || {default: $__chai__}).default;
 var chaiAsPromised = ($__chai_45_as_45_promised__ = require("chai-as-promised"), $__chai_45_as_45_promised__ && $__chai_45_as_45_promised__.__esModule && $__chai_45_as_45_promised__ || {default: $__chai_45_as_45_promised__}).default;
 chai.use(chaiAsPromised);
 var should = chai.should();
-describe('pipe multipart test', (function() {
+describe('multipart stream test', (function() {
   it('simple boundary', async($traceurRuntime.initGeneratorFunction(function $__6() {
     var boundary,
         testBoundary;

@@ -11,7 +11,7 @@ var $__quiver_45_error__,
     $__quiver_45_stream_45_util__,
     $__quiver_45_stream_45_component__,
     $__header_46_js__,
-    $__pipe_45_multipart_46_js__;
+    $__multipart_45_stream_46_js__;
 var error = ($__quiver_45_error__ = require("quiver-error"), $__quiver_45_error__ && $__quiver_45_error__.__esModule && $__quiver_45_error__ || {default: $__quiver_45_error__}).error;
 var $__1 = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_promise__ && $__quiver_45_promise__.__esModule && $__quiver_45_promise__ || {default: $__quiver_45_promise__}),
     async = $__1.async,
@@ -19,7 +19,7 @@ var $__1 = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_pro
     timeout = $__1.timeout;
 var $__2 = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45_component__ && $__quiver_45_component__.__esModule && $__quiver_45_component__ || {default: $__quiver_45_component__}),
     streamFilter = $__2.streamFilter,
-    loadStreamHandler = $__2.loadStreamHandler,
+    simpleHandlerLoader = $__2.simpleHandlerLoader,
     inputHandlerMiddleware = $__2.inputHandlerMiddleware;
 var $__3 = ($__quiver_45_stream_45_util__ = require("quiver-stream-util"), $__quiver_45_stream_45_util__ && $__quiver_45_stream_45_util__.__esModule && $__quiver_45_stream_45_util__ || {default: $__quiver_45_stream_45_util__}),
     pipeStream = $__3.pipeStream,
@@ -31,9 +31,8 @@ var $__3 = ($__quiver_45_stream_45_util__ = require("quiver-stream-util"), $__qu
     streamToStreamable = $__3.streamToStreamable;
 var extractStreamHead = ($__quiver_45_stream_45_component__ = require("quiver-stream-component"), $__quiver_45_stream_45_component__ && $__quiver_45_stream_45_component__.__esModule && $__quiver_45_stream_45_component__ || {default: $__quiver_45_stream_45_component__}).extractStreamHead;
 var parseSubheaders = ($__header_46_js__ = require("./header.js"), $__header_46_js__ && $__header_46_js__.__esModule && $__header_46_js__ || {default: $__header_46_js__}).parseSubheaders;
-var extractAllMultipart = ($__pipe_45_multipart_46_js__ = require("./pipe-multipart.js"), $__pipe_45_multipart_46_js__ && $__pipe_45_multipart_46_js__.__esModule && $__pipe_45_multipart_46_js__ || {default: $__pipe_45_multipart_46_js__}).extractAllMultipart;
+var extractAllMultipart = ($__multipart_45_stream_46_js__ = require("./multipart-stream.js"), $__multipart_45_stream_46_js__ && $__multipart_45_stream_46_js__.__esModule && $__multipart_45_stream_46_js__ || {default: $__multipart_45_stream_46_js__}).extractAllMultipart;
 var multipartType = /^multipart\/form-data/;
-var boundaryRegex = /^multipart\/.+?(?:; boundary=(?:(?:"(.+)")|(?:([^\s]+))))$/i;
 var parseBoundary = (function(contentType) {
   var boundary = parseSubheaders(contentType)[1].boundary;
   if (!boundary)
@@ -47,10 +46,15 @@ var parseMultipartHeaders = (function(headers) {
   var $__7 = parseSubheaders(dispositionHeader),
       disposition = $__7[0],
       dispositionHeaders = $__7[1];
-  var contentTypeHeader = headers[$traceurRuntime.toProperty('content-type')] || 'text/plain';
-  var $__7 = parseSubheaders(contentTypeHeader),
-      contentType = $__7[0],
-      contentTypeHeaders = $__7[1];
+  var contentTypeHeader = headers[$traceurRuntime.toProperty('content-type')];
+  if (contentTypeHeader) {
+    var $__7 = parseSubheaders(contentTypeHeader),
+        contentType = $__7[0],
+        contentTypeHeaders = $__7[1];
+  } else {
+    var contentType = 'text/plain';
+    var contentTypeHeaders = {};
+  }
   return {
     disposition: disposition,
     dispositionHeaders: dispositionHeaders,
@@ -94,7 +98,7 @@ var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $_
                         name: name,
                         filename: filename,
                         contentType: contentType
-                      }, streamToStreamable(partStream)).then(streamableToJson);
+                      }, partStream);
                       $ctx.state = -2;
                       break;
                     default:
@@ -152,7 +156,7 @@ var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $_
                       name: name,
                       filename: filename,
                       contentType: contentType
-                    }, streamToStreamable(partStream)).then(streamableToJson);
+                    }, partStream);
                   case 8:
                     serialized = $ctx.sent;
                     $ctx.state = 10;
@@ -267,5 +271,5 @@ var multipartSerializeFilter = (function(serializerHandler) {
           }
       }, $__10, this);
     }));
-  })).addMiddleware(inputHandlerMiddleware(serializerHandler, 'serializerHandler', {loader: loadStreamHandler}));
+  })).addMiddleware(inputHandlerMiddleware(serializerHandler, 'serializerHandler', {loader: simpleHandlerLoader('stream', 'json')}));
 });

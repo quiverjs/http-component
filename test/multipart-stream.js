@@ -10,7 +10,7 @@ import {
 
 import { 
   pipeMultipart, handleMultipart
-} from '../lib/pipe-multipart.js'
+} from '../lib/multipart-stream.js'
 
 import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
@@ -18,7 +18,7 @@ import chaiAsPromised from 'chai-as-promised'
 chai.use(chaiAsPromised)
 var should = chai.should()
 
-describe('pipe multipart test', () => {
+describe('multipart stream test', () => {
   it('simple boundary', async(function*() {
     var boundary = new Buffer('--boundary--')
 
