@@ -205,10 +205,11 @@ var pipeMultipart = async($traceurRuntime.initGeneratorFunction(function $__6(re
             return writeStream.write(buffer);
           }));
           writeStream.closeWrite();
+          readStream = pushbackStream(readStream, nextBuffers);
           $ctx.state = 23;
           break;
         case 23:
-          $ctx.returnValue = pushbackStream(readStream, nextBuffers);
+          $ctx.returnValue = readStream;
           $ctx.state = -2;
           break;
         case 32:
