@@ -8,6 +8,10 @@ import {
   loadStreamHandler
 } from 'quiver-component'
 
+import {
+  sizeWindowedStream, convertStreamable
+} from 'quiver-stream-component'
+
 import { fileStreamable } from 'quiver-file-stream'
 
 import { multipartSerializeFilter } from '../lib/multipart.js'
@@ -19,6 +23,11 @@ chai.use(chaiAsPromised)
 var should = chai.should()
 
 describe('multipart test', () => {
+  var sizeWindowStreamable = streamable =>
+    convertStreamable(readStream => 
+      sizeWindowedStream(readStream, 3, 5),
+      streamable)
+
   it('single file test', async(function*() {
     var serializer = simpleHandler(
       (args, text) => {
@@ -42,6 +51,8 @@ describe('multipart test', () => {
     var handler = yield loadStreamHandler({}, main)
     var streamable = yield fileStreamable(
       './test-content/multipart-1.txt')
+    
+    streamable = sizeWindowStreamable(streamable)
 
     streamable.contentType = 'multipart/form-data; boundary=AaB03x'
 
@@ -80,6 +91,8 @@ describe('multipart test', () => {
     var handler = yield loadStreamHandler({}, main)
     var streamable = yield fileStreamable(
       './test-content/multipart-2.txt')
+
+    streamable = sizeWindowStreamable(streamable)
 
     streamable.contentType = 'multipart/form-data; boundary=AaB03x'
 
