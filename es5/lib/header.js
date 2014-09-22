@@ -54,7 +54,7 @@ var parseSubheaders = (function(field) {
     if (!value)
       return;
     value = value.replace(/^"/, '').replace(/"$/, '');
-    $traceurRuntime.setProperty(subheaders, key, value);
+    subheaders[key] = value;
   }));
   return [main, subheaders];
 });
@@ -64,15 +64,13 @@ var parseHttpHeaders = (function(headerText) {
   var rawHeaders = headerText.split('\r\n');
   var headers = {};
   rawHeaders.forEach(function(header) {
-    var $__5,
-        $__6;
     var $__3 = parseHeader(header),
         key = $__3[0],
         value = $__3[1];
-    if (headers[$traceurRuntime.toProperty(key)]) {
-      ($__5 = headers[$traceurRuntime.toProperty(key)], $__6 = $__5 + ', ' + value, $traceurRuntime.setProperty(headers, key, $__6), $__6);
+    if (headers[key]) {
+      headers[key] += ', ' + value;
     } else {
-      $traceurRuntime.setProperty(headers, key, value);
+      headers[key] = value;
     }
   });
   return headers;

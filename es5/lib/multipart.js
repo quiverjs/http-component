@@ -48,17 +48,17 @@ var formatStreamable = (function(streamable) {
   }
 });
 var parseMultipartHeaders = (function(headers) {
-  var dispositionHeader = headers[$traceurRuntime.toProperty('content-disposition')];
+  var dispositionHeader = headers['content-disposition'];
   if (!dispositionHeader)
     throw error(400, 'missing Content-Disposition header');
   var $__7 = parseSubheaders(dispositionHeader),
       disposition = $__7[0],
       dispositionHeaders = $__7[1];
-  var contentTypeHeader = headers[$traceurRuntime.toProperty('content-type')];
+  var contentTypeHeader = headers['content-type'];
   if (contentTypeHeader) {
-    var $__7 = parseSubheaders(contentTypeHeader),
-        contentType = $__7[0],
-        contentTypeHeaders = $__7[1];
+    var $__8 = parseSubheaders(contentTypeHeader),
+        contentType = $__8[0],
+        contentTypeHeaders = $__8[1];
   } else {
     var contentType = 'text/plain';
     var contentTypeHeaders = {};
@@ -70,7 +70,7 @@ var parseMultipartHeaders = (function(headers) {
     contentTypeHeaders: contentTypeHeaders
   };
 });
-var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $__9(serializerHandler, readStream, boundary) {
+var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $__10(serializerHandler, readStream, boundary) {
   var formData,
       serializedParts,
       mixedPartHandler,
@@ -82,7 +82,7 @@ var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $_
           formData = {};
           serializedParts = {};
           mixedPartHandler = (function(name) {
-            return async($traceurRuntime.initGeneratorFunction(function $__10(headers, partStream) {
+            return async($traceurRuntime.initGeneratorFunction(function $__11(headers, partStream) {
               var $__7,
                   disposition,
                   dispositionHeaders,
@@ -112,15 +112,16 @@ var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $_
                     default:
                       return $ctx.end();
                   }
-              }, $__10, this);
+              }, $__11, this);
             }));
           });
-          handlePartStream = async($traceurRuntime.initGeneratorFunction(function $__10(headers, partStream) {
+          handlePartStream = async($traceurRuntime.initGeneratorFunction(function $__11(headers, partStream) {
             var $__7,
                 disposition,
                 dispositionHeaders,
                 contentType,
                 contentTypeHeaders,
+                $__8,
                 name,
                 filename,
                 boundary,
@@ -133,10 +134,10 @@ var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $_
                     $__7 = parseMultipartHeaders(headers), disposition = $__7.disposition, dispositionHeaders = $__7.dispositionHeaders, contentType = $__7.contentType, contentTypeHeaders = $__7.contentTypeHeaders;
                     if (disposition != 'form-data')
                       throw error(400, 'Invalid Content-Disposition');
-                    $__7 = dispositionHeaders, name = $__7.name, filename = $__7.filename;
+                    $__8 = dispositionHeaders, name = $__8.name, filename = $__8.filename;
                     if (!name)
                       throw error(400, 'Missing name field in Content-Disposition');
-                    if (formData[$traceurRuntime.toProperty(name)])
+                    if (formData[name])
                       throw error(400, 'duplicate multipart field');
                     $ctx.state = 20;
                     break;
@@ -144,7 +145,7 @@ var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $_
                     $ctx.state = (contentType == 'multipart/mixed') ? 5 : 17;
                     break;
                   case 5:
-                    boundary = contentTypeHeaders[$traceurRuntime.toProperty('boundary')];
+                    boundary = contentTypeHeaders['boundary'];
                     if (!boundary)
                       throw error(400, 'Missing multipart boundary');
                     $ctx.state = 6;
@@ -153,7 +154,7 @@ var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $_
                     $ctx.state = 2;
                     return extractAllMultipart(partStream, boundary, mixedPartHandler(name));
                   case 2:
-                    $traceurRuntime.setProperty(serializedParts, name, $ctx.sent);
+                    serializedParts[name] = $ctx.sent;
                     $ctx.state = -2;
                     break;
                   case 17:
@@ -171,13 +172,13 @@ var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $_
                     $ctx.state = 10;
                     break;
                   case 10:
-                    field = serializedParts[$traceurRuntime.toProperty(name)];
+                    field = serializedParts[name];
                     if (!field) {
-                      $traceurRuntime.setProperty(serializedParts, name, serialized);
+                      serializedParts[name] = serialized;
                     } else if (Array.isArray(field)) {
                       field.push(serialized);
                     } else {
-                      $traceurRuntime.setProperty(serializedParts, name, [field, serialized]);
+                      serializedParts[name] = [field, serialized];
                     }
                     $ctx.state = -2;
                     break;
@@ -185,13 +186,13 @@ var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $_
                     $ctx.state = 14;
                     return streamToText(partStream);
                   case 14:
-                    $traceurRuntime.setProperty(formData, name, $ctx.sent);
+                    formData[name] = $ctx.sent;
                     $ctx.state = -2;
                     break;
                   default:
                     return $ctx.end();
                 }
-            }, $__10, this);
+            }, $__11, this);
           }));
           $ctx.state = 8;
           break;
@@ -209,23 +210,23 @@ var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $_
         default:
           return $ctx.end();
       }
-  }, $__9, this);
+  }, $__10, this);
 }));
 var multipartSerializeFilter = (function(serializerHandler) {
   return streamFilter((function(config, handler) {
     var serializerHandler = config.serializerHandler;
-    return async($traceurRuntime.initGeneratorFunction(function $__10(args, streamable) {
+    return async($traceurRuntime.initGeneratorFunction(function $__11(args, streamable) {
       var requestHead,
           contentType,
           boundary,
           readStream,
-          $__7,
+          $__9,
           formData,
           serializedParts,
-          $__11,
           $__12,
           $__13,
-          $__14;
+          $__14,
+          $__15;
       return $traceurRuntime.createGeneratorInstance(function($ctx) {
         while (true)
           switch ($ctx.state) {
@@ -255,22 +256,22 @@ var multipartSerializeFilter = (function(serializerHandler) {
               $ctx.state = 7;
               break;
             case 7:
-              $__11 = serializeMultipart(serializerHandler, readStream, boundary);
+              $__12 = serializeMultipart(serializerHandler, readStream, boundary);
               $ctx.state = 13;
               break;
             case 13:
               $ctx.state = 9;
-              return $__11;
+              return $__12;
             case 9:
-              $__12 = $ctx.sent;
+              $__13 = $ctx.sent;
               $ctx.state = 11;
               break;
             case 11:
-              $__7 = $__12;
-              $__13 = $__7[0];
-              formData = $__13;
-              $__14 = $__7[1];
-              serializedParts = $__14;
+              $__9 = $__13;
+              $__14 = $__9[0];
+              formData = $__14;
+              $__15 = $__9[1];
+              serializedParts = $__15;
               $ctx.state = 15;
               break;
             case 15:
@@ -285,7 +286,7 @@ var multipartSerializeFilter = (function(serializerHandler) {
             default:
               return $ctx.end();
           }
-      }, $__10, this);
+      }, $__11, this);
     }));
   })).addMiddleware(inputHandlerMiddleware(serializerHandler, 'serializerHandler', {loader: simpleHandlerLoader('stream', 'streamable')}));
 });

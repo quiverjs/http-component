@@ -1,5 +1,5 @@
 "use strict";
-var $__traceur_64_0_46_0_46_58__,
+var $__traceur_64_0_46_0_46_6__,
     $__quiver_45_promise__,
     $__quiver_45_component__,
     $__quiver_45_stream_45_component__,
@@ -7,7 +7,7 @@ var $__traceur_64_0_46_0_46_58__,
     $___46__46__47_lib_47_multipart_46_js__,
     $__chai__,
     $__chai_45_as_45_promised__;
-($__traceur_64_0_46_0_46_58__ = require("traceur"), $__traceur_64_0_46_0_46_58__ && $__traceur_64_0_46_0_46_58__.__esModule && $__traceur_64_0_46_0_46_58__ || {default: $__traceur_64_0_46_0_46_58__});
+($__traceur_64_0_46_0_46_6__ = require("traceur"), $__traceur_64_0_46_0_46_6__ && $__traceur_64_0_46_0_46_6__.__esModule && $__traceur_64_0_46_0_46_6__ || {default: $__traceur_64_0_46_0_46_6__});
 var async = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_promise__ && $__quiver_45_promise__.__esModule && $__quiver_45_promise__ || {default: $__quiver_45_promise__}).async;
 var $__1 = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45_component__ && $__quiver_45_component__.__esModule && $__quiver_45_component__ || {default: $__quiver_45_component__}),
     simpleHandler = $__1.simpleHandler,
@@ -111,8 +111,8 @@ describe('multipart test', (function() {
               var $__7 = args,
                   formData = $__7.formData,
                   serializedParts = $__7.serializedParts;
-              formData[$traceurRuntime.toProperty('user-field')].should.equal('John');
-              var files = serializedParts[$traceurRuntime.toProperty('upload-files')];
+              formData['user-field'].should.equal('John');
+              var files = serializedParts['upload-files'];
               files[0].id.should.equal('foo');
               files[1].id.should.equal('bar');
             }), 'void', 'void').addMiddleware(multipartSerializeFilter(serializer));

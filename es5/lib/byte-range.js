@@ -22,15 +22,17 @@ var byteRangeFilter = httpFilter((function(config, handler) {
   var $__5;
   var $__4 = config,
       convertNonRangeStream = ($__5 = $__4.convertNonRangeStream) === void 0 ? false : $__5;
-  return async($traceurRuntime.initGeneratorFunction(function $__6(requestHead, requestStreamable) {
+  return async($traceurRuntime.initGeneratorFunction(function $__9(requestHead, requestStreamable) {
     var rangeHeader,
         response,
-        $__4,
+        $__6,
         responseHead,
         responseStreamable,
+        $__7,
         toByteRangeStream,
         contentLength,
         isRangeStreamable,
+        $__8,
         start,
         end,
         rangeStream,
@@ -51,7 +53,7 @@ var byteRangeFilter = httpFilter((function(config, handler) {
             $ctx.state = 4;
             break;
           case 4:
-            $__4 = response, responseHead = $__4[0], responseStreamable = $__4[1];
+            $__6 = response, responseHead = $__6[0], responseStreamable = $__6[1];
             $ctx.state = 29;
             break;
           case 29:
@@ -62,7 +64,7 @@ var byteRangeFilter = httpFilter((function(config, handler) {
             $ctx.state = -2;
             break;
           case 6:
-            $__4 = responseStreamable, toByteRangeStream = $__4.toByteRangeStream, contentLength = $__4.contentLength;
+            $__7 = responseStreamable, toByteRangeStream = $__7.toByteRangeStream, contentLength = $__7.contentLength;
             isRangeStreamable = toByteRangeStream && contentLength;
             if (isRangeStreamable) {
               responseHead.setHeader('accept-ranges', 'bytes');
@@ -73,7 +75,7 @@ var byteRangeFilter = httpFilter((function(config, handler) {
             $ctx.state = (rangeHeader && isRangeStreamable) ? 17 : 23;
             break;
           case 17:
-            $__4 = parseRange(rangeHeader), start = $__4[0], end = $__4[1];
+            $__8 = parseRange(rangeHeader), start = $__8[0], end = $__8[1];
             $ctx.state = 18;
             break;
           case 18:
@@ -117,6 +119,6 @@ var byteRangeFilter = httpFilter((function(config, handler) {
           default:
             return $ctx.end();
         }
-    }, $__6, this);
+    }, $__9, this);
   }));
 }));
