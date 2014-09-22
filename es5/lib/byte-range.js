@@ -1,4 +1,10 @@
 "use strict";
+Object.defineProperties(exports, {
+  byteRangeFilter: {get: function() {
+      return byteRangeFilter;
+    }},
+  __esModule: {value: true}
+});
 var $__quiver_45_error__,
     $__quiver_45_promise__,
     $__quiver_45_component__,

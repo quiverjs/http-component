@@ -19,7 +19,7 @@
     "quiver-component": "~1.1.4",
     "quiver-file-stream": "~1.1.2",
     "quiver-stream-util": "~1.1.4",
-    "quiver-stream-component": "~1.0.4"
+    "quiver-stream-component": "~1.0.5"
   },
   "devDependencies": {
     "chai": "^1.9.1",
