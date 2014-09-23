@@ -100,7 +100,7 @@ var httpCompressFilter = httpFilter((function(config, handler) {
             break;
           case 15:
             $ctx.state = 18;
-            return compressStreamable(responseStreamable);
+            return compressStreamable('gzip', responseStreamable);
           case 18:
             compressedStreamable = $ctx.sent;
             $ctx.state = 20;
