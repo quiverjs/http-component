@@ -270,7 +270,7 @@ var byteRangeFilter = httpFilter((function(config, handler) {
             $ctx.state = -2;
             break;
           case 12:
-            if (!rangeHeader && toByteRangeStream) {
+            if (toByteRangeStream) {
               responseHead.setHeader('accept-ranges', 'bytes');
             }
             $ctx.state = 40;
@@ -284,18 +284,18 @@ var byteRangeFilter = httpFilter((function(config, handler) {
             break;
           case 15:
             $__8 = parseRange(rangeHeader), start = $__8[0], end = $__8[1];
+            if (end == -1)
+              end = contentLength;
             $ctx.state = 42;
             break;
           case 42:
-            $ctx.state = (start == 0 && end == -1) ? 17 : 18;
+            $ctx.state = (start == 0 && end == contentLength) ? 17 : 18;
             break;
           case 17:
             $ctx.returnValue = response;
             $ctx.state = -2;
             break;
           case 18:
-            if (end == -1)
-              end = contentLength;
             if (end > contentLength)
               throw error(416, 'Requested Range Not Satisfiable');
             $ctx.state = 44;
