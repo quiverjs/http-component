@@ -7,9 +7,9 @@
   "name": "quiver-http-component",
   "desription": "Components for processing HTTP requests",
   "version": "1.0.0",
-  "homepage": "https://github.com/quiverjs/file-component",
+  "homepage": "https://github.com/quiverjs/http-component",
   "repository": {
-    "url": "git@github.com:quiverjs/file-component.git"
+    "url": "git@github.com:quiverjs/http-component.git"
   },
   "dependencies": {
     "traceur": "~0.0.65",
@@ -29,7 +29,7 @@
     "quiver-file-component": "~1.1.3"
   },
   "bugs": {
-    "url": "https://github.com/quiverjs/file-component/issues",
+    "url": "https://github.com/quiverjs/http-component/issues",
     "email": "quiver@quiverjs.org"
   },
   "licenses": {

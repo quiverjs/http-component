@@ -1,5 +1,5 @@
 
-quiver-file-handler
+quiver-http-component
 ===================
 
-Create various filesystem-related stream handlers and filters
+Components for processing HTTP requests
