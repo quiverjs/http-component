@@ -3,6 +3,9 @@ Object.defineProperties(exports, {
   etagFilter: {get: function() {
       return etagFilter;
     }},
+  makeEtagFilter: {get: function() {
+      return makeEtagFilter;
+    }},
   __esModule: {value: true}
 });
 var $__quiver_45_promise__,
@@ -145,3 +148,4 @@ var etagFilter = httpFilter((function(config, handler) {
     }, $__6, this);
   }));
 }));
+var makeEtagFilter = etagFilter.privatizedConstructor();

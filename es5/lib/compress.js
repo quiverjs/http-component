@@ -6,6 +6,9 @@ Object.defineProperties(exports, {
   httpCompressFilter: {get: function() {
       return httpCompressFilter;
     }},
+  makeHttpCompressFilter: {get: function() {
+      return makeHttpCompressFilter;
+    }},
   __esModule: {value: true}
 });
 var $__quiver_45_error__,
@@ -129,3 +132,4 @@ var httpCompressFilter = httpFilter((function(config, handler) {
     }, $__8, this);
   }));
 }));
+var makeHttpCompressFilter = httpCompressFilter.privatizedConstructor();

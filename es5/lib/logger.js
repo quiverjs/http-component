@@ -1,4 +1,10 @@
 "use strict";
+Object.defineProperties(exports, {
+  requestLoggerFilter: {get: function() {
+      return requestLoggerFilter;
+    }},
+  __esModule: {value: true}
+});
 var $__fs__,
     $__quiver_45_component__,
     $__quiver_45_promise__,
@@ -49,7 +55,7 @@ var requestLoggerFilter = (function() {
           response,
           responseHead,
           diff,
-          requestTime,
+          responseTime,
           log;
       return $traceurRuntime.createGeneratorInstance(function($ctx) {
         while (true)
@@ -68,11 +74,11 @@ var requestLoggerFilter = (function() {
             case 4:
               responseHead = response[0];
               diff = process.hrtime(startTime);
-              requestTime = (diff[0] * 1e3 + diff[1] * 1e-6).toFixed(3);
+              responseTime = (diff[0] * 1e3 + diff[1] * 1e-6).toFixed(3);
               log = logFormatter({
                 requestHead: requestHead,
                 responseHead: responseHead,
-                requestTime: requestTime
+                responseTime: responseTime
               });
               writeStream.write(log + '\n');
               $ctx.state = 10;

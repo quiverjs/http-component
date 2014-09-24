@@ -16,17 +16,21 @@ import {
   buffersToStream
 } from 'quiver-stream-util'
 
-import { formHandler } from './multipart.js'
-import { byteRangeFilter } from '../lib/byte-range.js'
-import { httpCompressFilter } from '../lib/compress.js'
+import {
+  byteRangeFilter,
+  requestLoggerFilter,
+  httpCompressFilter,
+  chunkedResponseFilter
+} from '../lib/http-component.js'
 
-import { chunkedResponseFilter } from '../lib/chunked.js'
+import { formHandler } from './multipart.js'
+import { authHandler } from './auth.js'
 
 var rangeHandler = fileHandler()
-  .addMiddleware(byteRangeFilter)
+  .addMiddleware(byteRangeFilter())
 
 var compressHandler = fileHandler()
-  .addMiddleware(httpCompressFilter)
+  .addMiddleware(httpCompressFilter())
 
 var chunkHandler = simpleHandler(
   args => 
@@ -36,14 +40,16 @@ var chunkHandler = simpleHandler(
       'manually in Quiver.'
     ]),
   'void', 'stream')
-  .addMiddleware(chunkedResponseFilter)
+  .addMiddleware(chunkedResponseFilter())
 
 var main = router()
   .addStaticRoute(singleFileHandler(), '/form')
   .addStaticRoute(formHandler, '/submit')
+  .addStaticRoute(authHandler, '/auth')
   .addParamRoute(chunkHandler, '/chunk')
   .addParamRoute(rangeHandler, '/range/:restpath')
   .addParamRoute(compressHandler, '/compress/:restpath')
+  .addMiddleware(requestLoggerFilter())
 
 var config = {
   dirPath: 'test-content',

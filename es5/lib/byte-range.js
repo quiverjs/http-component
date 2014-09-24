@@ -6,6 +6,9 @@ Object.defineProperties(exports, {
   byteRangeFilter: {get: function() {
       return byteRangeFilter;
     }},
+  makeByteRangeFilter: {get: function() {
+      return makeByteRangeFilter;
+    }},
   __esModule: {value: true}
 });
 var $__quiver_45_error__,
@@ -340,3 +343,4 @@ var byteRangeFilter = httpFilter((function(config, handler) {
     }, $__23, this);
   }));
 }));
+var makeByteRangeFilter = byteRangeFilter.privatizedConstructor();

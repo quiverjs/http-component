@@ -3,6 +3,9 @@ Object.defineProperties(exports, {
   formDataFilter: {get: function() {
       return formDataFilter;
     }},
+  makeFormDataFilter: {get: function() {
+      return makeFormDataFilter;
+    }},
   __esModule: {value: true}
 });
 var $__quiver_45_error__,
@@ -37,3 +40,4 @@ var formDataFilter = streamFilter((function(config, handler) {
     }));
   });
 }));
+var makeFormDataFilter = formDataFilter.privatizedConstructor();

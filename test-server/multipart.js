@@ -8,7 +8,7 @@ import {
 
 import {
   multipartSerializeFilter
-} from '../lib/multipart.js'
+} from '../lib/http-component.js'
 
 export var formHandler = simpleHandler(
   args => {

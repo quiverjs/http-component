@@ -1,16 +1,25 @@
 "use strict";
+Object.defineProperties(exports, {
+  basicAuthFilter: {get: function() {
+      return basicAuthFilter;
+    }},
+  __esModule: {value: true}
+});
 var $__crypto__,
-    $__quiver_45_error__,
-    $__quiver_45_component__,
+    $__quiver_45_http__,
     $__quiver_45_promise__,
-    $__quiver_45_stream_45_util__;
+    $__quiver_45_stream_45_util__,
+    $__quiver_45_component__;
 var crypto = ($__crypto__ = require("crypto"), $__crypto__ && $__crypto__.__esModule && $__crypto__ || {default: $__crypto__}).default;
-var error = ($__quiver_45_error__ = require("quiver-error"), $__quiver_45_error__ && $__quiver_45_error__.__esModule && $__quiver_45_error__ || {default: $__quiver_45_error__}).error;
-var httpFilter = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45_component__ && $__quiver_45_component__.__esModule && $__quiver_45_component__ || {default: $__quiver_45_component__}).httpFilter;
-var $__3 = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_promise__ && $__quiver_45_promise__.__esModule && $__quiver_45_promise__ || {default: $__quiver_45_promise__}),
-    async = $__3.async,
-    promisify = $__3.promisify;
+var ResponseHead = ($__quiver_45_http__ = require("quiver-http"), $__quiver_45_http__ && $__quiver_45_http__.__esModule && $__quiver_45_http__ || {default: $__quiver_45_http__}).ResponseHead;
+var $__2 = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_promise__ && $__quiver_45_promise__.__esModule && $__quiver_45_promise__ || {default: $__quiver_45_promise__}),
+    async = $__2.async,
+    promisify = $__2.promisify;
 var emptyStreamable = ($__quiver_45_stream_45_util__ = require("quiver-stream-util"), $__quiver_45_stream_45_util__ && $__quiver_45_stream_45_util__.__esModule && $__quiver_45_stream_45_util__ || {default: $__quiver_45_stream_45_util__}).emptyStreamable;
+var $__4 = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45_component__ && $__quiver_45_component__.__esModule && $__quiver_45_component__ || {default: $__quiver_45_component__}),
+    httpFilter = $__4.httpFilter,
+    simpleHandlerLoader = $__4.simpleHandlerLoader,
+    inputHandlerMiddleware = $__4.inputHandlerMiddleware;
 var randomBytes = promisify(crypto.randomBytes);
 var splitOnce = (function(str, separator) {
   var index = str.indexOf(separator);
@@ -25,11 +34,12 @@ var decodeCredentials = (function(str) {
   return splitOnce(base64Decode(str), ':');
 });
 var randomRealm = (function() {
-  return randomBytes().then((function(buffer) {
+  return randomBytes(32).then((function(buffer) {
     return buffer.toString('base64');
   }));
 });
 var basicAuthFilter = (function(authHandler) {
+  var userField = arguments[1] !== (void 0) ? arguments[1] : 'userId';
   return httpFilter(async($traceurRuntime.initGeneratorFunction(function $__9(config, handler) {
     var $__6,
         $__7,
@@ -180,7 +190,7 @@ var basicAuthFilter = (function(authHandler) {
                       $ctx.state = 21;
                       break;
                     case 21:
-                      requestHead.setArgs('userId', userId);
+                      requestHead.setArgs(userField, userId);
                       $ctx.state = 32;
                       break;
                     case 32:
@@ -198,5 +208,5 @@ var basicAuthFilter = (function(authHandler) {
             return $ctx.end();
         }
     }, $__9, this);
-  }))).addMiddleware(inputHandlerMiddleware('authHandler', authHandler, {loader: simpleHandlerLoader('void', 'text')}));
+  }))).addMiddleware(inputHandlerMiddleware(authHandler, 'authHandler', {loader: simpleHandlerLoader('void', 'text')}));
 });

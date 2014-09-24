@@ -3,6 +3,9 @@ Object.defineProperties(exports, {
   chunkedResponseFilter: {get: function() {
       return chunkedResponseFilter;
     }},
+  makeChunkedResponseFilter: {get: function() {
+      return makeChunkedResponseFilter;
+    }},
   __esModule: {value: true}
 });
 var $__quiver_45_promise__,
@@ -66,3 +69,4 @@ var chunkedResponseFilter = httpFilter((function(config, handler) {
     }, $__5, this);
   }));
 }));
+var makeChunkedResponseFilter = chunkedResponseFilter.privatizedConstructor();
