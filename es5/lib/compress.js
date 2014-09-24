@@ -1,4 +1,13 @@
 "use strict";
+Object.defineProperties(exports, {
+  selectAcceptEncoding: {get: function() {
+      return selectAcceptEncoding;
+    }},
+  httpCompressFilter: {get: function() {
+      return httpCompressFilter;
+    }},
+  __esModule: {value: true}
+});
 var $__quiver_45_error__,
     $__quiver_45_promise__,
     $__quiver_45_component__,
@@ -9,7 +18,7 @@ var async = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_pr
 var httpFilter = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45_component__ && $__quiver_45_component__.__esModule && $__quiver_45_component__ || {default: $__quiver_45_component__}).httpFilter;
 var compressStreamable = ($__quiver_45_stream_45_component__ = require("quiver-stream-component"), $__quiver_45_stream_45_component__ && $__quiver_45_stream_45_component__.__esModule && $__quiver_45_stream_45_component__ || {default: $__quiver_45_stream_45_component__}).compressStreamable;
 var parseSubheaders = ($__header_46_js__ = require("./header.js"), $__header_46_js__ && $__header_46_js__.__esModule && $__header_46_js__ || {default: $__header_46_js__}).parseSubheaders;
-var acceptRegex = /^\s*([a-zA-Z]+|\*)(?:;q=(\d(?:\.\d)?))?\s*$/;
+var acceptRegex = /^\s*([a-zA-Z]+|\*)(?:\s*;q=(\d(?:\.\d)?))?\s*$/;
 var validEncoding = ['gzip', 'identity', '*'];
 var selectAcceptEncoding = (function(header) {
   var fields = {};
@@ -21,7 +30,7 @@ var selectAcceptEncoding = (function(header) {
     var qvalue = matches[2] ? parseFloat(matches[2]) : 1;
     var accepted = (qvalue > 0);
     if (validEncoding.indexOf(encoding) != -1)
-      fields[encoding] = qvalue;
+      fields[encoding] = accepted;
   }));
   if (fields.gzip || (fields['*'] && fields.gzip !== false)) {
     return 'gzip';
@@ -29,7 +38,7 @@ var selectAcceptEncoding = (function(header) {
   if (fields.identity || (fields['*'] !== false && fields.identity !== false)) {
     return 'identity';
   }
-  throw error(406, 'No acceptable encoding');
+  throw error(415, 'No acceptable encoding');
 });
 var httpCompressFilter = httpFilter((function(config, handler) {
   var $__6;
@@ -107,6 +116,7 @@ var httpCompressFilter = httpFilter((function(config, handler) {
             break;
           case 20:
             responseHead.setHeader('content-encoding', 'gzip');
+            responseHead.removeHeader('content-length');
             $ctx.state = 32;
             break;
           case 32:

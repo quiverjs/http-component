@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "traceur": "~0.0.65",
-    "quiver-http": "1.1.2",
+    "quiver-http": "1.1.3",
     "quiver-error": "~0.1.1",
     "quiver-promise": "~0.1.2",
     "quiver-component": "~1.1.5",
@@ -24,6 +24,7 @@
   "devDependencies": {
     "chai": "^1.9.1",
     "mocha": "^1.21.4",
+    "buffertools": "^2.1.2",
     "chai-as-promised": "^4.1.1",
     "quiver-file-component": "~1.1.3"
   },
