@@ -57,7 +57,7 @@ describe('http basic auth test', () => {
     authHeaderRegex.test(authHeader).should.equal(true)
 
     yield streamableToText(responseStreamable)
-      .should.eventually.equal('')
+      .should.eventually.equal('<h1>401 Unauthorized</h1>')
 
     var requestHead = new RequestHead({
       headers: {

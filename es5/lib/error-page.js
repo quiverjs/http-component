@@ -28,8 +28,14 @@ var basicErrorPageFilter = httpFilter((function(config, handler) {
       var statusMessage = statusTable[errorCode] || 'Unknown';
       var errorTrace = devMode ? ("<pre>" + err.stack + "</pre>") : '';
       var errorPage = ("<h1>" + errorCode + " " + statusMessage + "</h1>\n" + errorTrace);
-      var responseHead = new ResponseHead({statusCode: errorCode});
       var responseStreamable = textToStreamable(errorPage);
+      var responseHead = new ResponseHead({
+        statusCode: errorCode,
+        headers: {
+          'content-type': 'text/html',
+          'content-length': '' + responseStreamable.contentLength
+        }
+      });
       return [responseHead, responseStreamable];
     }));
   });

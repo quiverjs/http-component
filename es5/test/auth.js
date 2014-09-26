@@ -109,7 +109,7 @@ describe('http basic auth test', (function() {
             break;
           case 40:
             $ctx.state = 14;
-            return streamableToText(responseStreamable).should.eventually.equal('');
+            return streamableToText(responseStreamable).should.eventually.equal('<h1>401 Unauthorized</h1>');
           case 14:
             $ctx.maybeThrow();
             $ctx.state = 16;

@@ -15,7 +15,7 @@ var ResponseHead = ($__quiver_45_http__ = require("quiver-http"), $__quiver_45_h
 var $__2 = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_promise__ && $__quiver_45_promise__.__esModule && $__quiver_45_promise__ || {default: $__quiver_45_promise__}),
     async = $__2.async,
     promisify = $__2.promisify;
-var emptyStreamable = ($__quiver_45_stream_45_util__ = require("quiver-stream-util"), $__quiver_45_stream_45_util__ && $__quiver_45_stream_45_util__.__esModule && $__quiver_45_stream_45_util__ || {default: $__quiver_45_stream_45_util__}).emptyStreamable;
+var textToStreamable = ($__quiver_45_stream_45_util__ = require("quiver-stream-util"), $__quiver_45_stream_45_util__ && $__quiver_45_stream_45_util__.__esModule && $__quiver_45_stream_45_util__ || {default: $__quiver_45_stream_45_util__}).textToStreamable;
 var $__4 = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45_component__ && $__quiver_45_component__.__esModule && $__quiver_45_component__ || {default: $__quiver_45_component__}),
     httpFilter = $__4.httpFilter,
     simpleHandlerLoader = $__4.simpleHandlerLoader,
@@ -104,10 +104,17 @@ var basicAuthFilter = (function(authHandler) {
           case 15:
             wwwAuthenticate = 'Basic realm="' + authenticationRealm + '"';
             unauthorizedResponse = (function() {
-              return ([new ResponseHead({
+              var message = '<h1>401 Unauthorized</h1>';
+              var responseHead = new ResponseHead({
                 statusCode: 401,
-                headers: {'www-authenticate': wwwAuthenticate}
-              }), emptyStreamable()]);
+                headers: {
+                  'www-authenticate': wwwAuthenticate,
+                  'content-type': 'text/html',
+                  'content-length': '' + message.length
+                }
+              });
+              var responseStreamable = textToStreamable(message);
+              return [responseHead, responseStreamable];
             });
             $ctx.state = 19;
             break;
