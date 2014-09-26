@@ -12,6 +12,9 @@ Object.defineProperties(exports, {
   httpCompressFilter: {get: function() {
       return httpCompressFilter;
     }},
+  basicErrorPageFilter: {get: function() {
+      return basicErrorPageFilter;
+    }},
   etagFilter: {get: function() {
       return etagFilter;
     }},
@@ -30,6 +33,7 @@ var $__auth_46_js__,
     $__byte_45_range_46_js__,
     $__chunked_46_js__,
     $__compress_46_js__,
+    $__error_45_page_46_js__,
     $__etag_46_js__,
     $__form_46_js__,
     $__logger_46_js__,
@@ -38,6 +42,7 @@ var basicAuthFilter = ($__auth_46_js__ = require("./auth.js"), $__auth_46_js__ &
 var byteRangeFilter = ($__byte_45_range_46_js__ = require("./byte-range.js"), $__byte_45_range_46_js__ && $__byte_45_range_46_js__.__esModule && $__byte_45_range_46_js__ || {default: $__byte_45_range_46_js__}).makeByteRangeFilter;
 var chunkedResponseFilter = ($__chunked_46_js__ = require("./chunked.js"), $__chunked_46_js__ && $__chunked_46_js__.__esModule && $__chunked_46_js__ || {default: $__chunked_46_js__}).makeChunkedResponseFilter;
 var httpCompressFilter = ($__compress_46_js__ = require("./compress.js"), $__compress_46_js__ && $__compress_46_js__.__esModule && $__compress_46_js__ || {default: $__compress_46_js__}).makeHttpCompressFilter;
+var basicErrorPageFilter = ($__error_45_page_46_js__ = require("./error-page.js"), $__error_45_page_46_js__ && $__error_45_page_46_js__.__esModule && $__error_45_page_46_js__ || {default: $__error_45_page_46_js__}).makeBasicErrorPageFilter;
 var etagFilter = ($__etag_46_js__ = require("./etag.js"), $__etag_46_js__ && $__etag_46_js__.__esModule && $__etag_46_js__ || {default: $__etag_46_js__}).makeEtagFilter;
 var formDataFilter = ($__form_46_js__ = require("./form.js"), $__form_46_js__ && $__form_46_js__.__esModule && $__form_46_js__ || {default: $__form_46_js__}).makeFormDataFilter;
 var requestLoggerFilter = ($__logger_46_js__ = require("./logger.js"), $__logger_46_js__ && $__logger_46_js__.__esModule && $__logger_46_js__ || {default: $__logger_46_js__}).requestLoggerFilter;

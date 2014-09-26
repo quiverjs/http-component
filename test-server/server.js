@@ -20,7 +20,8 @@ import {
   byteRangeFilter,
   requestLoggerFilter,
   httpCompressFilter,
-  chunkedResponseFilter
+  chunkedResponseFilter,
+  basicErrorPageFilter
 } from '../lib/http-component.js'
 
 import { formHandler } from './multipart.js'
@@ -49,6 +50,7 @@ var main = router()
   .addParamRoute(chunkHandler, '/chunk')
   .addParamRoute(rangeHandler, '/range/:restpath')
   .addParamRoute(compressHandler, '/compress/:restpath')
+  .addMiddleware(basicErrorPageFilter())
   .addMiddleware(requestLoggerFilter())
 
 var config = {
