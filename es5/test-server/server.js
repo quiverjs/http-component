@@ -20,6 +20,7 @@ var $__4 = ($___46__46__47_lib_47_http_45_component_46_js__ = require("../lib/ht
     byteRangeFilter = $__4.byteRangeFilter,
     requestLoggerFilter = $__4.requestLoggerFilter,
     httpCompressFilter = $__4.httpCompressFilter,
+    headRequestFilter = $__4.headRequestFilter,
     chunkedResponseFilter = $__4.chunkedResponseFilter,
     basicErrorPageFilter = $__4.basicErrorPageFilter;
 var formHandler = ($__multipart_46_js__ = require("./multipart.js"), $__multipart_46_js__ && $__multipart_46_js__.__esModule && $__multipart_46_js__ || {default: $__multipart_46_js__}).formHandler;
@@ -29,7 +30,7 @@ var compressHandler = fileHandler().addMiddleware(httpCompressFilter());
 var chunkHandler = simpleHandler((function(args) {
   return buffersToStream(['Hello world. ', 'This content is chunked ', 'manually in Quiver.']);
 }), 'void', 'stream').addMiddleware(chunkedResponseFilter());
-var main = router().addStaticRoute(singleFileHandler(), '/form').addStaticRoute(formHandler, '/submit').addStaticRoute(authHandler, '/auth').addParamRoute(chunkHandler, '/chunk').addParamRoute(rangeHandler, '/range/:restpath').addParamRoute(compressHandler, '/compress/:restpath').addMiddleware(basicErrorPageFilter()).addMiddleware(requestLoggerFilter());
+var main = router().addStaticRoute(singleFileHandler(), '/form').addStaticRoute(formHandler, '/submit').addStaticRoute(authHandler, '/auth').addParamRoute(chunkHandler, '/chunk').addParamRoute(rangeHandler, '/range/:restpath').addParamRoute(compressHandler, '/compress/:restpath').addMiddleware(headRequestFilter()).addMiddleware(basicErrorPageFilter()).addMiddleware(requestLoggerFilter());
 var config = {
   dirPath: 'test-content',
   filePath: 'test-content/form.html'

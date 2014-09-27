@@ -20,6 +20,7 @@ import {
   byteRangeFilter,
   requestLoggerFilter,
   httpCompressFilter,
+  headRequestFilter,
   chunkedResponseFilter,
   basicErrorPageFilter
 } from '../lib/http-component.js'
@@ -50,6 +51,7 @@ var main = router()
   .addParamRoute(chunkHandler, '/chunk')
   .addParamRoute(rangeHandler, '/range/:restpath')
   .addParamRoute(compressHandler, '/compress/:restpath')
+  .addMiddleware(headRequestFilter())
   .addMiddleware(basicErrorPageFilter())
   .addMiddleware(requestLoggerFilter())
 
