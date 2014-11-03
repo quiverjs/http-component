@@ -14,7 +14,7 @@ import {
   streamableToText,
 } from 'quiver-stream-util'
 
-import { basicAuthFilter } from '../lib/auth.js'
+import { basicAuthFilter } from '../lib/auth'
 
 import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'

@@ -10,8 +10,8 @@ var $__quiver_45_error__,
     $__quiver_45_component__,
     $__quiver_45_stream_45_util__,
     $__quiver_45_stream_45_component__,
-    $__header_46_js__,
-    $__multipart_45_stream_46_js__;
+    $__header__,
+    $__multipart_45_stream__;
 var error = ($__quiver_45_error__ = require("quiver-error"), $__quiver_45_error__ && $__quiver_45_error__.__esModule && $__quiver_45_error__ || {default: $__quiver_45_error__}).error;
 var $__1 = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_promise__ && $__quiver_45_promise__.__esModule && $__quiver_45_promise__ || {default: $__quiver_45_promise__}),
     async = $__1.async,
@@ -31,8 +31,8 @@ var $__3 = ($__quiver_45_stream_45_util__ = require("quiver-stream-util"), $__qu
     streamableToText = $__3.streamableToText,
     streamToStreamable = $__3.streamToStreamable;
 var extractStreamHead = ($__quiver_45_stream_45_component__ = require("quiver-stream-component"), $__quiver_45_stream_45_component__ && $__quiver_45_stream_45_component__.__esModule && $__quiver_45_stream_45_component__ || {default: $__quiver_45_stream_45_component__}).extractStreamHead;
-var parseSubheaders = ($__header_46_js__ = require("./header.js"), $__header_46_js__ && $__header_46_js__.__esModule && $__header_46_js__ || {default: $__header_46_js__}).parseSubheaders;
-var extractAllMultipart = ($__multipart_45_stream_46_js__ = require("./multipart-stream.js"), $__multipart_45_stream_46_js__ && $__multipart_45_stream_46_js__.__esModule && $__multipart_45_stream_46_js__ || {default: $__multipart_45_stream_46_js__}).extractAllMultipart;
+var parseSubheaders = ($__header__ = require("./header"), $__header__ && $__header__.__esModule && $__header__ || {default: $__header__}).parseSubheaders;
+var extractAllMultipart = ($__multipart_45_stream__ = require("./multipart-stream"), $__multipart_45_stream__ && $__multipart_45_stream__.__esModule && $__multipart_45_stream__ || {default: $__multipart_45_stream__}).extractAllMultipart;
 var multipartType = /^multipart\/form-data/;
 var parseBoundary = (function(contentType) {
   var boundary = parseSubheaders(contentType)[1].boundary;

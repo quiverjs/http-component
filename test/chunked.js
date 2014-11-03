@@ -19,7 +19,7 @@ import {
 
 import {
   chunkedResponseFilter
-} from '../lib/chunked.js'
+} from '../lib/chunked'
 
 import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'

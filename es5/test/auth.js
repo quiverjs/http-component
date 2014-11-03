@@ -1,14 +1,14 @@
 "use strict";
-var $__traceur_64_0_46_0_46_6__,
+var $__traceur_64_0_46_0_46_7__,
     $__quiver_45_error__,
     $__quiver_45_promise__,
     $__quiver_45_http__,
     $__quiver_45_component__,
     $__quiver_45_stream_45_util__,
-    $___46__46__47_lib_47_auth_46_js__,
+    $___46__46__47_lib_47_auth__,
     $__chai__,
     $__chai_45_as_45_promised__;
-($__traceur_64_0_46_0_46_6__ = require("traceur"), $__traceur_64_0_46_0_46_6__ && $__traceur_64_0_46_0_46_6__.__esModule && $__traceur_64_0_46_0_46_6__ || {default: $__traceur_64_0_46_0_46_6__});
+($__traceur_64_0_46_0_46_7__ = require("traceur"), $__traceur_64_0_46_0_46_7__ && $__traceur_64_0_46_0_46_7__.__esModule && $__traceur_64_0_46_0_46_7__ || {default: $__traceur_64_0_46_0_46_7__});
 var error = ($__quiver_45_error__ = require("quiver-error"), $__quiver_45_error__ && $__quiver_45_error__.__esModule && $__quiver_45_error__ || {default: $__quiver_45_error__}).error;
 var async = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_promise__ && $__quiver_45_promise__.__esModule && $__quiver_45_promise__ || {default: $__quiver_45_promise__}).async;
 var RequestHead = ($__quiver_45_http__ = require("quiver-http"), $__quiver_45_http__ && $__quiver_45_http__.__esModule && $__quiver_45_http__ || {default: $__quiver_45_http__}).RequestHead;
@@ -18,7 +18,7 @@ var $__3 = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45
 var $__4 = ($__quiver_45_stream_45_util__ = require("quiver-stream-util"), $__quiver_45_stream_45_util__ && $__quiver_45_stream_45_util__.__esModule && $__quiver_45_stream_45_util__ || {default: $__quiver_45_stream_45_util__}),
     emptyStreamable = $__4.emptyStreamable,
     streamableToText = $__4.streamableToText;
-var basicAuthFilter = ($___46__46__47_lib_47_auth_46_js__ = require("../lib/auth.js"), $___46__46__47_lib_47_auth_46_js__ && $___46__46__47_lib_47_auth_46_js__.__esModule && $___46__46__47_lib_47_auth_46_js__ || {default: $___46__46__47_lib_47_auth_46_js__}).basicAuthFilter;
+var basicAuthFilter = ($___46__46__47_lib_47_auth__ = require("../lib/auth"), $___46__46__47_lib_47_auth__ && $___46__46__47_lib_47_auth__.__esModule && $___46__46__47_lib_47_auth__ || {default: $___46__46__47_lib_47_auth__}).basicAuthFilter;
 var chai = ($__chai__ = require("chai"), $__chai__ && $__chai__.__esModule && $__chai__ || {default: $__chai__}).default;
 var chaiAsPromised = ($__chai_45_as_45_promised__ = require("chai-as-promised"), $__chai_45_as_45_promised__ && $__chai_45_as_45_promised__.__esModule && $__chai_45_as_45_promised__ || {default: $__chai_45_as_45_promised__}).default;
 chai.use(chaiAsPromised);

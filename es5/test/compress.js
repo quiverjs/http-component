@@ -1,5 +1,5 @@
 "use strict";
-var $__traceur_64_0_46_0_46_6__,
+var $__traceur_64_0_46_0_46_7__,
     $__fs__,
     $__zlib__,
     $__buffertools__,
@@ -7,10 +7,10 @@ var $__traceur_64_0_46_0_46_6__,
     $__quiver_45_http__,
     $__quiver_45_component__,
     $__quiver_45_stream_45_util__,
-    $___46__46__47_lib_47_compress_46_js__,
+    $___46__46__47_lib_47_compress__,
     $__chai__,
     $__chai_45_as_45_promised__;
-($__traceur_64_0_46_0_46_6__ = require("traceur"), $__traceur_64_0_46_0_46_6__ && $__traceur_64_0_46_0_46_6__.__esModule && $__traceur_64_0_46_0_46_6__ || {default: $__traceur_64_0_46_0_46_6__});
+($__traceur_64_0_46_0_46_7__ = require("traceur"), $__traceur_64_0_46_0_46_7__ && $__traceur_64_0_46_0_46_7__.__esModule && $__traceur_64_0_46_0_46_7__ || {default: $__traceur_64_0_46_0_46_7__});
 var fs = ($__fs__ = require("fs"), $__fs__ && $__fs__.__esModule && $__fs__ || {default: $__fs__}).default;
 var zlib = ($__zlib__ = require("zlib"), $__zlib__ && $__zlib__.__esModule && $__zlib__ || {default: $__zlib__}).default;
 var buffertools = ($__buffertools__ = require("buffertools"), $__buffertools__ && $__buffertools__.__esModule && $__buffertools__ || {default: $__buffertools__}).default;
@@ -25,7 +25,7 @@ var $__6 = ($__quiver_45_stream_45_util__ = require("quiver-stream-util"), $__qu
     emptyStreamable = $__6.emptyStreamable,
     streamableToText = $__6.streamableToText,
     streamableToBuffer = $__6.streamableToBuffer;
-var $__7 = ($___46__46__47_lib_47_compress_46_js__ = require("../lib/compress.js"), $___46__46__47_lib_47_compress_46_js__ && $___46__46__47_lib_47_compress_46_js__.__esModule && $___46__46__47_lib_47_compress_46_js__ || {default: $___46__46__47_lib_47_compress_46_js__}),
+var $__7 = ($___46__46__47_lib_47_compress__ = require("../lib/compress"), $___46__46__47_lib_47_compress__ && $___46__46__47_lib_47_compress__.__esModule && $___46__46__47_lib_47_compress__ || {default: $___46__46__47_lib_47_compress__}),
     httpCompressFilter = $__7.httpCompressFilter,
     selectAcceptEncoding = $__7.selectAcceptEncoding;
 var chai = ($__chai__ = require("chai"), $__chai__ && $__chai__.__esModule && $__chai__ || {default: $__chai__}).default;

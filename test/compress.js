@@ -20,7 +20,7 @@ import {
 import {
   httpCompressFilter,
   selectAcceptEncoding
-} from '../lib/compress.js'
+} from '../lib/compress'
 
 import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'

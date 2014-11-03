@@ -15,12 +15,12 @@ var $__quiver_45_error__,
     $__quiver_45_promise__,
     $__quiver_45_component__,
     $__quiver_45_stream_45_component__,
-    $__header_46_js__;
+    $__header__;
 var error = ($__quiver_45_error__ = require("quiver-error"), $__quiver_45_error__ && $__quiver_45_error__.__esModule && $__quiver_45_error__ || {default: $__quiver_45_error__}).error;
 var async = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_promise__ && $__quiver_45_promise__.__esModule && $__quiver_45_promise__ || {default: $__quiver_45_promise__}).async;
 var httpFilter = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45_component__ && $__quiver_45_component__.__esModule && $__quiver_45_component__ || {default: $__quiver_45_component__}).httpFilter;
 var compressStreamable = ($__quiver_45_stream_45_component__ = require("quiver-stream-component"), $__quiver_45_stream_45_component__ && $__quiver_45_stream_45_component__.__esModule && $__quiver_45_stream_45_component__ || {default: $__quiver_45_stream_45_component__}).compressStreamable;
-var parseSubheaders = ($__header_46_js__ = require("./header.js"), $__header_46_js__ && $__header_46_js__.__esModule && $__header_46_js__ || {default: $__header_46_js__}).parseSubheaders;
+var parseSubheaders = ($__header__ = require("./header"), $__header__ && $__header__.__esModule && $__header__ || {default: $__header__}).parseSubheaders;
 var acceptRegex = /^\s*([a-zA-Z]+|\*)(?:\s*;q=(\d(?:\.\d)?))?\s*$/;
 var validEncoding = ['gzip', 'identity', '*'];
 var selectAcceptEncoding = (function(header) {

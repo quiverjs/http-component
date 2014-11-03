@@ -1,13 +1,13 @@
 "use strict";
-var $__traceur_64_0_46_0_46_6__,
+var $__traceur_64_0_46_0_46_7__,
     $__quiver_45_promise__,
     $__quiver_45_http__,
     $__quiver_45_component__,
     $__quiver_45_stream_45_util__,
-    $___46__46__47_lib_47_byte_45_range_46_js__,
+    $___46__46__47_lib_47_byte_45_range__,
     $__chai__,
     $__chai_45_as_45_promised__;
-($__traceur_64_0_46_0_46_6__ = require("traceur"), $__traceur_64_0_46_0_46_6__ && $__traceur_64_0_46_0_46_6__.__esModule && $__traceur_64_0_46_0_46_6__ || {default: $__traceur_64_0_46_0_46_6__});
+($__traceur_64_0_46_0_46_7__ = require("traceur"), $__traceur_64_0_46_0_46_7__ && $__traceur_64_0_46_0_46_7__.__esModule && $__traceur_64_0_46_0_46_7__ || {default: $__traceur_64_0_46_0_46_7__});
 var async = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_promise__ && $__quiver_45_promise__.__esModule && $__quiver_45_promise__ || {default: $__quiver_45_promise__}).async;
 var RequestHead = ($__quiver_45_http__ = require("quiver-http"), $__quiver_45_http__ && $__quiver_45_http__.__esModule && $__quiver_45_http__ || {default: $__quiver_45_http__}).RequestHead;
 var $__2 = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45_component__ && $__quiver_45_component__.__esModule && $__quiver_45_component__ || {default: $__quiver_45_component__}),
@@ -20,7 +20,7 @@ var $__3 = ($__quiver_45_stream_45_util__ = require("quiver-stream-util"), $__qu
     buffersToStream = $__3.buffersToStream,
     streamableToText = $__3.streamableToText,
     buffersToStreamable = $__3.buffersToStreamable;
-var $__4 = ($___46__46__47_lib_47_byte_45_range_46_js__ = require("../lib/byte-range.js"), $___46__46__47_lib_47_byte_45_range_46_js__ && $___46__46__47_lib_47_byte_45_range_46_js__.__esModule && $___46__46__47_lib_47_byte_45_range_46_js__ || {default: $___46__46__47_lib_47_byte_45_range_46_js__}),
+var $__4 = ($___46__46__47_lib_47_byte_45_range__ = require("../lib/byte-range"), $___46__46__47_lib_47_byte_45_range__ && $___46__46__47_lib_47_byte_45_range__.__esModule && $___46__46__47_lib_47_byte_45_range__ || {default: $___46__46__47_lib_47_byte_45_range__}),
     byteRangeStream = $__4.byteRangeStream,
     byteRangeFilter = $__4.byteRangeFilter;
 var chai = ($__chai__ = require("chai"), $__chai__ && $__chai__.__esModule && $__chai__ || {default: $__chai__}).default;

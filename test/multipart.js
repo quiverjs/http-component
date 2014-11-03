@@ -14,7 +14,7 @@ import {
 
 import { fileStreamable } from 'quiver-file-stream'
 
-import { multipartSerializeFilter } from '../lib/multipart.js'
+import { multipartSerializeFilter } from '../lib/multipart'
 
 import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'

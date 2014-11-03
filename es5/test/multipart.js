@@ -1,13 +1,13 @@
 "use strict";
-var $__traceur_64_0_46_0_46_6__,
+var $__traceur_64_0_46_0_46_7__,
     $__quiver_45_promise__,
     $__quiver_45_component__,
     $__quiver_45_stream_45_component__,
     $__quiver_45_file_45_stream__,
-    $___46__46__47_lib_47_multipart_46_js__,
+    $___46__46__47_lib_47_multipart__,
     $__chai__,
     $__chai_45_as_45_promised__;
-($__traceur_64_0_46_0_46_6__ = require("traceur"), $__traceur_64_0_46_0_46_6__ && $__traceur_64_0_46_0_46_6__.__esModule && $__traceur_64_0_46_0_46_6__ || {default: $__traceur_64_0_46_0_46_6__});
+($__traceur_64_0_46_0_46_7__ = require("traceur"), $__traceur_64_0_46_0_46_7__ && $__traceur_64_0_46_0_46_7__.__esModule && $__traceur_64_0_46_0_46_7__ || {default: $__traceur_64_0_46_0_46_7__});
 var async = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_promise__ && $__quiver_45_promise__.__esModule && $__quiver_45_promise__ || {default: $__quiver_45_promise__}).async;
 var $__1 = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45_component__ && $__quiver_45_component__.__esModule && $__quiver_45_component__ || {default: $__quiver_45_component__}),
     simpleHandler = $__1.simpleHandler,
@@ -17,7 +17,7 @@ var $__2 = ($__quiver_45_stream_45_component__ = require("quiver-stream-componen
     sizeWindowedStream = $__2.sizeWindowedStream,
     convertStreamable = $__2.convertStreamable;
 var fileStreamable = ($__quiver_45_file_45_stream__ = require("quiver-file-stream"), $__quiver_45_file_45_stream__ && $__quiver_45_file_45_stream__.__esModule && $__quiver_45_file_45_stream__ || {default: $__quiver_45_file_45_stream__}).fileStreamable;
-var multipartSerializeFilter = ($___46__46__47_lib_47_multipart_46_js__ = require("../lib/multipart.js"), $___46__46__47_lib_47_multipart_46_js__ && $___46__46__47_lib_47_multipart_46_js__.__esModule && $___46__46__47_lib_47_multipart_46_js__ || {default: $___46__46__47_lib_47_multipart_46_js__}).multipartSerializeFilter;
+var multipartSerializeFilter = ($___46__46__47_lib_47_multipart__ = require("../lib/multipart"), $___46__46__47_lib_47_multipart__ && $___46__46__47_lib_47_multipart__.__esModule && $___46__46__47_lib_47_multipart__ || {default: $___46__46__47_lib_47_multipart__}).multipartSerializeFilter;
 var chai = ($__chai__ = require("chai"), $__chai__ && $__chai__.__esModule && $__chai__ || {default: $__chai__}).default;
 var chaiAsPromised = ($__chai_45_as_45_promised__ = require("chai-as-promised"), $__chai_45_as_45_promised__ && $__chai_45_as_45_promised__.__esModule && $__chai_45_as_45_promised__ || {default: $__chai_45_as_45_promised__}).default;
 chai.use(chaiAsPromised);

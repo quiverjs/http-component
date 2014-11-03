@@ -20,7 +20,7 @@ import {
 import {
   byteRangeStream,
   byteRangeFilter
-} from '../lib/byte-range.js'
+} from '../lib/byte-range'
 
 import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'

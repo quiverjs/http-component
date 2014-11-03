@@ -10,7 +10,7 @@ import {
 
 import { 
   pipeMultipart, handleMultipart
-} from '../lib/multipart-stream.js'
+} from '../lib/multipart-stream'
 
 import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
