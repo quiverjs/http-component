@@ -14,7 +14,7 @@ import {
   streamableToText,
 } from 'quiver-stream-util'
 
-import { basicAuthFilter } from '../lib/auth'
+import { basicAuthFilter } from '../lib/http-component'
 
 import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
@@ -37,13 +37,16 @@ describe('http basic auth test', () => {
         throw error(401, 'Unauthorized')
       }, 'void', 'text')
 
+    var authFilter = basicAuthFilter()
+      .implement({ authHandler })
+
     var main = simpleHandler(
       args => {
         args.userId.should.equal('genie')
 
         return 'secret content'
       }, 'void', 'text')
-    .addMiddleware(basicAuthFilter(authHandler))
+    .middleware(authFilter)
 
     var handler = yield loadHttpHandler({}, main)
 

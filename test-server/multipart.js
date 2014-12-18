@@ -10,6 +10,10 @@ import {
   multipartSerializeFilter
 } from '../lib/http-component.js'
 
+var serializerHandler = checksumHandler('sha1')
+var multipartFilter = multipartSerializeFilter()
+  .implement({ serializerHandler })
+
 export var formHandler = simpleHandler(
   args => {
     var {
@@ -26,5 +30,4 @@ and your uploaded files have following SHA1 checksum:
 ${ JSON.stringify(serializedParts) }`
 
   }, 'void', 'text')
-  .addMiddleware(multipartSerializeFilter(
-    checksumHandler('sha1')))
+  .middleware(multipartFilter)

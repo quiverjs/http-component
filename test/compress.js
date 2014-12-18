@@ -46,7 +46,6 @@ describe('http compress test', () => {
     selectAcceptEncoding('identity;q=0, *').should.equal('gzip')
     selectAcceptEncoding('gzip;q=0, *;q=1.0').should.equal('identity')
 
-
     expect(() =>
       selectAcceptEncoding('identity;q=0')
     ).to.throw()
@@ -62,7 +61,7 @@ describe('http compress test', () => {
     var component = simpleHandler(
       args => testContent,
       'void', 'text')
-    .addMiddleware(httpCompressFilter)
+    .middleware(httpCompressFilter)
 
     var handler = yield loadHttpHandler({}, component)
 
@@ -74,7 +73,6 @@ describe('http compress test', () => {
 
     yield streamableToText(responseStreamable)
       .should.eventually.equal(testContent)
-
 
     var requestHead = new RequestHead({
       headers: {

@@ -40,4 +40,4 @@ var formDataFilter = streamFilter((function(config, handler) {
     }));
   });
 }));
-var makeFormDataFilter = formDataFilter.privatizedConstructor();
+var makeFormDataFilter = formDataFilter.factory();

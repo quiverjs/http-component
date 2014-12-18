@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperties(exports, {
-  authHandler: {get: function() {
-      return authHandler;
+  adminHandler: {get: function() {
+      return adminHandler;
     }},
   __esModule: {value: true}
 });
@@ -20,6 +20,7 @@ var authHandler = simpleHandler((function(args) {
   }
   throw error(401, 'Unauthorized');
 }), 'void', 'text');
-var authHandler = simpleHandler((function(args) {
+var authFilter = basicAuthFilter().implement({authHandler: authHandler});
+var adminHandler = simpleHandler((function(args) {
   return 'Hello Administrator. Nobody else can access this area';
-}), 'void', 'text').addMiddleware(basicAuthFilter(authHandler));
+}), 'void', 'text').middleware(authFilter);

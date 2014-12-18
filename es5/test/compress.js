@@ -93,7 +93,7 @@ describe('http compress test', (function() {
           case 4:
             component = simpleHandler((function(args) {
               return testContent;
-            }), 'void', 'text').addMiddleware(httpCompressFilter);
+            }), 'void', 'text').middleware(httpCompressFilter);
             $ctx.state = 50;
             break;
           case 50:

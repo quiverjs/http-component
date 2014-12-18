@@ -17,8 +17,11 @@ var authHandler = simpleHandler(
     throw error(401, 'Unauthorized')
   }, 'void', 'text')
 
-export var authHandler = simpleHandler(
+var authFilter = basicAuthFilter()
+  .implement({ authHandler })
+
+export var adminHandler = simpleHandler(
   args => {
     return 'Hello Administrator. Nobody else can access this area'
   }, 'void', 'text')
-.addMiddleware(basicAuthFilter(authHandler))
+.middleware(authFilter)

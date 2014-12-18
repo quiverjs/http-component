@@ -132,4 +132,4 @@ var httpCompressFilter = httpFilter((function(config, handler) {
     }, $__8, this);
   }));
 }));
-var makeHttpCompressFilter = httpCompressFilter.privatizedConstructor();
+var makeHttpCompressFilter = httpCompressFilter.factory();

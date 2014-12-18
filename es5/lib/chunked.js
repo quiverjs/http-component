@@ -69,4 +69,4 @@ var chunkedResponseFilter = httpFilter((function(config, handler) {
     }, $__5, this);
   }));
 }));
-var makeChunkedResponseFilter = chunkedResponseFilter.privatizedConstructor();
+var makeChunkedResponseFilter = chunkedResponseFilter.factory();

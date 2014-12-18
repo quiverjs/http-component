@@ -40,4 +40,4 @@ var basicErrorPageFilter = httpFilter((function(config, handler) {
     }));
   });
 }));
-var makeBasicErrorPageFilter = basicErrorPageFilter.privatizedConstructor();
+var makeBasicErrorPageFilter = basicErrorPageFilter.factory();

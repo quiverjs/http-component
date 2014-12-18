@@ -88,4 +88,4 @@ var httpHeaderFilter = argsFilter((function(args) {
   var header = args.header;
   args.httpHeaders = parseHttpHeaders(header);
   return args;
-})).addMiddleware(headerExtractFilter(headerSeparator)).privatizedConstructor();
+})).middleware(headerExtractFilter(headerSeparator)).factory();

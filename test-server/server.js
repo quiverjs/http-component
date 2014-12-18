@@ -26,7 +26,7 @@ import {
 } from '../lib/http-component.js'
 
 import { formHandler } from './multipart.js'
-import { authHandler } from './auth.js'
+import { adminHandler } from './auth.js'
 
 var rangeHandler = fileHandler()
   .addMiddleware(byteRangeFilter())
@@ -45,15 +45,15 @@ var chunkHandler = simpleHandler(
   .addMiddleware(chunkedResponseFilter())
 
 var main = router()
-  .addStaticRoute(singleFileHandler(), '/form')
-  .addStaticRoute(formHandler, '/submit')
-  .addStaticRoute(authHandler, '/auth')
-  .addParamRoute(chunkHandler, '/chunk')
-  .addParamRoute(rangeHandler, '/range/:restpath')
-  .addParamRoute(compressHandler, '/compress/:restpath')
-  .addMiddleware(headRequestFilter())
-  .addMiddleware(basicErrorPageFilter())
-  .addMiddleware(requestLoggerFilter())
+  .staticRoute('/form', singleFileHandler())
+  .staticRoute('/submit', formHandler)
+  .staticRoute('/admin', adminHandler)
+  .paramRoute('/chunk', chunkHandler)
+  .paramRoute('/range/:restpath', rangeHandler)
+  .paramRoute('/compress/:restpath', compressHandler)
+  .middleware(headRequestFilter())
+  .middleware(basicErrorPageFilter())
+  .middleware(requestLoggerFilter())
 
 var config = {
   dirPath: 'test-content',

@@ -343,4 +343,4 @@ var byteRangeFilter = httpFilter((function(config, handler) {
     }, $__23, this);
   }));
 }));
-var makeByteRangeFilter = byteRangeFilter.privatizedConstructor();
+var makeByteRangeFilter = byteRangeFilter.factory();

@@ -41,7 +41,7 @@ describe('chunked http filter test', () => {
     var component = simpleHandler(
       args => buffersToStream(testBuffers),
       'void', 'stream')
-    .addMiddleware(chunkedResponseFilter)
+    .middleware(chunkedResponseFilter)
 
     var handler = yield loadHttpHandler({}, component)
 
@@ -61,7 +61,7 @@ describe('chunked http filter test', () => {
     var component = simpleHandler(
       args => testContent,
       'void', 'text')
-    .addMiddleware(chunkedResponseFilter)
+    .middleware(chunkedResponseFilter)
 
     var handler = yield loadHttpHandler({}, component)
 

@@ -3,6 +3,9 @@ Object.defineProperties(exports, {
   requestLoggerFilter: {get: function() {
       return requestLoggerFilter;
     }},
+  makeRequestLoggerFilter: {get: function() {
+      return makeRequestLoggerFilter;
+    }},
   __esModule: {value: true}
 });
 var $__fs__,
@@ -44,53 +47,54 @@ var commonLogFormatter = (function(info) {
   var date = new Date().toUTCString();
   return (clientAddress + " - " + userId + " [" + date + "] \"" + method + " " + url + " HTTP/" + httpVersion + "\" " + statusCode + " " + responseTime);
 });
-var requestLoggerFilter = (function() {
-  var logFormatter = arguments[0] !== (void 0) ? arguments[0] : commonLogFormatter;
-  return httpFilter((function(config, handler) {
-    var logFile = config.logFile;
-    var nodeWriteStream = logFile ? fs.createWriteStream(logFile) : process.stdout;
-    var writeStream = nodeToQuiverWriteStream(nodeWriteStream);
-    return async($traceurRuntime.initGeneratorFunction(function $__15(requestHead, requestStreamable) {
-      var startTime,
-          response,
-          responseHead,
-          diff,
-          responseTime,
-          log;
-      return $traceurRuntime.createGeneratorInstance(function($ctx) {
-        while (true)
-          switch ($ctx.state) {
-            case 0:
-              startTime = process.hrtime();
-              $ctx.state = 8;
-              break;
-            case 8:
-              $ctx.state = 2;
-              return handler(requestHead, requestStreamable);
-            case 2:
-              response = $ctx.sent;
-              $ctx.state = 4;
-              break;
-            case 4:
-              responseHead = response[0];
-              diff = process.hrtime(startTime);
-              responseTime = (diff[0] * 1e3 + diff[1] * 1e-6).toFixed(3);
-              log = logFormatter({
-                requestHead: requestHead,
-                responseHead: responseHead,
-                responseTime: responseTime
-              });
-              writeStream.write(log + '\n');
-              $ctx.state = 10;
-              break;
-            case 10:
-              $ctx.returnValue = response;
-              $ctx.state = -2;
-              break;
-            default:
-              return $ctx.end();
-          }
-      }, $__15, this);
-    }));
+var requestLoggerFilter = httpFilter((function(config, handler) {
+  var $__6;
+  var $__4 = config,
+      logFile = $__4.logFile,
+      logFormatter = ($__6 = $__4.logFormatter) === void 0 ? commonLogFormatter : $__6;
+  var nodeWriteStream = logFile ? fs.createWriteStream(logFile) : process.stdout;
+  var writeStream = nodeToQuiverWriteStream(nodeWriteStream);
+  return async($traceurRuntime.initGeneratorFunction(function $__15(requestHead, requestStreamable) {
+    var startTime,
+        response,
+        responseHead,
+        diff,
+        responseTime,
+        log;
+    return $traceurRuntime.createGeneratorInstance(function($ctx) {
+      while (true)
+        switch ($ctx.state) {
+          case 0:
+            startTime = process.hrtime();
+            $ctx.state = 8;
+            break;
+          case 8:
+            $ctx.state = 2;
+            return handler(requestHead, requestStreamable);
+          case 2:
+            response = $ctx.sent;
+            $ctx.state = 4;
+            break;
+          case 4:
+            responseHead = response[0];
+            diff = process.hrtime(startTime);
+            responseTime = (diff[0] * 1e3 + diff[1] * 1e-6).toFixed(3);
+            log = logFormatter({
+              requestHead: requestHead,
+              responseHead: responseHead,
+              responseTime: responseTime
+            });
+            writeStream.write(log + '\n');
+            $ctx.state = 10;
+            break;
+          case 10:
+            $ctx.returnValue = response;
+            $ctx.state = -2;
+            break;
+          default:
+            return $ctx.end();
+        }
+    }, $__15, this);
   }));
-});
+}));
+var makeRequestLoggerFilter = requestLoggerFilter.factory();

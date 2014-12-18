@@ -14,7 +14,7 @@ import {
 
 import { fileStreamable } from 'quiver-file-stream'
 
-import { multipartSerializeFilter } from '../lib/multipart'
+import { multipartSerializeFilter } from '../lib/http-component'
 
 import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
@@ -29,7 +29,7 @@ describe('multipart test', () => {
       streamable)
 
   it('single file test', async(function*() {
-    var serializer = simpleHandler(
+    var serializerHandler = simpleHandler(
       (args, text) => {
         args.name.should.equal('files')
         args.filename.should.equal('file1.txt')
@@ -40,13 +40,16 @@ describe('multipart test', () => {
         }
       }, 'text', 'json')
 
+    var multipartFilter = multipartSerializeFilter()
+      .implement({ serializerHandler })
+
     var main = simpleHandler(args => {
       var { formData, serializedParts } = args
 
       formData.username.should.equal('john')
       serializedParts.files.name.should.equal('hello.txt')
     }, 'void', 'void')
-    .addMiddleware(multipartSerializeFilter(serializer))
+    .middleware(multipartFilter)
 
     var handler = yield loadStreamHandler({}, main)
     var streamable = yield fileStreamable(
@@ -60,7 +63,7 @@ describe('multipart test', () => {
   }))
 
   it('multipart/mixed files test', async(function*() {
-    var serializer = simpleHandler(
+    var serializerHandler = simpleHandler(
     (args, text) => {
       var { name, filename } = args
 
@@ -76,6 +79,9 @@ describe('multipart test', () => {
       }
     }, 'text', 'json')
 
+    var multipartFilter = multipartSerializeFilter()
+      .implement({ serializerHandler })
+
     var main = simpleHandler(args => {
       var { formData, serializedParts } = args
 
@@ -86,7 +92,7 @@ describe('multipart test', () => {
       files[1].id.should.equal('bar')
 
     }, 'void', 'void')
-    .addMiddleware(multipartSerializeFilter(serializer))
+    .middleware(multipartFilter)
 
     var handler = yield loadStreamHandler({}, main)
     var streamable = yield fileStreamable(

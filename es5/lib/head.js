@@ -32,4 +32,4 @@ var headRequestFilter = httpFilter((function(config, handler) {
     }));
   });
 }));
-var makeHeadRequestFilter = headRequestFilter.privatizedConstructor();
+var makeHeadRequestFilter = headRequestFilter.factory();

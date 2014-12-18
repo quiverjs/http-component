@@ -24,13 +24,13 @@ var $__4 = ($___46__46__47_lib_47_http_45_component_46_js__ = require("../lib/ht
     chunkedResponseFilter = $__4.chunkedResponseFilter,
     basicErrorPageFilter = $__4.basicErrorPageFilter;
 var formHandler = ($__multipart_46_js__ = require("./multipart.js"), $__multipart_46_js__ && $__multipart_46_js__.__esModule && $__multipart_46_js__ || {default: $__multipart_46_js__}).formHandler;
-var authHandler = ($__auth_46_js__ = require("./auth.js"), $__auth_46_js__ && $__auth_46_js__.__esModule && $__auth_46_js__ || {default: $__auth_46_js__}).authHandler;
+var adminHandler = ($__auth_46_js__ = require("./auth.js"), $__auth_46_js__ && $__auth_46_js__.__esModule && $__auth_46_js__ || {default: $__auth_46_js__}).adminHandler;
 var rangeHandler = fileHandler().addMiddleware(byteRangeFilter());
 var compressHandler = fileHandler().addMiddleware(httpCompressFilter());
 var chunkHandler = simpleHandler((function(args) {
   return buffersToStream(['Hello world. ', 'This content is chunked ', 'manually in Quiver.']);
 }), 'void', 'stream').addMiddleware(chunkedResponseFilter());
-var main = router().addStaticRoute(singleFileHandler(), '/form').addStaticRoute(formHandler, '/submit').addStaticRoute(authHandler, '/auth').addParamRoute(chunkHandler, '/chunk').addParamRoute(rangeHandler, '/range/:restpath').addParamRoute(compressHandler, '/compress/:restpath').addMiddleware(headRequestFilter()).addMiddleware(basicErrorPageFilter()).addMiddleware(requestLoggerFilter());
+var main = router().staticRoute('/form', singleFileHandler()).staticRoute('/submit', formHandler).staticRoute('/admin', adminHandler).paramRoute('/chunk', chunkHandler).paramRoute('/range/:restpath', rangeHandler).paramRoute('/compress/:restpath', compressHandler).middleware(headRequestFilter()).middleware(basicErrorPageFilter()).middleware(requestLoggerFilter());
 var config = {
   dirPath: 'test-content',
   filePath: 'test-content/form.html'

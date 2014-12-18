@@ -4,7 +4,7 @@ var $__traceur_64_0_46_0_46_7__,
     $__quiver_45_component__,
     $__quiver_45_stream_45_component__,
     $__quiver_45_file_45_stream__,
-    $___46__46__47_lib_47_multipart__,
+    $___46__46__47_lib_47_http_45_component__,
     $__chai__,
     $__chai_45_as_45_promised__;
 ($__traceur_64_0_46_0_46_7__ = require("traceur"), $__traceur_64_0_46_0_46_7__ && $__traceur_64_0_46_0_46_7__.__esModule && $__traceur_64_0_46_0_46_7__ || {default: $__traceur_64_0_46_0_46_7__});
@@ -17,7 +17,7 @@ var $__2 = ($__quiver_45_stream_45_component__ = require("quiver-stream-componen
     sizeWindowedStream = $__2.sizeWindowedStream,
     convertStreamable = $__2.convertStreamable;
 var fileStreamable = ($__quiver_45_file_45_stream__ = require("quiver-file-stream"), $__quiver_45_file_45_stream__ && $__quiver_45_file_45_stream__.__esModule && $__quiver_45_file_45_stream__ || {default: $__quiver_45_file_45_stream__}).fileStreamable;
-var multipartSerializeFilter = ($___46__46__47_lib_47_multipart__ = require("../lib/multipart"), $___46__46__47_lib_47_multipart__ && $___46__46__47_lib_47_multipart__.__esModule && $___46__46__47_lib_47_multipart__ || {default: $___46__46__47_lib_47_multipart__}).multipartSerializeFilter;
+var multipartSerializeFilter = ($___46__46__47_lib_47_http_45_component__ = require("../lib/http-component"), $___46__46__47_lib_47_http_45_component__ && $___46__46__47_lib_47_http_45_component__.__esModule && $___46__46__47_lib_47_http_45_component__ || {default: $___46__46__47_lib_47_http_45_component__}).multipartSerializeFilter;
 var chai = ($__chai__ = require("chai"), $__chai__ && $__chai__.__esModule && $__chai__ || {default: $__chai__}).default;
 var chaiAsPromised = ($__chai_45_as_45_promised__ = require("chai-as-promised"), $__chai_45_as_45_promised__ && $__chai_45_as_45_promised__.__esModule && $__chai_45_as_45_promised__ || {default: $__chai_45_as_45_promised__}).default;
 chai.use(chaiAsPromised);
@@ -29,7 +29,8 @@ describe('multipart test', (function() {
     }), streamable);
   });
   it('single file test', async($traceurRuntime.initGeneratorFunction(function $__8() {
-    var serializer,
+    var serializerHandler,
+        multipartFilter,
         main,
         handler,
         streamable;
@@ -37,19 +38,20 @@ describe('multipart test', (function() {
       while (true)
         switch ($ctx.state) {
           case 0:
-            serializer = simpleHandler((function(args, text) {
+            serializerHandler = simpleHandler((function(args, text) {
               args.name.should.equal('files');
               args.filename.should.equal('file1.txt');
               text.should.equal('Hello World');
               return {name: 'hello.txt'};
             }), 'text', 'json');
+            multipartFilter = multipartSerializeFilter().implement({serializerHandler: serializerHandler});
             main = simpleHandler((function(args) {
               var $__7 = args,
                   formData = $__7.formData,
                   serializedParts = $__7.serializedParts;
               formData.username.should.equal('john');
               serializedParts.files.name.should.equal('hello.txt');
-            }), 'void', 'void').addMiddleware(multipartSerializeFilter(serializer));
+            }), 'void', 'void').middleware(multipartFilter);
             $ctx.state = 14;
             break;
           case 14:
@@ -84,7 +86,8 @@ describe('multipart test', (function() {
     }, $__8, this);
   })));
   it('multipart/mixed files test', async($traceurRuntime.initGeneratorFunction(function $__9() {
-    var serializer,
+    var serializerHandler,
+        multipartFilter,
         main,
         handler,
         streamable;
@@ -92,7 +95,7 @@ describe('multipart test', (function() {
       while (true)
         switch ($ctx.state) {
           case 0:
-            serializer = simpleHandler((function(args, text) {
+            serializerHandler = simpleHandler((function(args, text) {
               var $__7 = args,
                   name = $__7.name,
                   filename = $__7.filename;
@@ -107,6 +110,7 @@ describe('multipart test', (function() {
                 throw new Error('Unexpected filename');
               }
             }), 'text', 'json');
+            multipartFilter = multipartSerializeFilter().implement({serializerHandler: serializerHandler});
             main = simpleHandler((function(args) {
               var $__7 = args,
                   formData = $__7.formData,
@@ -115,7 +119,7 @@ describe('multipart test', (function() {
               var files = serializedParts['upload-files'];
               files[0].id.should.equal('foo');
               files[1].id.should.equal('bar');
-            }), 'void', 'void').addMiddleware(multipartSerializeFilter(serializer));
+            }), 'void', 'void').middleware(multipartFilter);
             $ctx.state = 14;
             break;
           case 14:

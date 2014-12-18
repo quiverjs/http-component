@@ -90,7 +90,7 @@ describe('byte range test', () => {
         streamable.contentLength = testContent.length
         return streamable
       }, 'void', 'streamable')
-    .addMiddleware(byteRangeFilter)
+    .middleware(byteRangeFilter)
 
     var handler = yield loadHttpHandler({}, component)
 

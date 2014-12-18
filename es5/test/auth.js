@@ -5,7 +5,7 @@ var $__traceur_64_0_46_0_46_7__,
     $__quiver_45_http__,
     $__quiver_45_component__,
     $__quiver_45_stream_45_util__,
-    $___46__46__47_lib_47_auth__,
+    $___46__46__47_lib_47_http_45_component__,
     $__chai__,
     $__chai_45_as_45_promised__;
 ($__traceur_64_0_46_0_46_7__ = require("traceur"), $__traceur_64_0_46_0_46_7__ && $__traceur_64_0_46_0_46_7__.__esModule && $__traceur_64_0_46_0_46_7__ || {default: $__traceur_64_0_46_0_46_7__});
@@ -18,7 +18,7 @@ var $__3 = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45
 var $__4 = ($__quiver_45_stream_45_util__ = require("quiver-stream-util"), $__quiver_45_stream_45_util__ && $__quiver_45_stream_45_util__.__esModule && $__quiver_45_stream_45_util__ || {default: $__quiver_45_stream_45_util__}),
     emptyStreamable = $__4.emptyStreamable,
     streamableToText = $__4.streamableToText;
-var basicAuthFilter = ($___46__46__47_lib_47_auth__ = require("../lib/auth"), $___46__46__47_lib_47_auth__ && $___46__46__47_lib_47_auth__.__esModule && $___46__46__47_lib_47_auth__ || {default: $___46__46__47_lib_47_auth__}).basicAuthFilter;
+var basicAuthFilter = ($___46__46__47_lib_47_http_45_component__ = require("../lib/http-component"), $___46__46__47_lib_47_http_45_component__ && $___46__46__47_lib_47_http_45_component__.__esModule && $___46__46__47_lib_47_http_45_component__ || {default: $___46__46__47_lib_47_http_45_component__}).basicAuthFilter;
 var chai = ($__chai__ = require("chai"), $__chai__ && $__chai__.__esModule && $__chai__ || {default: $__chai__}).default;
 var chaiAsPromised = ($__chai_45_as_45_promised__ = require("chai-as-promised"), $__chai_45_as_45_promised__ && $__chai_45_as_45_promised__.__esModule && $__chai_45_as_45_promised__ || {default: $__chai_45_as_45_promised__}).default;
 chai.use(chaiAsPromised);
@@ -27,6 +27,7 @@ var authHeaderRegex = /^Basic realm=".+"$/;
 describe('http basic auth test', (function() {
   it('basic test', async($traceurRuntime.initGeneratorFunction(function $__11() {
     var authHandler,
+        authFilter,
         main,
         handler,
         $__8,
@@ -66,10 +67,11 @@ describe('http basic auth test', (function() {
               }
               throw error(401, 'Unauthorized');
             }), 'void', 'text');
+            authFilter = basicAuthFilter().implement({authHandler: authHandler});
             main = simpleHandler((function(args) {
               args.userId.should.equal('genie');
               return 'secret content';
-            }), 'void', 'text').addMiddleware(basicAuthFilter(authHandler));
+            }), 'void', 'text').middleware(authFilter);
             $ctx.state = 38;
             break;
           case 38:

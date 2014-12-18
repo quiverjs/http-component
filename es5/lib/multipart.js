@@ -3,6 +3,9 @@ Object.defineProperties(exports, {
   multipartSerializeFilter: {get: function() {
       return multipartSerializeFilter;
     }},
+  makeMultipartSerializeFilter: {get: function() {
+      return makeMultipartSerializeFilter;
+    }},
   __esModule: {value: true}
 });
 var $__quiver_45_error__,
@@ -19,6 +22,7 @@ var $__1 = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_pro
     timeout = $__1.timeout;
 var $__2 = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45_component__ && $__quiver_45_component__.__esModule && $__quiver_45_component__ || {default: $__quiver_45_component__}),
     streamFilter = $__2.streamFilter,
+    abstractHandler = $__2.abstractHandler,
     simpleHandlerLoader = $__2.simpleHandlerLoader,
     inputHandlerMiddleware = $__2.inputHandlerMiddleware;
 var $__3 = ($__quiver_45_stream_45_util__ = require("quiver-stream-util"), $__quiver_45_stream_45_util__ && $__quiver_45_stream_45_util__.__esModule && $__quiver_45_stream_45_util__ || {default: $__quiver_45_stream_45_util__}),
@@ -70,7 +74,7 @@ var parseMultipartHeaders = (function(headers) {
     contentTypeHeaders: contentTypeHeaders
   };
 });
-var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $__10(serializerHandler, readStream, boundary) {
+var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $__11(serializerHandler, readStream, boundary) {
   var formData,
       serializedParts,
       mixedPartHandler,
@@ -82,7 +86,7 @@ var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $_
           formData = {};
           serializedParts = {};
           mixedPartHandler = (function(name) {
-            return async($traceurRuntime.initGeneratorFunction(function $__11(headers, partStream) {
+            return async($traceurRuntime.initGeneratorFunction(function $__12(headers, partStream) {
               var $__7,
                   disposition,
                   dispositionHeaders,
@@ -112,10 +116,10 @@ var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $_
                     default:
                       return $ctx.end();
                   }
-              }, $__11, this);
+              }, $__12, this);
             }));
           });
-          handlePartStream = async($traceurRuntime.initGeneratorFunction(function $__11(headers, partStream) {
+          handlePartStream = async($traceurRuntime.initGeneratorFunction(function $__12(headers, partStream) {
             var $__7,
                 disposition,
                 dispositionHeaders,
@@ -192,7 +196,7 @@ var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $_
                   default:
                     return $ctx.end();
                 }
-            }, $__11, this);
+            }, $__12, this);
           }));
           $ctx.state = 8;
           break;
@@ -210,83 +214,83 @@ var serializeMultipart = async($traceurRuntime.initGeneratorFunction(function $_
         default:
           return $ctx.end();
       }
-  }, $__10, this);
+  }, $__11, this);
 }));
-var multipartSerializeFilter = (function(serializerHandler) {
-  return streamFilter((function(config, handler) {
-    var serializerHandler = config.serializerHandler;
-    return async($traceurRuntime.initGeneratorFunction(function $__11(args, streamable) {
-      var requestHead,
-          contentType,
-          boundary,
-          readStream,
-          $__9,
-          formData,
-          serializedParts,
-          $__12,
-          $__13,
-          $__14,
-          $__15;
-      return $traceurRuntime.createGeneratorInstance(function($ctx) {
-        while (true)
-          switch ($ctx.state) {
-            case 0:
-              requestHead = args.requestHead;
-              contentType = streamable.contentType;
-              $ctx.state = 19;
-              break;
-            case 19:
-              $ctx.state = (!contentType || !multipartType.test(contentType)) ? 1 : 2;
-              break;
-            case 1:
-              $ctx.returnValue = handler(args, streamable);
-              $ctx.state = -2;
-              break;
-            case 2:
-              if (requestHead && requestHead.method != 'POST')
-                throw error(405, 'Method Not Allowed');
-              boundary = parseBoundary(contentType);
-              $ctx.state = 21;
-              break;
-            case 21:
-              $ctx.state = 5;
-              return streamable.toStream();
-            case 5:
-              readStream = $ctx.sent;
-              $ctx.state = 7;
-              break;
-            case 7:
-              $__12 = serializeMultipart(serializerHandler, readStream, boundary);
-              $ctx.state = 13;
-              break;
-            case 13:
-              $ctx.state = 9;
-              return $__12;
-            case 9:
-              $__13 = $ctx.sent;
-              $ctx.state = 11;
-              break;
-            case 11:
-              $__9 = $__13;
-              $__14 = $__9[0];
-              formData = $__14;
-              $__15 = $__9[1];
-              serializedParts = $__15;
-              $ctx.state = 15;
-              break;
-            case 15:
-              args.formData = formData;
-              args.serializedParts = serializedParts;
-              $ctx.state = 23;
-              break;
-            case 23:
-              $ctx.returnValue = handler(args, emptyStreamable());
-              $ctx.state = -2;
-              break;
-            default:
-              return $ctx.end();
-          }
-      }, $__11, this);
-    }));
-  })).addMiddleware(inputHandlerMiddleware(serializerHandler, 'serializerHandler', {loader: simpleHandlerLoader('stream', 'streamable')}));
-});
+var serializerHandler = abstractHandler('serializerHandler').setLoader(simpleHandlerLoader('stream', 'streamable'));
+var multipartSerializeFilter = streamFilter((function(config, handler) {
+  var serializerHandler = config.serializerHandler;
+  return async($traceurRuntime.initGeneratorFunction(function $__12(args, streamable) {
+    var requestHead,
+        contentType,
+        boundary,
+        readStream,
+        $__10,
+        formData,
+        serializedParts,
+        $__13,
+        $__14,
+        $__15,
+        $__16;
+    return $traceurRuntime.createGeneratorInstance(function($ctx) {
+      while (true)
+        switch ($ctx.state) {
+          case 0:
+            requestHead = args.requestHead;
+            contentType = streamable.contentType;
+            $ctx.state = 19;
+            break;
+          case 19:
+            $ctx.state = (!contentType || !multipartType.test(contentType)) ? 1 : 2;
+            break;
+          case 1:
+            $ctx.returnValue = handler(args, streamable);
+            $ctx.state = -2;
+            break;
+          case 2:
+            if (requestHead && requestHead.method != 'POST')
+              throw error(405, 'Method Not Allowed');
+            boundary = parseBoundary(contentType);
+            $ctx.state = 21;
+            break;
+          case 21:
+            $ctx.state = 5;
+            return streamable.toStream();
+          case 5:
+            readStream = $ctx.sent;
+            $ctx.state = 7;
+            break;
+          case 7:
+            $__13 = serializeMultipart(serializerHandler, readStream, boundary);
+            $ctx.state = 13;
+            break;
+          case 13:
+            $ctx.state = 9;
+            return $__13;
+          case 9:
+            $__14 = $ctx.sent;
+            $ctx.state = 11;
+            break;
+          case 11:
+            $__10 = $__14;
+            $__15 = $__10[0];
+            formData = $__15;
+            $__16 = $__10[1];
+            serializedParts = $__16;
+            $ctx.state = 15;
+            break;
+          case 15:
+            args.formData = formData;
+            args.serializedParts = serializedParts;
+            $ctx.state = 23;
+            break;
+          case 23:
+            $ctx.returnValue = handler(args, emptyStreamable());
+            $ctx.state = -2;
+            break;
+          default:
+            return $ctx.end();
+        }
+    }, $__12, this);
+  }));
+})).inputHandlers({serializerHandler: serializerHandler});
+var makeMultipartSerializeFilter = multipartSerializeFilter.factory();

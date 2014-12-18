@@ -121,7 +121,7 @@ describe('byte range test', (function() {
               var streamable = buffersToStreamable(['Lorem ip', 'sum dol', 'or sit a', 'met, consectetur', ' adipiscing elit.']);
               streamable.contentLength = testContent.length;
               return streamable;
-            }), 'void', 'streamable').addMiddleware(byteRangeFilter);
+            }), 'void', 'streamable').middleware(byteRangeFilter);
             $ctx.state = 49;
             break;
           case 49:

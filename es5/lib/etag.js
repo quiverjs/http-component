@@ -148,4 +148,4 @@ var etagFilter = httpFilter((function(config, handler) {
     }, $__6, this);
   }));
 }));
-var makeEtagFilter = etagFilter.privatizedConstructor();
+var makeEtagFilter = etagFilter.factory();

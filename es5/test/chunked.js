@@ -48,7 +48,7 @@ describe('chunked http filter test', (function() {
             testChunkedContent = '5\r\nhello\r\n' + '1b\r\njavascript definitely rocks\r\n' + '0\r\n\r\n';
             component = simpleHandler((function(args) {
               return buffersToStream(testBuffers);
-            }), 'void', 'stream').addMiddleware(chunkedResponseFilter);
+            }), 'void', 'stream').middleware(chunkedResponseFilter);
             $ctx.state = 18;
             break;
           case 18:
@@ -115,7 +115,7 @@ describe('chunked http filter test', (function() {
             testContent = 'Hello World';
             component = simpleHandler((function(args) {
               return testContent;
-            }), 'void', 'text').addMiddleware(chunkedResponseFilter);
+            }), 'void', 'text').middleware(chunkedResponseFilter);
             $ctx.state = 18;
             break;
           case 18:
