@@ -1,12 +1,12 @@
-import 'traceur'
+import 'quiver-core/traceur'
 
-import { async } from 'quiver-promise'
+import { async } from 'quiver-core/promise'
 
 import {
   streamToText,
   createChannel,
   buffersToStream,
-} from 'quiver-stream-util'
+} from 'quiver-core/stream-util'
 
 import { 
   pipeMultipart, handleMultipart

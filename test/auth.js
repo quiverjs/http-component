@@ -1,18 +1,18 @@
-import 'traceur'
+import 'quiver-core/traceur'
 
-import { error } from 'quiver-error'
-import { async } from 'quiver-promise'
-import { RequestHead } from 'quiver-http'
+import { error } from 'quiver-core/error'
+import { async } from 'quiver-core/promise'
+import { RequestHead } from 'quiver-core/http'
 
 import { 
   simpleHandler,
   loadHttpHandler
-} from 'quiver-component'
+} from 'quiver-core/component'
 
 import {
   emptyStreamable,
   streamableToText,
-} from 'quiver-stream-util'
+} from 'quiver-core/stream-util'
 
 import { basicAuthFilter } from '../lib/http-component'
 

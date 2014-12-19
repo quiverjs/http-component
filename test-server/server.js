@@ -1,11 +1,11 @@
-import 'traceur'
+import 'quiver-core/traceur'
 
-import { startServer } from 'quiver-http'
+import { startServer } from 'quiver-core/http'
 
 import {
   router,
   simpleHandler
-} from 'quiver-component'
+} from 'quiver-core/component'
 
 import {
   fileHandler,
@@ -14,7 +14,7 @@ import {
 
 import {
   buffersToStream
-} from 'quiver-stream-util'
+} from 'quiver-core/stream-util'
 
 import {
   byteRangeFilter,

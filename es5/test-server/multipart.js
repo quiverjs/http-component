@@ -5,13 +5,13 @@ Object.defineProperties(exports, {
     }},
   __esModule: {value: true}
 });
-var $__quiver_45_component__,
+var $__quiver_45_core_47_component__,
     $__quiver_45_stream_45_component__,
     $___46__46__47_lib_47_http_45_component_46_js__;
-var simpleHandler = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45_component__ && $__quiver_45_component__.__esModule && $__quiver_45_component__ || {default: $__quiver_45_component__}).simpleHandler;
+var simpleHandler = ($__quiver_45_core_47_component__ = require("quiver-core/component"), $__quiver_45_core_47_component__ && $__quiver_45_core_47_component__.__esModule && $__quiver_45_core_47_component__ || {default: $__quiver_45_core_47_component__}).simpleHandler;
 var checksumHandler = ($__quiver_45_stream_45_component__ = require("quiver-stream-component"), $__quiver_45_stream_45_component__ && $__quiver_45_stream_45_component__.__esModule && $__quiver_45_stream_45_component__ || {default: $__quiver_45_stream_45_component__}).checksumHandler;
 var multipartSerializeFilter = ($___46__46__47_lib_47_http_45_component_46_js__ = require("../lib/http-component.js"), $___46__46__47_lib_47_http_45_component_46_js__ && $___46__46__47_lib_47_http_45_component_46_js__.__esModule && $___46__46__47_lib_47_http_45_component_46_js__ || {default: $___46__46__47_lib_47_http_45_component_46_js__}).multipartSerializeFilter;
-var serializerHandler = checksumHandler('sha1');
+var serializerHandler = checksumHandler().configOverride({checksumAlgorithm: 'sha1'});
 var multipartFilter = multipartSerializeFilter().implement({serializerHandler: serializerHandler});
 var formHandler = simpleHandler((function(args) {
   var $__3 = args,

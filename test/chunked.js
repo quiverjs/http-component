@@ -1,12 +1,12 @@
-import 'traceur'
+import 'quiver-core/traceur'
 
-import { async } from 'quiver-promise'
-import { RequestHead } from 'quiver-http'
+import { async } from 'quiver-core/promise'
+import { RequestHead } from 'quiver-core/http'
 
 import { 
   simpleHandler,
   loadHttpHandler
-} from 'quiver-component'
+} from 'quiver-core/component'
 
 import {
   textToStream,
@@ -15,7 +15,7 @@ import {
   buffersToStream,
   streamableToText,
   buffersToStreamable,
-} from 'quiver-stream-util'
+} from 'quiver-core/stream-util'
 
 import {
   chunkedResponseFilter

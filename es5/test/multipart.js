@@ -1,22 +1,22 @@
 "use strict";
-var $__traceur_64_0_46_0_46_7__,
-    $__quiver_45_promise__,
-    $__quiver_45_component__,
+var $__quiver_45_core_47_traceur__,
+    $__quiver_45_core_47_promise__,
+    $__quiver_45_core_47_component__,
     $__quiver_45_stream_45_component__,
-    $__quiver_45_file_45_stream__,
+    $__quiver_45_core_47_file_45_stream__,
     $___46__46__47_lib_47_http_45_component__,
     $__chai__,
     $__chai_45_as_45_promised__;
-($__traceur_64_0_46_0_46_7__ = require("traceur"), $__traceur_64_0_46_0_46_7__ && $__traceur_64_0_46_0_46_7__.__esModule && $__traceur_64_0_46_0_46_7__ || {default: $__traceur_64_0_46_0_46_7__});
-var async = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_promise__ && $__quiver_45_promise__.__esModule && $__quiver_45_promise__ || {default: $__quiver_45_promise__}).async;
-var $__1 = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45_component__ && $__quiver_45_component__.__esModule && $__quiver_45_component__ || {default: $__quiver_45_component__}),
+($__quiver_45_core_47_traceur__ = require("quiver-core/traceur"), $__quiver_45_core_47_traceur__ && $__quiver_45_core_47_traceur__.__esModule && $__quiver_45_core_47_traceur__ || {default: $__quiver_45_core_47_traceur__});
+var async = ($__quiver_45_core_47_promise__ = require("quiver-core/promise"), $__quiver_45_core_47_promise__ && $__quiver_45_core_47_promise__.__esModule && $__quiver_45_core_47_promise__ || {default: $__quiver_45_core_47_promise__}).async;
+var $__1 = ($__quiver_45_core_47_component__ = require("quiver-core/component"), $__quiver_45_core_47_component__ && $__quiver_45_core_47_component__.__esModule && $__quiver_45_core_47_component__ || {default: $__quiver_45_core_47_component__}),
     simpleHandler = $__1.simpleHandler,
     loadSimpleHandler = $__1.loadSimpleHandler,
     loadStreamHandler = $__1.loadStreamHandler;
 var $__2 = ($__quiver_45_stream_45_component__ = require("quiver-stream-component"), $__quiver_45_stream_45_component__ && $__quiver_45_stream_45_component__.__esModule && $__quiver_45_stream_45_component__ || {default: $__quiver_45_stream_45_component__}),
     sizeWindowedStream = $__2.sizeWindowedStream,
     convertStreamable = $__2.convertStreamable;
-var fileStreamable = ($__quiver_45_file_45_stream__ = require("quiver-file-stream"), $__quiver_45_file_45_stream__ && $__quiver_45_file_45_stream__.__esModule && $__quiver_45_file_45_stream__ || {default: $__quiver_45_file_45_stream__}).fileStreamable;
+var fileStreamable = ($__quiver_45_core_47_file_45_stream__ = require("quiver-core/file-stream"), $__quiver_45_core_47_file_45_stream__ && $__quiver_45_core_47_file_45_stream__.__esModule && $__quiver_45_core_47_file_45_stream__ || {default: $__quiver_45_core_47_file_45_stream__}).fileStreamable;
 var multipartSerializeFilter = ($___46__46__47_lib_47_http_45_component__ = require("../lib/http-component"), $___46__46__47_lib_47_http_45_component__ && $___46__46__47_lib_47_http_45_component__.__esModule && $___46__46__47_lib_47_http_45_component__ || {default: $___46__46__47_lib_47_http_45_component__}).multipartSerializeFilter;
 var chai = ($__chai__ = require("chai"), $__chai__ && $__chai__.__esModule && $__chai__ || {default: $__chai__}).default;
 var chaiAsPromised = ($__chai_45_as_45_promised__ = require("chai-as-promised"), $__chai_45_as_45_promised__ && $__chai_45_as_45_promised__.__esModule && $__chai_45_as_45_promised__ || {default: $__chai_45_as_45_promised__}).default;

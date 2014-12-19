@@ -6,27 +6,21 @@
   },
   "name": "quiver-http-component",
   "desription": "Components for processing HTTP requests",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "homepage": "https://github.com/quiverjs/quiver-http-component",
   "repository": {
     "url": "git@github.com:quiverjs/quiver-http-component.git"
   },
   "dependencies": {
-    "traceur": "0.0.79",
-    "quiver-http": "1.2.2",
-    "quiver-error": "~1.0.1",
-    "quiver-promise": "~1.0.0",
-    "quiver-component": "~2.0.2",
-    "quiver-file-stream": "~1.2.1",
-    "quiver-stream-util": "~1.2.1",
-    "quiver-stream-component": "~1.2.1"
+    "quiver-core": "~1.0.1",
+    "quiver-stream-component": "~1.3.1"
   },
   "devDependencies": {
     "chai": "^1.10.0",
     "mocha": "^2.0.1",
     "buffertools": "^2.1.2",
     "chai-as-promised": "^4.1.1",
-    "quiver-file-component": "~1.2.1"
+    "quiver-file-component": "~1.2.3"
   },
   "bugs": {
     "url": "https://github.com/quiverjs/quiver-http-component/issues"

@@ -1,6 +1,6 @@
 import {
   simpleHandler
-} from 'quiver-component'
+} from 'quiver-core/component'
 
 import {
   checksumHandler
@@ -10,7 +10,11 @@ import {
   multipartSerializeFilter
 } from '../lib/http-component.js'
 
-var serializerHandler = checksumHandler('sha1')
+var serializerHandler = checksumHandler()
+  .configOverride({
+    checksumAlgorithm: 'sha1'
+  })
+
 var multipartFilter = multipartSerializeFilter()
   .implement({ serializerHandler })
 

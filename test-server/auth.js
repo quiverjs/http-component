@@ -1,8 +1,8 @@
-import { error } from 'quiver-error'
+import { error } from 'quiver-core/error'
 
 import { 
   simpleHandler,
-} from 'quiver-component'
+} from 'quiver-core/component'
 
 import { basicAuthFilter } from '../lib/http-component.js'
 

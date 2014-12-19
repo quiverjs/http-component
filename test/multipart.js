@@ -1,18 +1,18 @@
-import 'traceur'
+import 'quiver-core/traceur'
 
-import { async } from 'quiver-promise'
+import { async } from 'quiver-core/promise'
 
 import {
   simpleHandler,
   loadSimpleHandler,
   loadStreamHandler
-} from 'quiver-component'
+} from 'quiver-core/component'
 
 import {
   sizeWindowedStream, convertStreamable
 } from 'quiver-stream-component'
 
-import { fileStreamable } from 'quiver-file-stream'
+import { fileStreamable } from 'quiver-core/file-stream'
 
 import { multipartSerializeFilter } from '../lib/http-component'
 

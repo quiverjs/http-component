@@ -1,21 +1,21 @@
-import 'traceur'
+import 'quiver-core/traceur'
 
 import fs from 'fs'
 import zlib from 'zlib'
 import buffertools from 'buffertools'
-import { async, promisify } from 'quiver-promise'
-import { RequestHead } from 'quiver-http'
+import { async, promisify } from 'quiver-core/promise'
+import { RequestHead } from 'quiver-core/http'
 
 import { 
   simpleHandler,
   loadHttpHandler
-} from 'quiver-component'
+} from 'quiver-core/component'
 
 import {
   emptyStreamable,
   streamableToText,
   streamableToBuffer,
-} from 'quiver-stream-util'
+} from 'quiver-core/stream-util'
 
 import {
   httpCompressFilter,
