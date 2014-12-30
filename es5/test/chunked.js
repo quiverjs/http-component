@@ -48,12 +48,12 @@ describe('chunked http filter test', (function() {
             testChunkedContent = '5\r\nhello\r\n' + '1b\r\njavascript definitely rocks\r\n' + '0\r\n\r\n';
             component = simpleHandler((function(args) {
               return buffersToStream(testBuffers);
-            }), 'void', 'stream').middleware(chunkedResponseFilter);
+            }), 'void', 'stream').middleware(chunkedResponseFilter).setLoader(loadHttpHandler);
             $ctx.state = 18;
             break;
           case 18:
             $ctx.state = 2;
-            return loadHttpHandler({}, component);
+            return component.loadHandler({});
           case 2:
             handler = $ctx.sent;
             $ctx.state = 4;
@@ -115,12 +115,12 @@ describe('chunked http filter test', (function() {
             testContent = 'Hello World';
             component = simpleHandler((function(args) {
               return testContent;
-            }), 'void', 'text').middleware(chunkedResponseFilter);
+            }), 'void', 'text').middleware(chunkedResponseFilter).setLoader(loadHttpHandler);
             $ctx.state = 18;
             break;
           case 18:
             $ctx.state = 2;
-            return loadHttpHandler({}, component);
+            return component.loadHandler({});
           case 2:
             handler = $ctx.sent;
             $ctx.state = 4;

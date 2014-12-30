@@ -62,8 +62,9 @@ describe('http compress test', () => {
       args => testContent,
       'void', 'text')
     .middleware(httpCompressFilter)
+    .setLoader(loadHttpHandler)
 
-    var handler = yield loadHttpHandler({}, component)
+    var handler = yield component.loadHandler({})
 
     var [responseHead, responseStreamable] = 
       yield handler(new RequestHead(), emptyStreamable())

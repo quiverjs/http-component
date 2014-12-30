@@ -50,8 +50,9 @@ describe('multipart test', () => {
       serializedParts.files.name.should.equal('hello.txt')
     }, 'void', 'void')
     .middleware(multipartFilter)
+    .setLoader(loadStreamHandler)
 
-    var handler = yield loadStreamHandler({}, main)
+    var handler = yield main.loadHandler({})
     var streamable = yield fileStreamable(
       './test-content/multipart-1.txt')
     
@@ -93,8 +94,9 @@ describe('multipart test', () => {
 
     }, 'void', 'void')
     .middleware(multipartFilter)
+    .setLoader(loadStreamHandler)
 
-    var handler = yield loadStreamHandler({}, main)
+    var handler = yield main.loadHandler({})
     var streamable = yield fileStreamable(
       './test-content/multipart-2.txt')
 

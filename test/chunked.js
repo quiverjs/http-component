@@ -42,8 +42,9 @@ describe('chunked http filter test', () => {
       args => buffersToStream(testBuffers),
       'void', 'stream')
     .middleware(chunkedResponseFilter)
+    .setLoader(loadHttpHandler)
 
-    var handler = yield loadHttpHandler({}, component)
+    var handler = yield component.loadHandler({})
 
     var [responseHead, responseStreamable] =
       yield handler(new RequestHead(), emptyStreamable())
@@ -62,8 +63,9 @@ describe('chunked http filter test', () => {
       args => testContent,
       'void', 'text')
     .middleware(chunkedResponseFilter)
+    .setLoader(loadHttpHandler)
 
-    var handler = yield loadHttpHandler({}, component)
+    var handler = yield component.loadHandler({})
 
     var [responseHead, responseStreamable] =
       yield handler(new RequestHead(), emptyStreamable())

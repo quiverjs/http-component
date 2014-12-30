@@ -93,12 +93,12 @@ describe('http compress test', (function() {
           case 4:
             component = simpleHandler((function(args) {
               return testContent;
-            }), 'void', 'text').middleware(httpCompressFilter);
+            }), 'void', 'text').middleware(httpCompressFilter).setLoader(loadHttpHandler);
             $ctx.state = 50;
             break;
           case 50:
             $ctx.state = 6;
-            return loadHttpHandler({}, component);
+            return component.loadHandler({});
           case 6:
             handler = $ctx.sent;
             $ctx.state = 8;

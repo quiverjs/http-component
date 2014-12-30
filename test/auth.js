@@ -47,8 +47,9 @@ describe('http basic auth test', () => {
         return 'secret content'
       }, 'void', 'text')
     .middleware(authFilter)
+    .setLoader(loadHttpHandler)
 
-    var handler = yield loadHttpHandler({}, main)
+    var handler = yield main.loadHandler({})
 
     var [responseHead, responseStreamable] = 
       yield handler(new RequestHead(), emptyStreamable())

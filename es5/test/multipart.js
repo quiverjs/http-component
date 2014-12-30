@@ -51,12 +51,12 @@ describe('multipart test', (function() {
                   serializedParts = $__7.serializedParts;
               formData.username.should.equal('john');
               serializedParts.files.name.should.equal('hello.txt');
-            }), 'void', 'void').middleware(multipartFilter);
+            }), 'void', 'void').middleware(multipartFilter).setLoader(loadStreamHandler);
             $ctx.state = 14;
             break;
           case 14:
             $ctx.state = 2;
-            return loadStreamHandler({}, main);
+            return main.loadHandler({});
           case 2:
             handler = $ctx.sent;
             $ctx.state = 4;
@@ -119,12 +119,12 @@ describe('multipart test', (function() {
               var files = serializedParts['upload-files'];
               files[0].id.should.equal('foo');
               files[1].id.should.equal('bar');
-            }), 'void', 'void').middleware(multipartFilter);
+            }), 'void', 'void').middleware(multipartFilter).setLoader(loadStreamHandler);
             $ctx.state = 14;
             break;
           case 14:
             $ctx.state = 2;
-            return loadStreamHandler({}, main);
+            return main.loadHandler({});
           case 2:
             handler = $ctx.sent;
             $ctx.state = 4;

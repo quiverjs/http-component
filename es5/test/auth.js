@@ -71,12 +71,12 @@ describe('http basic auth test', (function() {
             main = simpleHandler((function(args) {
               args.userId.should.equal('genie');
               return 'secret content';
-            }), 'void', 'text').middleware(authFilter);
+            }), 'void', 'text').middleware(authFilter).setLoader(loadHttpHandler);
             $ctx.state = 38;
             break;
           case 38:
             $ctx.state = 2;
-            return loadHttpHandler({}, main);
+            return main.loadHandler({});
           case 2:
             handler = $ctx.sent;
             $ctx.state = 4;

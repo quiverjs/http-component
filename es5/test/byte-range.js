@@ -121,12 +121,12 @@ describe('byte range test', (function() {
               var streamable = buffersToStreamable(['Lorem ip', 'sum dol', 'or sit a', 'met, consectetur', ' adipiscing elit.']);
               streamable.contentLength = testContent.length;
               return streamable;
-            }), 'void', 'streamable').middleware(byteRangeFilter);
+            }), 'void', 'streamable').middleware(byteRangeFilter).setLoader(loadHttpHandler);
             $ctx.state = 49;
             break;
           case 49:
             $ctx.state = 2;
-            return loadHttpHandler({}, component);
+            return component.loadHandler({});
           case 2:
             handler = $ctx.sent;
             $ctx.state = 4;
