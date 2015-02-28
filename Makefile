@@ -1,12 +1,9 @@
+TRACEUR_FLAGS=--modules commonjs --generators parse --block-binding parse
 
-all: build test
+build: src
+	traceur --dir src/ out/ $(TRACEUR_FLAGS)
 
-build:
-	node_modules/.bin/traceur --dir lib es5/lib --modules commonjs
-	node_modules/.bin/traceur --dir test es5/test --modules commonjs
-	node_modules/.bin/traceur --dir test-server es5/test-server --modules commonjs
+unit-test: build
+	mocha out/test
 
-test: build
-	@NODE_ENV=test ./node_modules/.bin/mocha es5/test;
-
-.PHONY: build test
+.PHONY: build build-lib build-test test

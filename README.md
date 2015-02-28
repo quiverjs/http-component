@@ -5,4 +5,4 @@ quiver-http-component
 
 Components for processing HTTP requests
 
-[Documentation](https://github.com/quiverjs/doc/wiki/Http-Component)
+[Documentation](https://github.com/quiverjs/quiverjs/wiki/Http-Component)
