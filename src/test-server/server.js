@@ -1,5 +1,3 @@
-import 'quiver-core/traceur'
-
 import { startServer } from 'quiver-core/http'
 
 import {

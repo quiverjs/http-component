@@ -14,9 +14,7 @@ import {
 
 // Naive approach of matching boundary
 // TODO: Implement Boyer–Moore string search algorithm
-export 
-
-const createBufferQueue = boundaryLength => {
+export const createBufferQueue = boundaryLength => {
   const buffers = []
   let bufferLength = 0
 
