@@ -49,25 +49,25 @@ describe('http basic auth test', () => {
 
     const handler = yield main.loadHandler({})
 
-    var [responseHead, responseStreamable] = 
+    let [responseHead, responseStreamable] = 
       yield handler(new RequestHead(), emptyStreamable())
 
     responseHead.statusCode.should.equal(401)
 
-    var authHeader = responseHead.getHeader('www-authenticate')
+    let authHeader = responseHead.getHeader('www-authenticate')
     should.exist(authHeader)
     authHeaderRegex.test(authHeader).should.equal(true)
 
     yield streamableToText(responseStreamable)
       .should.eventually.equal('<h1>401 Unauthorized</h1>')
 
-    var requestHead = new RequestHead({
+    let requestHead = new RequestHead({
       headers: {
         authorization: 'Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=='
       }
     })
 
-    var [responseHead, responseStreamable] = 
+    ;[responseHead, responseStreamable] = 
       yield handler(requestHead, emptyStreamable())
 
     responseHead.statusCode.should.equal(200)
@@ -78,18 +78,18 @@ describe('http basic auth test', () => {
     const invalidCredentials = new Buffer(
       'admin:password').toString('base64')
 
-    var requestHead = new RequestHead({
+    requestHead = new RequestHead({
       headers: {
         authorization: 'Basic ' + invalidCredentials
       }
     })
 
-    var [responseHead, responseStreamable] = 
+    ;[responseHead, responseStreamable] = 
       yield handler(requestHead, emptyStreamable())
 
     responseHead.statusCode.should.equal(401)
 
-    var authHeader = responseHead.getHeader('www-authenticate')
+    authHeader = responseHead.getHeader('www-authenticate')
     should.exist(authHeader)
   }))
 })

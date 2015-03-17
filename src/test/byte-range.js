@@ -93,7 +93,7 @@ describe('byte range test', () => {
 
     const handler = yield component.loadHandler({})
 
-    var [responseHead, responseStreamable] = 
+    let [responseHead, responseStreamable] = 
       yield handler(new RequestHead(), emptyStreamable())
 
     responseHead.statusCode.should.equal(200)
@@ -107,13 +107,13 @@ describe('byte range test', () => {
     yield streamableToText(responseStreamable)
       .should.eventually.equal(testContent)
 
-    var requestHead = new RequestHead({
+    let requestHead = new RequestHead({
       headers: {
         range: 'bytes=' + start + '-' + (end-1)
       }
     })
 
-    var [responseHead, responseStreamable] = 
+    ;[responseHead, responseStreamable] = 
       yield handler(requestHead, emptyStreamable())
 
     responseHead.statusCode.should.equal(206)
@@ -128,7 +128,7 @@ describe('byte range test', () => {
     yield streamableToText(responseStreamable)
       .should.eventually.equal(expectedSlice)
 
-    var requestHead = new RequestHead({
+    requestHead = new RequestHead({
       headers: {
         range: 'bytes=' + start + '-' + 
           (testContent.length+10)
@@ -136,7 +136,7 @@ describe('byte range test', () => {
     })
 
     try {
-      var [responseHead, responseStreamable] = 
+      ;[responseHead, responseStreamable] = 
         yield handler(requestHead, emptyStreamable())
 
       throw new Error('should not reach')

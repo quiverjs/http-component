@@ -1,6 +1,5 @@
 import fs from 'fs'
 import zlib from 'zlib'
-import buffertools from 'buffertools'
 import { async, promisify } from 'quiver-core/promise'
 import { RequestHead } from 'quiver-core/http'
 
@@ -64,7 +63,7 @@ describe('http compress test', () => {
 
     const handler = yield component.loadHandler({})
 
-    var [responseHead, responseStreamable] = 
+    let [responseHead, responseStreamable] = 
       yield handler(new RequestHead(), emptyStreamable())
 
     should.not.exist(responseHead.getHeader(
@@ -73,13 +72,13 @@ describe('http compress test', () => {
     yield streamableToText(responseStreamable)
       .should.eventually.equal(testContent)
 
-    var requestHead = new RequestHead({
+    let requestHead = new RequestHead({
       headers: {
         'accept-encoding': 'gzip'
       }
     })
 
-    var [responseHead, responseStreamable] = 
+    ;[responseHead, responseStreamable] = 
       yield handler(requestHead, emptyStreamable())
 
     responseHead.getHeader('content-encoding')
@@ -87,17 +86,16 @@ describe('http compress test', () => {
 
     const buffer = yield streamableToBuffer(responseStreamable)
 
-    should.equal(buffertools.compare(
+    should.equal(Buffer.compare(
       buffer, compressed), 0)
 
-
-    var requestHead = new RequestHead({
+    requestHead = new RequestHead({
       headers: {
         'accept-encoding': 'gzip;q=0, identity;q=0.5, *;q=0'
       }
     })
 
-    var [responseHead, responseStreamable] = 
+    ;[responseHead, responseStreamable] = 
       yield handler(requestHead, emptyStreamable())
 
     should.not.exist(responseHead.getHeader(
@@ -107,7 +105,7 @@ describe('http compress test', () => {
       .should.eventually.equal(testContent)
 
 
-    var requestHead = new RequestHead({
+    requestHead = new RequestHead({
       headers: {
         'accept-encoding': 'identity;q=0'
       }

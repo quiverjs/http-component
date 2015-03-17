@@ -22,7 +22,7 @@ const createBufferQueue = boundaryLength => {
 
   const getByte = (index) => {
     let currentIndex = 0
-    
+
     for(let i=0; i<buffers.length; i++) {
       const buffer = buffers[i]
       const end = currentIndex + buffer.length
@@ -183,14 +183,16 @@ const newLineBuffer = new Buffer('\r\n')
 
 export const extractMultipart = async(
 function*(readStream, startBoundary, partHandler) {
-  var [headers, readStream] = yield extractHttpHeaders(
+  let headers, partContent, endBuffer
+
+  ;[headers, readStream] = yield extractHttpHeaders(
     readStream)
 
-  var [partContent, readStream] = yield handleMultipart(
+  ;[partContent, readStream] = yield handleMultipart(
     readStream, startBoundary, partStream =>
       partHandler(headers, partStream))
 
-  var [endBuffer, readStream] = yield extractFixedStreamHead(
+  ;[endBuffer, readStream] = yield extractFixedStreamHead(
     readStream, 2)
 
   const ending = endBuffer.toString()
@@ -216,17 +218,20 @@ function*(readStream, startBoundary, partHandler) {
 export const extractAllMultipart = async(
 function*(readStream, boundary, partHandler) {
   try {
+    let head
     const parts = []
 
     const firstBoundary = new Buffer('--' + boundary + '\r\n')
     const startBoundary = new Buffer('\r\n--' + boundary)
-
+    
     // eat the first boundary
-    var [head, readStream] = yield extractStreamHead(
+    ;[head, readStream] = yield extractStreamHead(
       readStream, firstBoundary)
 
     while(true) {
-      var [partContent, readStream, ended] 
+      let partContent, ended
+
+      ;[partContent, readStream, ended]
         = yield extractMultipart(readStream, 
             startBoundary, partHandler)
 

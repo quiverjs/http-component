@@ -74,8 +74,9 @@ async(function*(config, handler) {
     const credentials = authHeader.slice(6).trim()
     const [username, password] = decodeCredentials(credentials)
 
+    let userId
     try {
-      var userId = yield authHandler({ username, password })
+      userId = yield authHandler({ username, password })
     } catch(err) {
       if(err.errorCode == 401) return unauthorized()
       throw err
