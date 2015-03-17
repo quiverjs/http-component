@@ -4,15 +4,15 @@ import { emptyStreamable } from 'quiver-core/stream-util'
 
 import crypto from 'crypto'
 
-let algorithm = 'sha1'
-let checksumField = 'checksum-sha1'
+const algorithm = 'sha1'
+const checksumField = 'checksum-sha1'
 
-let checksumBuffer = buffer =>
+const checksumBuffer = buffer =>
   crypto.createHash(algorithm)
     .update(buffer)
     .digest('hex')
 
-let etagStreamable = async(function*(streamable) {
+const etagStreamable = async(function*(streamable) {
   if(streamable.etag) 
     return streamable.etag
 
@@ -22,9 +22,9 @@ let etagStreamable = async(function*(streamable) {
   if(!streamable.toBuffer) 
     return null
 
-  let buffer = yield streamable.toBuffer()
+  const buffer = yield streamable.toBuffer()
 
-  let etag = checksumBuffer(buffer)
+  const etag = checksumBuffer(buffer)
 
   streamable.etag = etag
   streamable[checksumField] = etag
@@ -32,22 +32,22 @@ let etagStreamable = async(function*(streamable) {
   return etag
 })
 
-export let etagFilter = httpFilter(
+export const etagFilter = httpFilter(
 (config, handler) =>
   async(function*(requestHead, requestStreamable) {
-    let noneMatch = requestHead.getHeader('if-none-match')
+    const noneMatch = requestHead.getHeader('if-none-match')
 
-    let response = yield handler(
+    const response = yield handler(
       requestHead, requestStreamable)
 
-    let [responseHead, responseStreamable] = response
+    const [responseHead, responseStreamable] = response
 
     if(responseHead.statusCode != 200) return response
 
-    let etag = yield etagStreamable(responseStreamable)
+    const etag = yield etagStreamable(responseStreamable)
     if(!etag) return response
 
-    let etagField = '"' + etag + '"'
+    const etagField = '"' + etag + '"'
     
     if(noneMatch && noneMatch == etagField) {
       responseHead.statusCode = 304
@@ -60,4 +60,4 @@ export let etagFilter = httpFilter(
     return [responseHead, responseStreamable]
   }))
 
-export let makeEtagFilter = etagFilter.factory()
+export const makeEtagFilter = etagFilter.factory()

@@ -3,64 +3,64 @@ import { httpFilter } from 'quiver-core/component'
 import { async, promisify } from 'quiver-core/promise'
 import { nodeToQuiverWriteStream } from 'quiver-core/stream-util'
 
-let commonLogFormatter = info => {
-  let {
+const commonLogFormatter = info => {
+  const {
     requestHead,
     responseHead,
     responseTime='-'
   } = info
 
-  let { 
+  const { 
     url='/',
     method = 'GET',
     httpVersion = '1.1',
     headers: requestHeaders
   } = requestHead
 
-  let { 
+  const { 
     userId = '-',
     clientAddress = '-',
   } = requestHead.args
 
-  let {
+  const {
     statusCode = 200,
     headers: responseHeaders
   } = responseHead
 
-  let referer = requestHeaders['referer'] || 
+  const referer = requestHeaders['referer'] || 
     requestHeaders['referrer'] || '-'
 
-  let contentLength = responseHeaders['content-length'] || '-'
+  const contentLength = responseHeaders['content-length'] || '-'
 
-  let userAgent = responseHeaders['user-agent'] || '-'
+  const userAgent = responseHeaders['user-agent'] || '-'
 
-  let date = new Date().toUTCString()
+  const date = new Date().toUTCString()
 
   return `${clientAddress} - ${userId} [${date}] "${method} ${url} HTTP/${httpVersion}" ${statusCode} ${responseTime}`
 }
 
-export let requestLoggerFilter = httpFilter(
+export const requestLoggerFilter = httpFilter(
 (config, handler) => {
-  let { 
+  const { 
     logFile,
     logFormatter=commonLogFormatter 
   } = config
   
-  let nodeWriteStream = logFile ? 
+  const nodeWriteStream = logFile ? 
     fs.createWriteStream(logFile) : process.stdout
 
-  let writeStream = nodeToQuiverWriteStream(nodeWriteStream)
+  const writeStream = nodeToQuiverWriteStream(nodeWriteStream)
 
   return async(function*(requestHead, requestStreamable) {
-    let startTime = process.hrtime()
+    const startTime = process.hrtime()
 
-    let response = yield handler(requestHead, requestStreamable)
-    let [responseHead] = response
+    const response = yield handler(requestHead, requestStreamable)
+    const [responseHead] = response
 
-    let diff = process.hrtime(startTime)
-    let responseTime = (diff[0] * 1e3 + diff[1] * 1e-6).toFixed(3)
+    const diff = process.hrtime(startTime)
+    const responseTime = (diff[0] * 1e3 + diff[1] * 1e-6).toFixed(3)
 
-    let log = logFormatter({
+    const log = logFormatter({
       requestHead, 
       responseHead,
       responseTime
@@ -72,4 +72,4 @@ export let requestLoggerFilter = httpFilter(
   })
 })
 
-export let makeRequestLoggerFilter = requestLoggerFilter.factory()
+export const makeRequestLoggerFilter = requestLoggerFilter.factory()

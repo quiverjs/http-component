@@ -3,13 +3,13 @@ import { httpFilter } from 'quiver-core/component'
 import { streamToStreamable } from 'quiver-core/stream-util'
 import { streamToChunkedStream } from 'quiver-stream-component'
 
-export let chunkedResponseFilter = httpFilter(
+export const chunkedResponseFilter = httpFilter(
 (config, handler) =>
   async(function*(requestHead, requestStreamable) {
-    let response = yield handler(
+    const response = yield handler(
       requestHead, requestStreamable)
 
-    let [responseHead, responseStreamable] = response
+    const [responseHead, responseStreamable] = response
 
     if(responseHead.getHeader('content-length') ||
        responseHead.getHeader('transfer-encoding'))
@@ -17,14 +17,14 @@ export let chunkedResponseFilter = httpFilter(
       return response
     }
 
-    let readStream = yield responseStreamable.toStream()
-    let chunkedStream = streamToChunkedStream(readStream)
-    let chunkedStreamable = streamToStreamable(chunkedStream)
+    const readStream = yield responseStreamable.toStream()
+    const chunkedStream = streamToChunkedStream(readStream)
+    const chunkedStreamable = streamToStreamable(chunkedStream)
 
     responseHead.setHeader('transfer-encoding', 'chunked')
 
     return [responseHead, chunkedStreamable]
   }))
 
-export let makeChunkedResponseFilter = 
+export const makeChunkedResponseFilter = 
   chunkedResponseFilter.factory()

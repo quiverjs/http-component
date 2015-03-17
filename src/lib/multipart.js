@@ -33,16 +33,16 @@ import {
   extractAllMultipart 
 } from './multipart-stream'
 
-let multipartType = /^multipart\/form-data/
+const multipartType = /^multipart\/form-data/
 
-let parseBoundary = contentType => {
-  let [, { boundary }] = parseSubheaders(contentType)
+const parseBoundary = contentType => {
+  const [, { boundary }] = parseSubheaders(contentType)
   if(!boundary) throw errror(400, 'no boundary specified')
 
   return boundary
 }
 
-let formatStreamable = streamable => {
+const formatStreamable = streamable => {
   if(streamable.contentType == 'application/json') {
     return streamableToJson(streamable)
   } else {
@@ -50,24 +50,26 @@ let formatStreamable = streamable => {
   }
 }
 
-let parseMultipartHeaders = headers => {
-  let dispositionHeader = headers['content-disposition']
+const parseMultipartHeaders = headers => {
+  const dispositionHeader = headers['content-disposition']
 
   if(!dispositionHeader) throw error(400, 
     'missing Content-Disposition header')
 
-  let [disposition, dispositionHeaders] = parseSubheaders(
+  const [disposition, dispositionHeaders] = parseSubheaders(
     dispositionHeader)
 
-  let contentTypeHeader = headers['content-type']
+  const contentTypeHeader = headers['content-type']
 
+  let contentType, contentTypeHeaders
+  
   if(contentTypeHeader) {
-    var [contentType, contentTypeHeaders] = parseSubheaders(
+    ;([contentType, contentTypeHeaders]) = parseSubheaders(
       contentTypeHeader)
 
   } else {
-    var contentType = 'text/plain'
-    var contentTypeHeaders = {}
+    contentType = 'text/plain'
+    contentTypeHeaders = {}
   }
 
   return {
@@ -78,14 +80,14 @@ let parseMultipartHeaders = headers => {
   }
 }
 
-let serializeMultipart = async(
+const serializeMultipart = async(
 function*(serializerHandler, readStream, boundary) {
-  let formData = { }
-  let serializedParts = {}
+  const formData = { }
+  const serializedParts = {}
 
-  let mixedPartHandler = name =>
+  const mixedPartHandler = name =>
   async(function*(headers, partStream) {
-    let {
+    const {
       disposition,
       dispositionHeaders,
       contentType,
@@ -95,7 +97,7 @@ function*(serializerHandler, readStream, boundary) {
     if(disposition != 'file')
       throw error(400, 'Invalid Content-Disposition')
 
-    let { filename } =  dispositionHeaders
+    const { filename } =  dispositionHeaders
 
     if(!filename)
       throw error(400, 'Missing upload file name')
@@ -106,9 +108,9 @@ function*(serializerHandler, readStream, boundary) {
     .then(formatStreamable)
   })
 
-  let handlePartStream = async(
+  const handlePartStream = async(
   function*(headers, partStream) {
-    let {
+    const {
       disposition,
       dispositionHeaders,
       contentType,
@@ -118,7 +120,7 @@ function*(serializerHandler, readStream, boundary) {
     if(disposition != 'form-data')
       throw error(400, 'Invalid Content-Disposition')
 
-    let { name, filename } = dispositionHeaders
+    const { name, filename } = dispositionHeaders
 
     if(!name)
       throw error(400, 'Missing name field in Content-Disposition')
@@ -127,7 +129,7 @@ function*(serializerHandler, readStream, boundary) {
       throw error(400, 'duplicate multipart field')
 
     if(contentType=='multipart/mixed') {
-      let boundary = contentTypeHeaders['boundary']
+      const boundary = contentTypeHeaders['boundary']
 
       if(!boundary)
         throw error(400, 'Missing multipart boundary')
@@ -137,11 +139,11 @@ function*(serializerHandler, readStream, boundary) {
 
     } else {
       if(filename) {
-        let serialized = yield serializerHandler(
+        const serialized = yield serializerHandler(
           { name, filename, contentType }, partStream)
           .then(formatStreamable)
 
-        let field = serializedParts[name]
+        const field = serializedParts[name]
 
         if(!field) {
           serializedParts[name] = serialized
@@ -163,16 +165,16 @@ function*(serializerHandler, readStream, boundary) {
   return [formData, serializedParts]
 })
 
-let serializerHandler = abstractHandler('serializerHandler')
+const serializerHandler = abstractHandler('serializerHandler')
   .setLoader(simpleHandlerLoader('stream', 'streamable'))
 
-export let multipartSerializeFilter =
+export const multipartSerializeFilter =
 streamFilter((config, handler) => {
-  let { serializerHandler } = config
+  const { serializerHandler } = config
 
   return async(function*(args, streamable) {
-    let { requestHead } = args
-    let { contentType } = streamable
+    const { requestHead } = args
+    const { contentType } = streamable
 
     if(!contentType || !multipartType.test(contentType))
     {
@@ -182,11 +184,11 @@ streamFilter((config, handler) => {
     if(requestHead && requestHead.method != 'POST')
       throw error(405, 'Method Not Allowed')
 
-    let boundary = parseBoundary(contentType)
+    const boundary = parseBoundary(contentType)
 
-    let readStream = yield streamable.toStream()
+    const readStream = yield streamable.toStream()
 
-    let [ formData, serializedParts ]
+    const [ formData, serializedParts ]
       = yield serializeMultipart(
         serializerHandler, readStream, boundary)
 
@@ -198,5 +200,5 @@ streamFilter((config, handler) => {
 })
 .inputHandlers({ serializerHandler })
 
-export let makeMultipartSerializeFilter = 
+export const makeMultipartSerializeFilter = 
   multipartSerializeFilter.factory()

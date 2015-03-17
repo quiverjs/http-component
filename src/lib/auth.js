@@ -9,44 +9,44 @@ import {
   inputHandlerMiddleware
 } from 'quiver-core/component'
 
-let randomBytes = promisify(crypto.randomBytes)
+const randomBytes = promisify(crypto.randomBytes)
 
-let splitOnce = (str, separator) => {
-  let index = str.indexOf(separator)
+const splitOnce = (str, separator) => {
+  const index = str.indexOf(separator)
   if(index == -1) return [str, '']
 
   return [str.slice(0, index), str.slice(index+1)]
 }
 
-let base64Decode = str =>
+const base64Decode = str =>
   new Buffer(str, 'base64').toString()
 
-let decodeCredentials = str =>
+const decodeCredentials = str =>
   splitOnce(base64Decode(str), ':')
 
-let randomRealm = () =>
+const randomRealm = () =>
   randomBytes(32).then(buffer =>
     buffer.toString('base64'))
 
-let authHandler = abstractHandler('authHandler')
+const authHandler = abstractHandler('authHandler')
   .setLoader(simpleHandlerLoader('void', 'text'))
 
-export let basicAuthFilter = httpFilter(
+export const basicAuthFilter = httpFilter(
 async(function*(config, handler) {
-  let {
+  const {
     authHandler,
     userField='userId',
     strictAuthenticate = true,
     authenticationRealm = yield randomRealm()
   } = config
 
-  let wwwAuthenticate = 'Basic realm="' + 
+  const wwwAuthenticate = 'Basic realm="' + 
     authenticationRealm + '"'
 
-  let unauthorizedResponse = () => {
-    let message = '<h1>401 Unauthorized</h1>'
+  const unauthorizedResponse = () => {
+    const message = '<h1>401 Unauthorized</h1>'
 
-    let responseHead = new ResponseHead({
+    const responseHead = new ResponseHead({
       statusCode: 401,
       headers: {
         'www-authenticate': wwwAuthenticate,
@@ -55,24 +55,24 @@ async(function*(config, handler) {
       }
     })
     
-    let responseStreamable = textToStreamable(message)
+    const responseStreamable = textToStreamable(message)
     
     return [responseHead, responseStreamable]
   }
 
   return async(function*(requestHead, requestStreamable) {
-    let unauthorized = strictAuthenticate ?
+    const unauthorized = strictAuthenticate ?
       unauthorizedResponse :
       () => handler(requestHead, requestStreamable)
 
-    let authHeader = requestHead.getHeader('authorization')
+    const authHeader = requestHead.getHeader('authorization')
     if(!authHeader) return unauthorized()
 
-    let basicToken = authHeader.slice(0, 6)
+    const basicToken = authHeader.slice(0, 6)
     if(basicToken != 'Basic ') return unauthorized()
 
-    let credentials = authHeader.slice(6).trim()
-    let [username, password] = decodeCredentials(credentials)
+    const credentials = authHeader.slice(6).trim()
+    const [username, password] = decodeCredentials(credentials)
 
     try {
       var userId = yield authHandler({ username, password })
@@ -88,4 +88,4 @@ async(function*(config, handler) {
 }))
 .inputHandlers({ authHandler })
 
-export let makeBasicAuthFilter = basicAuthFilter.factory()
+export const makeBasicAuthFilter = basicAuthFilter.factory()

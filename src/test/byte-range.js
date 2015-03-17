@@ -24,16 +24,16 @@ import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 
 chai.use(chaiAsPromised)
-let should = chai.should()
+const should = chai.should()
 
 describe('byte range test', () => {
-  let testContent = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-  let expectedSlice = 'dolor sit amet'
-  let start = 12
-  let end = 26
+  const testContent = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+  const expectedSlice = 'dolor sit amet'
+  const start = 12
+  const end = 26
 
-  let testRangeStream = readStream => {
-    let rangeStream = byteRangeStream(readStream, start, end)
+  const testRangeStream = readStream => {
+    const rangeStream = byteRangeStream(readStream, start, end)
 
     return streamToText(rangeStream)
       .should.eventually.equal(expectedSlice)
@@ -77,9 +77,9 @@ describe('byte range test', () => {
   }))
 
   it('test range filter', async(function*() {
-    let component = simpleHandler(
+    const component = simpleHandler(
       args => {
-        let streamable = buffersToStreamable([
+        const streamable = buffersToStreamable([
           'Lorem ip', 'sum dol',
           'or sit a', 'met, consectetur',
           ' adipiscing elit.'
@@ -91,7 +91,7 @@ describe('byte range test', () => {
     .middleware(byteRangeFilter)
     .setLoader(loadHttpHandler)
 
-    let handler = yield component.loadHandler({})
+    const handler = yield component.loadHandler({})
 
     var [responseHead, responseStreamable] = 
       yield handler(new RequestHead(), emptyStreamable())

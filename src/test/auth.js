@@ -18,15 +18,15 @@ import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 
 chai.use(chaiAsPromised)
-let should = chai.should()
+const should = chai.should()
 
-let authHeaderRegex = /^Basic realm=".+"$/
+const authHeaderRegex = /^Basic realm=".+"$/
 
 describe('http basic auth test', () => {
   it('basic test', async(function*() {
-    let authHandler = simpleHandler(
+    const authHandler = simpleHandler(
       args => {
-        let { username, password } = args
+        const { username, password } = args
 
         if(username=='Aladdin' && password=='open sesame') {
           return 'genie'
@@ -35,10 +35,10 @@ describe('http basic auth test', () => {
         throw error(401, 'Unauthorized')
       }, 'void', 'text')
 
-    let authFilter = basicAuthFilter()
+    const authFilter = basicAuthFilter()
       .implement({ authHandler })
 
-    let main = simpleHandler(
+    const main = simpleHandler(
       args => {
         args.userId.should.equal('genie')
 
@@ -47,7 +47,7 @@ describe('http basic auth test', () => {
     .middleware(authFilter)
     .setLoader(loadHttpHandler)
 
-    let handler = yield main.loadHandler({})
+    const handler = yield main.loadHandler({})
 
     var [responseHead, responseStreamable] = 
       yield handler(new RequestHead(), emptyStreamable())
@@ -75,7 +75,7 @@ describe('http basic auth test', () => {
     yield streamableToText(responseStreamable)
       .should.eventually.equal('secret content')
 
-    let invalidCredentials = new Buffer(
+    const invalidCredentials = new Buffer(
       'admin:password').toString('base64')
 
     var requestHead = new RequestHead({

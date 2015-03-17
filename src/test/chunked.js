@@ -23,28 +23,28 @@ import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 
 chai.use(chaiAsPromised)
-let should = chai.should()
+const should = chai.should()
 
 describe('chunked http filter test', () => {
   it('basic chunked test', async(function*() {
-    let testBuffers = [
+    const testBuffers = [
       'hello',
       'javascript definitely rocks'
     ]
 
-    let testChunkedContent = '5\r\nhello\r\n' +
+    const testChunkedContent = '5\r\nhello\r\n' +
         '1b\r\njavascript definitely rocks\r\n' +
         '0\r\n\r\n'
 
-    let component = simpleHandler(
+    const component = simpleHandler(
       args => buffersToStream(testBuffers),
       'void', 'stream')
     .middleware(chunkedResponseFilter)
     .setLoader(loadHttpHandler)
 
-    let handler = yield component.loadHandler({})
+    const handler = yield component.loadHandler({})
 
-    let [responseHead, responseStreamable] =
+    const [responseHead, responseStreamable] =
       yield handler(new RequestHead(), emptyStreamable())
 
     responseHead.getHeader('transfer-encoding')
@@ -55,17 +55,17 @@ describe('chunked http filter test', () => {
   }))
 
   it('skip when content-length set', async(function*() {
-    let testContent = 'Hello World'
+    const testContent = 'Hello World'
 
-    let component = simpleHandler(
+    const component = simpleHandler(
       args => testContent,
       'void', 'text')
     .middleware(chunkedResponseFilter)
     .setLoader(loadHttpHandler)
 
-    let handler = yield component.loadHandler({})
+    const handler = yield component.loadHandler({})
 
-    let [responseHead, responseStreamable] =
+    const [responseHead, responseStreamable] =
       yield handler(new RequestHead(), emptyStreamable())
 
     should.not.exist(responseHead.getHeader(

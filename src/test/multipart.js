@@ -18,16 +18,16 @@ import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 
 chai.use(chaiAsPromised)
-let should = chai.should()
+const should = chai.should()
 
 describe('multipart test', () => {
-  let sizeWindowStreamable = streamable =>
+  const sizeWindowStreamable = streamable =>
     convertStreamable(readStream => 
       sizeWindowedStream(readStream, 3, 5),
       streamable)
 
   it('single file test', async(function*() {
-    let serializerHandler = simpleHandler(
+    const serializerHandler = simpleHandler(
       (args, text) => {
         args.name.should.equal('files')
         args.filename.should.equal('file1.txt')
@@ -38,11 +38,11 @@ describe('multipart test', () => {
         }
       }, 'text', 'json')
 
-    let multipartFilter = multipartSerializeFilter()
+    const multipartFilter = multipartSerializeFilter()
       .implement({ serializerHandler })
 
-    let main = simpleHandler(args => {
-      let { formData, serializedParts } = args
+    const main = simpleHandler(args => {
+      const { formData, serializedParts } = args
 
       formData.username.should.equal('john')
       serializedParts.files.name.should.equal('hello.txt')
@@ -50,7 +50,7 @@ describe('multipart test', () => {
     .middleware(multipartFilter)
     .setLoader(loadStreamHandler)
 
-    let handler = yield main.loadHandler({})
+    const handler = yield main.loadHandler({})
     let streamable = yield fileStreamable(
       './test-content/multipart-1.txt')
     
@@ -62,9 +62,9 @@ describe('multipart test', () => {
   }))
 
   it('multipart/mixed files test', async(function*() {
-    let serializerHandler = simpleHandler(
+    const serializerHandler = simpleHandler(
     (args, text) => {
-      let { name, filename } = args
+      const { name, filename } = args
 
       name.should.equal('upload-files')
       if(filename=='foo.txt') {
@@ -78,14 +78,14 @@ describe('multipart test', () => {
       }
     }, 'text', 'json')
 
-    let multipartFilter = multipartSerializeFilter()
+    const multipartFilter = multipartSerializeFilter()
       .implement({ serializerHandler })
 
-    let main = simpleHandler(args => {
-      let { formData, serializedParts } = args
+    const main = simpleHandler(args => {
+      const { formData, serializedParts } = args
 
       formData['user-field'].should.equal('John')
-      let files = serializedParts['upload-files']
+      const files = serializedParts['upload-files']
 
       files[0].id.should.equal('foo')
       files[1].id.should.equal('bar')
@@ -94,7 +94,7 @@ describe('multipart test', () => {
     .middleware(multipartFilter)
     .setLoader(loadStreamHandler)
 
-    let handler = yield main.loadHandler({})
+    const handler = yield main.loadHandler({})
     let streamable = yield fileStreamable(
       './test-content/multipart-2.txt')
 

@@ -28,13 +28,13 @@ import {
 import { formHandler } from './multipart.js'
 import { adminHandler } from './auth.js'
 
-let rangeHandler = fileHandler()
+const rangeHandler = fileHandler()
   .addMiddleware(byteRangeFilter())
 
-let compressHandler = fileHandler()
+const compressHandler = fileHandler()
   .addMiddleware(httpCompressFilter())
 
-let chunkHandler = simpleHandler(
+const chunkHandler = simpleHandler(
   args => 
     buffersToStream([
       'Hello world. ',
@@ -44,7 +44,7 @@ let chunkHandler = simpleHandler(
   'void', 'stream')
   .addMiddleware(chunkedResponseFilter())
 
-let main = router()
+const main = router()
   .staticRoute('/form', singleFileHandler())
   .staticRoute('/submit', formHandler)
   .staticRoute('/admin', adminHandler)
@@ -55,7 +55,7 @@ let main = router()
   .middleware(basicErrorPageFilter())
   .middleware(requestLoggerFilter())
 
-let config = {
+const config = {
   dirPath: 'test-content',
   filePath: 'test-content/form.html'
 }

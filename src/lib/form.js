@@ -7,18 +7,18 @@ import {
 } from 'quiver-core/stream-util'
 
 import querystring from 'querystring'
-let { parse: parseQuery } = querystring
+const { parse: parseQuery } = querystring
 
-let streamableToFormData = streamable =>
+const streamableToFormData = streamable =>
   streamableToText(streamable).then(parseQuery)
 
-export let formDataFilter = streamFilter(
+export const formDataFilter = streamFilter(
 (config, handler) =>
   (args, streamable) => {
     if(args.requestHead && args.requestHead.method != 'POST')
       return reject(error(405, 'Method Not Allowed'))
 
-    let { contentType } = streamable
+    const { contentType } = streamable
     if(contentType && contentType != 
       'application/x-www-form-urlencoded')
     {
@@ -33,4 +33,4 @@ export let formDataFilter = streamFilter(
     })
   })
 
-export let makeFormDataFilter = formDataFilter.factory()
+export const makeFormDataFilter = formDataFilter.factory()

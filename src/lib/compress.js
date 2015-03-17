@@ -4,23 +4,23 @@ import { httpFilter } from 'quiver-core/component'
 import { compressStreamable } from 'quiver-stream-component'
 import { parseSubheaders } from './header'
 
-let acceptRegex = /^\s*([a-zA-Z]+|\*)(?:\s*;q=(\d(?:\.\d)?))?\s*$/
+const acceptRegex = /^\s*([a-zA-Z]+|\*)(?:\s*;q=(\d(?:\.\d)?))?\s*$/
 
-let validEncoding = ['gzip', 'identity', '*']
+const validEncoding = ['gzip', 'identity', '*']
 
-export let selectAcceptEncoding = header => {
-  let fields = { }
+export const selectAcceptEncoding = header => {
+  const fields = { }
 
   header.split(',')
     .forEach(field => {
-      let matches = acceptRegex.exec(field)
+      const matches = acceptRegex.exec(field)
 
       if(!matches)
         throw error(400, 'Invalid Accept-Encoding header')
 
-      let encoding = matches[1]
-      let qvalue = matches[2] ? parseFloat(matches[2]) : 1
-      let accepted = (qvalue > 0)
+      const encoding = matches[1]
+      const qvalue = matches[2] ? parseFloat(matches[2]) : 1
+      const accepted = (qvalue > 0)
 
       if(validEncoding.indexOf(encoding) != -1)
         fields[encoding] = accepted
@@ -41,29 +41,29 @@ export let selectAcceptEncoding = header => {
   throw error(415, 'No acceptable encoding')
 }
 
-export let httpCompressFilter = httpFilter(
+export const httpCompressFilter = httpFilter(
 (config, handler) => {
-  let { httpCompressionThreshold=1024 } = config
+  const { httpCompressionThreshold=1024 } = config
 
   return async(function*(requestHead, requestStreamable) {
-    let acceptEncoding = requestHead.getHeader(
+    const acceptEncoding = requestHead.getHeader(
       'accept-encoding')
 
-    let response = yield handler(
+    const response = yield handler(
       requestHead, requestStreamable)
 
     if(!acceptEncoding) return response
 
-    let encoding = selectAcceptEncoding(acceptEncoding)
+    const encoding = selectAcceptEncoding(acceptEncoding)
 
     if(encoding != 'gzip') return response
 
-    let [responseHead, responseStreamable] = response
+    const [responseHead, responseStreamable] = response
 
     if(responseHead.getHeader('content-encoding'))
       return response
 
-    let contentLength = responseHead.getHeader('content-length')
+    const contentLength = responseHead.getHeader('content-length')
 
     if(contentLength && 
       parseInt(contentLength) < httpCompressionThreshold)
@@ -71,7 +71,7 @@ export let httpCompressFilter = httpFilter(
       return response
     }
 
-    let compressedStreamable = yield compressStreamable('gzip',
+    const compressedStreamable = yield compressStreamable('gzip',
       responseStreamable)
 
     responseHead.setHeader('content-encoding', 'gzip')
@@ -81,5 +81,5 @@ export let httpCompressFilter = httpFilter(
   })
 })
 
-export let makeHttpCompressFilter = 
+export const makeHttpCompressFilter = 
   httpCompressFilter.factory()

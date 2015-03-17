@@ -3,29 +3,29 @@ import { ResponseHead } from 'quiver-core/http'
 import { httpFilter } from 'quiver-core/component'
 import { textToStreamable } from 'quiver-core/stream-util'
 
-let statusTable = http.STATUS_CODES
+const statusTable = http.STATUS_CODES
 
-export let basicErrorPageFilter = httpFilter(
+export const basicErrorPageFilter = httpFilter(
 (config, handler) => {
-  let { env='development' } = config
-  let devMode = env == 'development'
+  const { env='development' } = config
+  const devMode = env == 'development'
 
   return (requestHead, streamable) =>
     handler(requestHead, streamable)
     .catch(err => {
-      let errorCode = err.errorCode || 500
-      let statusMessage = statusTable[errorCode] || 'Unknown'
+      const errorCode = err.errorCode || 500
+      const statusMessage = statusTable[errorCode] || 'Unknown'
 
-      let errorTrace = devMode ? 
+      const errorTrace = devMode ? 
         `<pre>${err.stack}</pre>` : ''
 
-      let errorPage = 
+      const errorPage = 
 `<h1>${errorCode} ${statusMessage}</h1>
 ${errorTrace}`
 
-      let responseStreamable = textToStreamable(errorPage)
+      const responseStreamable = textToStreamable(errorPage)
 
-      let responseHead = new ResponseHead({
+      const responseHead = new ResponseHead({
         statusCode: errorCode,
         headers: {
           'content-type': 'text/html',
@@ -38,5 +38,5 @@ ${errorTrace}`
     })
 })
 
-export let makeBasicErrorPageFilter = basicErrorPageFilter
+export const makeBasicErrorPageFilter = basicErrorPageFilter
   .factory()

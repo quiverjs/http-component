@@ -10,17 +10,17 @@ import {
   multipartSerializeFilter
 } from '../lib/http-component.js'
 
-let serializerHandler = checksumHandler()
+const serializerHandler = checksumHandler()
   .configOverride({
     checksumAlgorithm: 'sha1'
   })
 
-let multipartFilter = multipartSerializeFilter()
+const multipartFilter = multipartSerializeFilter()
   .implement({ serializerHandler })
 
-export let formHandler = simpleHandler(
+export const formHandler = simpleHandler(
   args => {
-    let {
+    const {
       formData, serializedParts
     } = args
 

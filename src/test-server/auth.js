@@ -6,9 +6,9 @@ import {
 
 import { basicAuthFilter } from '../lib/http-component.js'
 
-let authHandler = simpleHandler(
+const authHandler = simpleHandler(
   args => {
-    let { username, password } = args
+    const { username, password } = args
 
     if(username=='admin' && password=='password') {
       return 'admin'
@@ -17,10 +17,10 @@ let authHandler = simpleHandler(
     throw error(401, 'Unauthorized')
   }, 'void', 'text')
 
-let authFilter = basicAuthFilter()
+const authFilter = basicAuthFilter()
   .implement({ authHandler })
 
-export let adminHandler = simpleHandler(
+export const adminHandler = simpleHandler(
   args => {
     return 'Hello Administrator. Nobody else can access this area'
   }, 'void', 'text')

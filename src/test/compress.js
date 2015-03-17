@@ -24,13 +24,13 @@ import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 
 chai.use(chaiAsPromised)
-let should = chai.should()
-let expect = chai.expect
+const should = chai.should()
+const expect = chai.expect
 
-let gzip = promisify(zlib.gzip)
-let gunzip = promisify(zlib.gunzip)
+const gzip = promisify(zlib.gzip)
+const gunzip = promisify(zlib.gunzip)
 
-let testContent = fs.readFileSync(
+const testContent = fs.readFileSync(
   'test-content/ipsum.txt').toString()
 
 describe('http compress test', () => {
@@ -54,15 +54,15 @@ describe('http compress test', () => {
   })
 
   it('basic test', async(function*() {
-    let compressed = yield gzip(testContent)
+    const compressed = yield gzip(testContent)
 
-    let component = simpleHandler(
+    const component = simpleHandler(
       args => testContent,
       'void', 'text')
     .middleware(httpCompressFilter)
     .setLoader(loadHttpHandler)
 
-    let handler = yield component.loadHandler({})
+    const handler = yield component.loadHandler({})
 
     var [responseHead, responseStreamable] = 
       yield handler(new RequestHead(), emptyStreamable())
@@ -85,7 +85,7 @@ describe('http compress test', () => {
     responseHead.getHeader('content-encoding')
       .should.equal('gzip')
 
-    let buffer = yield streamableToBuffer(responseStreamable)
+    const buffer = yield streamableToBuffer(responseStreamable)
 
     should.equal(buffertools.compare(
       buffer, compressed), 0)

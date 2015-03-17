@@ -4,10 +4,10 @@ import {
   emptyStreamable
 } from 'quiver-core/stream-util'
 
-export let headRequestFilter = httpFilter(
+export const headRequestFilter = httpFilter(
 (config, handler) =>
   (requestHead, requestStreamable) => {
-    let { method='GET' } = requestHead
+    const { method='GET' } = requestHead
 
     if(method != 'HEAD') return handler(
       requestHead, requestStreamable)
@@ -25,5 +25,5 @@ export let headRequestFilter = httpFilter(
     })
   })
 
-export let makeHeadRequestFilter = 
+export const makeHeadRequestFilter = 
   headRequestFilter.factory()

@@ -9,17 +9,17 @@ import {
   headerExtractFilter,
 } from 'quiver-stream-component'
 
-let invalidCharacters = /[^\s\x20-\x7E]/
-let trailingWhiteSpace = /\s$/
-let tokenSeparator = /[\(\)\<\>@,;:\\"\/\[\]?=\{\} \t]/
+const invalidCharacters = /[^\s\x20-\x7E]/
+const trailingWhiteSpace = /\s$/
+const tokenSeparator = /[\(\)\<\>@,;:\\"\/\[\]?=\{\} \t]/
 
-let invalidFieldName = key => {
+const invalidFieldName = key => {
   return (invalidCharacters.test(key)
     || trailingWhiteSpace.test(key)
     || tokenSeparator.test(key))
 }
 
-export let parseHeader = header => {
+export const parseHeader = header => {
   let colonIndex = header.indexOf(':')
   if(colonIndex == -1) return [header, '']
 
@@ -34,11 +34,11 @@ export let parseHeader = header => {
   return [key, value]
 }
 
-export let parseSubheaders = field => {
-  let subheaders = { }
-  let fields = field.split(';')
+export const parseSubheaders = field => {
+  const subheaders = { }
+  const fields = field.split(';')
 
-  let main = fields.shift().trim()
+  const main = fields.shift().trim()
 
   fields.forEach(
     subfield => {
@@ -52,15 +52,15 @@ export let parseSubheaders = field => {
   return [main, subheaders]
 }
 
-export let parseHttpHeaders = headerText => {
+export const parseHttpHeaders = headerText => {
   if(invalidCharacters.test(headerText))
     throw error(400, 'Bad Request')
 
-  let rawHeaders = headerText.split('\r\n')
-  let headers = { }
+  const rawHeaders = headerText.split('\r\n')
+  const headers = { }
 
   rawHeaders.forEach(function(header) {
-    let [key, value] = parseHeader(header)
+    const [key, value] = parseHeader(header)
 
     if(headers[key]) {
       headers[key] += ', ' + value
@@ -72,16 +72,16 @@ export let parseHttpHeaders = headerText => {
   return headers
 }
 
-let headerSeparator = new Buffer('\r\n\r\n')
+const headerSeparator = new Buffer('\r\n\r\n')
 
-export let extractHttpHeaders = (readStream, options) =>
+export const extractHttpHeaders = (readStream, options) =>
   extractStreamHead(readStream, headerSeparator, options)
   .then(([headBuffer, readStream]) =>
     ([parseHttpHeaders(headBuffer.toString()), readStream]))
 
-export let httpHeaderFilter = argsFilter(
+export const httpHeaderFilter = argsFilter(
 args => {
-  let { header } = args
+  const { header } = args
   args.httpHeaders = parseHttpHeaders(header)
   return args
 })

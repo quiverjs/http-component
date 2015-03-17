@@ -16,15 +16,16 @@ import {
 // TODO: Implement Boyer–Moore string search algorithm
 export 
 
-let createBufferQueue = boundaryLength => {
-  let buffers = []
+const createBufferQueue = boundaryLength => {
+  const buffers = []
   let bufferLength = 0
 
-  let getByte = (index) => {
+  const getByte = (index) => {
     let currentIndex = 0
+    
     for(let i=0; i<buffers.length; i++) {
-      let buffer = buffers[i]
-      let end = currentIndex + buffer.length
+      const buffer = buffers[i]
+      const end = currentIndex + buffer.length
       if(end > index) {
         return buffer[index-currentIndex]
       } else {
@@ -35,7 +36,7 @@ let createBufferQueue = boundaryLength => {
     throw new Error('out of range')
   }
 
-  let pushBuffer = buffer => {
+  const pushBuffer = buffer => {
     if(!Buffer.isBuffer(buffer)) 
       buffer = new Buffer(buffer)
 
@@ -43,20 +44,20 @@ let createBufferQueue = boundaryLength => {
     bufferLength += buffer.length
   }
 
-  let popBuffer = () => {
-    let buffer = buffers.shift()
+  const popBuffer = () => {
+    const buffer = buffers.shift()
     bufferLength -= buffer.length
     return buffer
   }
 
-  let unshiftBuffer = buffer => {
+  const unshiftBuffer = buffer => {
     buffers.unshift(buffer)
     bufferLength += buffer.length
   }
 
-  let sliceBuffers = index => {
-    let buffer = popBuffer()
-    let length = buffer.length
+  const sliceBuffers = index => {
+    const buffer = popBuffer()
+    const length = buffer.length
 
     if(length == index)
       return [buffer]
@@ -70,13 +71,13 @@ let createBufferQueue = boundaryLength => {
     }
   }
 
-  let canPop = () => {
+  const canPop = () => {
     return ((bufferLength - buffers[0].length) > boundaryLength)
   }
 
-  let indexOf = boundary =>  {
-    let lastBegin = bufferLength - boundaryLength
-    let firstByte = boundary[0]
+  const indexOf = boundary =>  {
+    const lastBegin = bufferLength - boundaryLength
+    const firstByte = boundary[0]
 
     first: for(let i=0; i<=lastBegin; i++) {
       if(getByte(i) != firstByte) continue
@@ -91,9 +92,9 @@ let createBufferQueue = boundaryLength => {
     return -1
   }
 
-  let sliceBoundary = index => {
-    let lastBuffers = sliceBuffers(index)
-    let boundaryBuffers = sliceBuffers(boundaryLength)
+  const sliceBoundary = index => {
+    const lastBuffers = sliceBuffers(index)
+    const boundaryBuffers = sliceBuffers(boundaryLength)
 
     return [lastBuffers, buffers]
   }
@@ -108,18 +109,18 @@ let createBufferQueue = boundaryLength => {
   }
 }
 
-export let pipeMultipart = async(
+export const pipeMultipart = async(
 function*(readStream, writeStream, boundary) {
   try {
     if(!Buffer.isBuffer(boundary)) boundary = new Buffer(boundary)
-    let boundaryLength = boundary.length
+    const boundaryLength = boundary.length
 
-    let bufferQueue = createBufferQueue(boundaryLength)
+    const bufferQueue = createBufferQueue(boundaryLength)
 
     yield writeStream.prepareWrite()
 
     while(true) {
-      let { closed, data } = yield readStream.read()
+      const { closed, data } = yield readStream.read()
       if(closed) throw error(400, 'malformed multipart stream')
 
       bufferQueue.pushBuffer(data)
@@ -127,7 +128,7 @@ function*(readStream, writeStream, boundary) {
       if(bufferQueue.length < boundaryLength)
         continue
 
-      let index = bufferQueue.indexOf(boundary)
+      const index = bufferQueue.indexOf(boundary)
 
       if(index == -1) {
         if(bufferQueue.canPop()) {
@@ -135,7 +136,7 @@ function*(readStream, writeStream, boundary) {
           yield writeStream.prepareWrite()
         }
       } else {
-        let [lastBuffers, nextBuffers] = bufferQueue.sliceBoundary(index)
+        const [lastBuffers, nextBuffers] = bufferQueue.sliceBoundary(index)
 
         lastBuffers.forEach(buffer =>
           writeStream.write(buffer))
@@ -157,13 +158,13 @@ function*(readStream, writeStream, boundary) {
   }
 })
 
-export let handleMultipart = (wholeStream, boundary, partHandler) => {
-  let {
+export const handleMultipart = (wholeStream, boundary, partHandler) => {
+  const {
     readStream: partStream, 
     writeStream
   } = createChannel()
 
-  let handlePart = async(function*() {
+  const handlePart = async(function*() {
     try {
       return yield partHandler(partStream)
     } catch(err) {
@@ -178,9 +179,9 @@ export let handleMultipart = (wholeStream, boundary, partHandler) => {
   ])
 }
 
-let newLineBuffer = new Buffer('\r\n')
+const newLineBuffer = new Buffer('\r\n')
 
-export let extractMultipart = async(
+export const extractMultipart = async(
 function*(readStream, startBoundary, partHandler) {
   var [headers, readStream] = yield extractHttpHeaders(
     readStream)
@@ -192,7 +193,7 @@ function*(readStream, startBoundary, partHandler) {
   var [endBuffer, readStream] = yield extractFixedStreamHead(
     readStream, 2)
 
-  let ending = endBuffer.toString()
+  const ending = endBuffer.toString()
 
   if(ending == '--') {
     return [partContent, readStream, true]
@@ -201,10 +202,10 @@ function*(readStream, startBoundary, partHandler) {
   if(ending != '\r\n') {
     readStream = pushbackStream(readStream, [endBuffer])
 
-    let [headBuffer, readStream] = yield extractStreamHead(
+    const [headBuffer, readStream] = yield extractStreamHead(
       readStream, newLineBuffer)
 
-    let ending = headBuffer.toString().trim()
+    const ending = headBuffer.toString().trim()
     if(ending != '')
       throw error(400, 'Bad Request')
   }
@@ -212,13 +213,13 @@ function*(readStream, startBoundary, partHandler) {
   return [partContent, readStream, false]
 })
 
-export let extractAllMultipart = async(
+export const extractAllMultipart = async(
 function*(readStream, boundary, partHandler) {
   try {
-    let parts = []
+    const parts = []
 
-    let firstBoundary = new Buffer('--' + boundary + '\r\n')
-    let startBoundary = new Buffer('\r\n--' + boundary)
+    const firstBoundary = new Buffer('--' + boundary + '\r\n')
+    const startBoundary = new Buffer('\r\n--' + boundary)
 
     // eat the first boundary
     var [head, readStream] = yield extractStreamHead(

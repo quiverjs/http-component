@@ -14,17 +14,17 @@ import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 
 chai.use(chaiAsPromised)
-let should = chai.should()
+const should = chai.should()
 
 describe('multipart stream test', () => {
   it('simple boundary', async(function*() {
-    let boundary = new Buffer('--boundary--')
+    const boundary = new Buffer('--boundary--')
 
-    let testBoundary = async(
+    const testBoundary = async(
     function*(testBuffers, expectedContent, restContent) {
-      let wholeStream = buffersToStream(testBuffers)
+      const wholeStream = buffersToStream(testBuffers)
 
-      let [partContent, restStream] = yield handleMultipart(
+      const [partContent, restStream] = yield handleMultipart(
         wholeStream, boundary, streamToText)
 
       partContent.should.equal(expectedContent)

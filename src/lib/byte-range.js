@@ -8,25 +8,25 @@ import {
   streamToStreamable
 } from 'quiver-core/stream-util'
 
-let byteRangePattern = /^bytes=(\d+)-(\d*)$/i
+const byteRangePattern = /^bytes=(\d+)-(\d*)$/i
 
-let parseRange = function(header) {
-  let matches = header.match(byteRangePattern)
+const parseRange = function(header) {
+  const matches = header.match(byteRangePattern)
   if(!matches) return [0, -1]
   
-  let start = parseInt(matches[1])
-  let end = parseInt(matches[2])+1
+  const start = parseInt(matches[1])
+  const end = parseInt(matches[2])+1
   if(isNaN(end)) end = -1
   
   return [start, end]
 }
 
-let pipeByteRange = async(
+const pipeByteRange = async(
 function*(readStream, writeStream, start, end) {
   try {
     let currentPos = 0
 
-    let { closed: writeClosed } = yield writeStream.prepareWrite()
+    const { closed: writeClosed } = yield writeStream.prepareWrite()
     if(writeClosed) return readStream.closeRead()
 
     while(true) {
@@ -63,7 +63,7 @@ function*(readStream, writeStream, start, end) {
         return writeStream.closeWrite()
       }
 
-      let { closed: writeClosed } = yield writeStream.prepareWrite()
+      const { closed: writeClosed } = yield writeStream.prepareWrite()
       if(writeClosed) return readStream.closeRead()
     }
 
@@ -76,8 +76,8 @@ function*(readStream, writeStream, start, end) {
   }
 })
 
-export let byteRangeStream = (readStream, start, end) => {
-  let {
+export const byteRangeStream = (readStream, start, end) => {
+  const {
     readStream: resultStream,
     writeStream
   } = createChannel()
@@ -86,18 +86,18 @@ export let byteRangeStream = (readStream, start, end) => {
   return resultStream
 }
 
-export let byteRangeFilter = httpFilter(
+export const byteRangeFilter = httpFilter(
 (config, handler) => {
-  let { 
+  const { 
     convertNonRangeStream=false 
   } = config
 
   return async(function*(requestHead, requestStreamable) {
-    let rangeHeader = requestHead.getHeader('range')
+    const rangeHeader = requestHead.getHeader('range')
 
-    let response = yield handler(requestHead, requestStreamable)
+    const response = yield handler(requestHead, requestStreamable)
 
-    let [
+    const [
       responseHead, responseStreamable
     ] = response
 
@@ -107,7 +107,7 @@ export let byteRangeFilter = httpFilter(
     if(responseHead.getHeader('content-range')) 
       return response
 
-    let {
+    const {
       toByteRangeStream,
       contentLength
     } = responseStreamable
@@ -120,7 +120,7 @@ export let byteRangeFilter = httpFilter(
 
     if(!rangeHeader) return response
 
-    let [start, end] = parseRange(rangeHeader)
+    const [start, end] = parseRange(rangeHeader)
     if(end==-1) end = contentLength
     if(start==0 && end==contentLength) return response
 
@@ -133,12 +133,12 @@ export let byteRangeFilter = httpFilter(
         .toByteRangeStream(start, end)
 
     } else {
-      let readStream = yield responseStreamable.toStream()
+      const readStream = yield responseStreamable.toStream()
       rangeStream = byteRangeStream(readStream, start, end)
     }
 
-    let rangeStreamable = streamToStreamable(rangeStream)
-    let contentRange = 'bytes ' + start + '-' + (end-1) + 
+    const rangeStreamable = streamToStreamable(rangeStream)
+    const contentRange = 'bytes ' + start + '-' + (end-1) + 
       '/' + contentLength
 
     responseHead.statusCode = 206
@@ -151,4 +151,4 @@ export let byteRangeFilter = httpFilter(
   })
 })
 
-export let makeByteRangeFilter = byteRangeFilter.factory()
+export const makeByteRangeFilter = byteRangeFilter.factory()
