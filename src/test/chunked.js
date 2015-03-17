@@ -1,5 +1,3 @@
-import 'quiver-core/traceur'
-
 import { async } from 'quiver-core/promise'
 import { RequestHead } from 'quiver-core/http'
 

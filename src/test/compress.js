@@ -1,5 +1,3 @@
-import 'quiver-core/traceur'
-
 import fs from 'fs'
 import zlib from 'zlib'
 import buffertools from 'buffertools'
