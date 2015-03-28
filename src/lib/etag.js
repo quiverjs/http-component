@@ -1,6 +1,6 @@
-import { async } from 'quiver-core/promise'
-import { httpFilter } from 'quiver-core/component'
-import { emptyStreamable } from 'quiver-core/stream-util'
+import { async } from 'quiver/promise'
+import { httpFilter } from 'quiver/component'
+import { emptyStreamable } from 'quiver/stream-util'
 
 import crypto from 'crypto'
 

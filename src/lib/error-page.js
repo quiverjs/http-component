@@ -1,7 +1,7 @@
 import http from 'http'
-import { ResponseHead } from 'quiver-core/http'
-import { httpFilter } from 'quiver-core/component'
-import { textToStreamable } from 'quiver-core/stream-util'
+import { ResponseHead } from 'quiver/http'
+import { httpFilter } from 'quiver/component'
+import { textToStreamable } from 'quiver/stream-util'
 
 const statusTable = http.STATUS_CODES
 

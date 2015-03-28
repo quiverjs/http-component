@@ -1,8 +1,8 @@
-import { httpFilter } from 'quiver-core/component'
+import { httpFilter } from 'quiver/component'
 import { 
   closeStreamable,
   emptyStreamable
-} from 'quiver-core/stream-util'
+} from 'quiver/stream-util'
 
 export const headRequestFilter = httpFilter(
 (config, handler) =>

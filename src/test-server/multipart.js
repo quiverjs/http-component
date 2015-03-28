@@ -1,6 +1,6 @@
 import {
   simpleHandler
-} from 'quiver-core/component'
+} from 'quiver/component'
 
 import {
   checksumHandler

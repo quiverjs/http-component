@@ -1,9 +1,9 @@
-import { startServer } from 'quiver-core/http'
+import { startServer } from 'quiver/http'
 
 import {
   router,
   simpleHandler
-} from 'quiver-core/component'
+} from 'quiver/component'
 
 import {
   fileHandler,
@@ -12,7 +12,7 @@ import {
 
 import {
   buffersToStream
-} from 'quiver-core/stream-util'
+} from 'quiver/stream-util'
 
 import {
   byteRangeFilter,

@@ -1,16 +1,16 @@
-import { async } from 'quiver-core/promise'
+import { async } from 'quiver/promise'
 
 import {
   simpleHandler,
   loadSimpleHandler,
   loadStreamHandler
-} from 'quiver-core/component'
+} from 'quiver/component'
 
 import {
   sizeWindowedStream, convertStreamable
 } from 'quiver-stream-component'
 
-import { fileStreamable } from 'quiver-core/file-stream'
+import { fileStreamable } from 'quiver/file-stream'
 
 import { multipartSerializeFilter } from '../lib/http-component'
 

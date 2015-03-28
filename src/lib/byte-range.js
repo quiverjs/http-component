@@ -1,12 +1,12 @@
-import { error } from 'quiver-core/error'
-import { async } from 'quiver-core/promise'
+import { error } from 'quiver/error'
+import { async } from 'quiver/promise'
 
-import { httpFilter } from 'quiver-core/component'
+import { httpFilter } from 'quiver/component'
 
 import {
   createChannel,
   streamToStreamable
-} from 'quiver-core/stream-util'
+} from 'quiver/stream-util'
 
 const byteRangePattern = /^bytes=(\d+)-(\d*)$/i
 

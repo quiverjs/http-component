@@ -1,10 +1,10 @@
-import { error } from 'quiver-core/error'
-import { streamFilter } from 'quiver-core/component'
-import { async, reject } from 'quiver-core/promise'
+import { error } from 'quiver/error'
+import { streamFilter } from 'quiver/component'
+import { async, reject } from 'quiver/promise'
 import { 
   streamableToText,
   emptyStreamable
-} from 'quiver-core/stream-util'
+} from 'quiver/stream-util'
 
 import querystring from 'querystring'
 const { parse: parseQuery } = querystring

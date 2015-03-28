@@ -1,16 +1,16 @@
-import { error } from 'quiver-core/error'
-import { async } from 'quiver-core/promise'
-import { RequestHead } from 'quiver-core/http'
+import { error } from 'quiver/error'
+import { async } from 'quiver/promise'
+import { RequestHead } from 'quiver/http'
 
 import { 
   simpleHandler,
   loadHttpHandler
-} from 'quiver-core/component'
+} from 'quiver/component'
 
 import {
   emptyStreamable,
   streamableToText,
-} from 'quiver-core/stream-util'
+} from 'quiver/stream-util'
 
 import { basicAuthFilter } from '../lib/http-component'
 

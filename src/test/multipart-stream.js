@@ -1,10 +1,10 @@
-import { async } from 'quiver-core/promise'
+import { async } from 'quiver/promise'
 
 import {
   streamToText,
   createChannel,
   buffersToStream,
-} from 'quiver-core/stream-util'
+} from 'quiver/stream-util'
 
 import { 
   pipeMultipart, handleMultipart

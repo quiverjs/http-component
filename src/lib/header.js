@@ -1,8 +1,8 @@
-import { error } from 'quiver-core/error'
+import { error } from 'quiver/error'
 
 import {
   argsFilter
-} from 'quiver-core/component'
+} from 'quiver/component'
 
 import { 
   extractStreamHead,

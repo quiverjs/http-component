@@ -1,7 +1,7 @@
 import fs from 'fs'
-import { httpFilter } from 'quiver-core/component'
-import { async, promisify } from 'quiver-core/promise'
-import { nodeToQuiverWriteStream } from 'quiver-core/stream-util'
+import { httpFilter } from 'quiver/component'
+import { async, promisify } from 'quiver/promise'
+import { nodeToQuiverWriteStream } from 'quiver/stream-util'
 
 const commonLogFormatter = info => {
   const {

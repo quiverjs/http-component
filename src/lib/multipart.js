@@ -1,14 +1,14 @@
-import { error } from 'quiver-core/error'
+import { error } from 'quiver/error'
 import { 
   async, createPromise, timeout 
-} from 'quiver-core/promise'
+} from 'quiver/promise'
 
 import { 
   streamFilter,
   abstractHandler,
   simpleHandlerLoader,
   inputHandlerMiddleware,
-} from 'quiver-core/component'
+} from 'quiver/component'
 
 import {
   pipeStream,
@@ -19,7 +19,7 @@ import {
   streamableToJson,
   streamableToText,
   streamToStreamable,
-} from 'quiver-core/stream-util'
+} from 'quiver/stream-util'
 
 import {
   extractStreamHead

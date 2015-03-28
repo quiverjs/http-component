@@ -1,6 +1,6 @@
-import { error } from 'quiver-core/error'
-import { async } from 'quiver-core/promise'
-import { httpFilter } from 'quiver-core/component'
+import { error } from 'quiver/error'
+import { async } from 'quiver/promise'
+import { httpFilter } from 'quiver/component'
 import { compressStreamable } from 'quiver-stream-component'
 import { parseSubheaders } from './header'
 

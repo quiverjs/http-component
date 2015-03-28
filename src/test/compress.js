@@ -1,18 +1,18 @@
 import fs from 'fs'
 import zlib from 'zlib'
-import { async, promisify } from 'quiver-core/promise'
-import { RequestHead } from 'quiver-core/http'
+import { async, promisify } from 'quiver/promise'
+import { RequestHead } from 'quiver/http'
 
 import { 
   simpleHandler,
   loadHttpHandler
-} from 'quiver-core/component'
+} from 'quiver/component'
 
 import {
   emptyStreamable,
   streamableToText,
   streamableToBuffer,
-} from 'quiver-core/stream-util'
+} from 'quiver/stream-util'
 
 import {
   httpCompressFilter,
