@@ -1,32 +1,24 @@
-import { async } from 'quiver/promise'
-import { RequestHead } from 'quiver/http'
+import test from 'tape'
+import { asyncTest } from 'quiver-core/util/tape'
 
-import { 
-  simpleHandler,
-  loadHttpHandler
-} from 'quiver/component'
+import { RequestHead } from 'quiver-core/http-head'
+
+import { simpleHandler } from 'quiver-core/component/constructor'
 
 import {
-  textToStream,
-  streamToText,
-  emptyStreamable,
-  buffersToStream,
-  streamableToText,
-  buffersToStreamable,
-} from 'quiver/stream-util'
+  createConfig, httpHandlerLoader, loadHandler
+} from 'quiver-core/component/util'
+
+import {
+  emptyStreamable, buffersToStream, streamableToText
+} from 'quiver-core/stream-util'
 
 import {
   chunkedResponseFilter
 } from '../lib/chunked'
 
-import chai from 'chai'
-import chaiAsPromised from 'chai-as-promised'
-
-chai.use(chaiAsPromised)
-const should = chai.should()
-
-describe('chunked http filter test', () => {
-  it('basic chunked test', async(function*() {
+test('chunked http filter test', assert => {
+  assert::asyncTest('basic chunked test', async assert => {
     const testBuffers = [
       'hello',
       'javascript definitely rocks'
@@ -38,43 +30,54 @@ describe('chunked http filter test', () => {
 
     const component = simpleHandler(
       args => buffersToStream(testBuffers),
-      'void', 'stream')
-    .middleware(chunkedResponseFilter)
-    .setLoader(loadHttpHandler)
+      {
+        inputType: 'empty',
+        outputType: 'stream'
+      })
+    .addMiddleware(chunkedResponseFilter)
+    .setLoader(httpHandlerLoader)
 
-    const handler = yield component.loadHandler({})
+    const handler = await loadHandler(createConfig(), component)
 
     const [responseHead, responseStreamable] =
-      yield handler(new RequestHead(), emptyStreamable())
+      await handler(new RequestHead(), emptyStreamable())
 
-    responseHead.getHeader('transfer-encoding')
-      .should.equal('chunked')
+    assert.equal(
+      responseHead.getHeader('transfer-encoding'),
+      'chunked')
 
-    yield streamableToText(responseStreamable)
-      .should.eventually.equal(testChunkedContent)
-  }))
+    assert.equal(
+      await streamableToText(responseStreamable),
+      testChunkedContent)
+  })
 
-  it('skip when content-length set', async(function*() {
+  assert::asyncTest('skip when content-length set', async assert => {
     const testContent = 'Hello World'
 
     const component = simpleHandler(
       args => testContent,
-      'void', 'text')
-    .middleware(chunkedResponseFilter)
-    .setLoader(loadHttpHandler)
+      {
+        inputType: 'empty',
+        outputType: 'text'
+      })
+    .addMiddleware(chunkedResponseFilter)
+    .setLoader(httpHandlerLoader)
 
-    const handler = yield component.loadHandler({})
+    const handler = await loadHandler(createConfig(), component)
 
     const [responseHead, responseStreamable] =
-      yield handler(new RequestHead(), emptyStreamable())
+      await handler(new RequestHead(), emptyStreamable())
 
-    should.not.exist(responseHead.getHeader(
-      'transfer-encoding'))
+    assert.notOk(responseHead.getHeader('transfer-encoding'))
 
-    responseHead.getHeader('content-length')
-      .should.equal(''+testContent.length)
+    assert.equal(
+      responseHead.getHeader('content-length'),
+      `${testContent.length}`)
 
-    yield streamableToText(responseStreamable)
-      .should.eventually.equal(testContent)
-  }))
+    assert.equal(
+      await streamableToText(responseStreamable),
+      testContent)
+
+    assert.end()
+  })
 })

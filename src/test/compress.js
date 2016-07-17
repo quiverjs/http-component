@@ -1,76 +1,77 @@
+import test from 'tape'
+import { asyncTest, rejected } from 'quiver-core/util/tape'
+
 import fs from 'fs'
 import zlib from 'zlib'
-import { async, promisify } from 'quiver/promise'
-import { RequestHead } from 'quiver/http'
+import { promisify } from 'quiver-core/util/promise'
+import { RequestHead } from 'quiver-core/http-head'
 
-import { 
-  simpleHandler,
-  loadHttpHandler
-} from 'quiver/component'
+import { simpleHandler } from 'quiver-core/component/constructor'
+
+import {
+  createConfig, httpHandlerLoader, loadHandler
+} from 'quiver-core/component/util'
 
 import {
   emptyStreamable,
   streamableToText,
   streamableToBuffer,
-} from 'quiver/stream-util'
+} from 'quiver-core/stream-util'
 
 import {
   httpCompressFilter,
   selectAcceptEncoding
 } from '../lib/compress'
 
-import chai from 'chai'
-import chaiAsPromised from 'chai-as-promised'
-
-chai.use(chaiAsPromised)
-const should = chai.should()
-const expect = chai.expect
-
 const gzip = promisify(zlib.gzip)
-const gunzip = promisify(zlib.gunzip)
 
 const testContent = fs.readFileSync(
   'test-content/ipsum.txt').toString()
 
-describe('http compress test', () => {
-  it('accept-encoding test', () => {
-    selectAcceptEncoding('gzip').should.equal('gzip')
-    selectAcceptEncoding('identity').should.equal('identity')
-    selectAcceptEncoding('gzip;q=0').should.equal('identity')
-    selectAcceptEncoding('*').should.equal('gzip')
-    selectAcceptEncoding('gzip, *;q=0').should.equal('gzip')
-    selectAcceptEncoding('identity;q=0.5, *;q=0').should.equal('identity')
-    selectAcceptEncoding('identity;q=0, *').should.equal('gzip')
-    selectAcceptEncoding('gzip;q=0, *;q=1.0').should.equal('identity')
+test('http compress test', assert => {
+  assert.test('accept-encoding test', assert => {
+    assert.equal(selectAcceptEncoding('gzip'), 'gzip')
+    assert.equal(selectAcceptEncoding('identity'), 'identity')
+    assert.equal(selectAcceptEncoding('gzip;q=0'), 'identity')
+    assert.equal(selectAcceptEncoding('*'), 'gzip')
+    assert.equal(selectAcceptEncoding('gzip, *;q=0'), 'gzip')
+    assert.equal(selectAcceptEncoding('identity;q=0.5, *;q=0'), 'identity')
+    assert.equal(selectAcceptEncoding('identity;q=0, *'), 'gzip')
+    assert.equal(selectAcceptEncoding('gzip;q=0, *;q=1.0'), 'identity')
 
-    expect(() =>
+    assert.throws(() =>
       selectAcceptEncoding('identity;q=0')
-    ).to.throw()
+    )
 
-    expect(() =>
+    assert.throws(() =>
       selectAcceptEncoding('*;q=0')
-    ).to.throw()
+    )
+
+    assert.end()
   })
 
-  it('basic test', async(function*() {
-    const compressed = yield gzip(testContent)
+  assert::asyncTest('basic test', async assert => {
+    const compressed = await gzip(testContent)
 
     const component = simpleHandler(
       args => testContent,
-      'void', 'text')
-    .middleware(httpCompressFilter)
-    .setLoader(loadHttpHandler)
+      {
+        inputType: 'empty',
+        outputType: 'text'
+      })
+    .addMiddleware(httpCompressFilter)
+    .setLoader(httpHandlerLoader)
 
-    const handler = yield component.loadHandler({})
+    const handler = await loadHandler(createConfig(), component)
 
-    let [responseHead, responseStreamable] = 
-      yield handler(new RequestHead(), emptyStreamable())
+    let [responseHead, responseStreamable] =
+      await handler(new RequestHead(), emptyStreamable())
 
-    should.not.exist(responseHead.getHeader(
-      'content-encoding'))
+    assert.notOk(responseHead.getHeader('content-encoding'))
 
-    yield streamableToText(responseStreamable)
-      .should.eventually.equal(testContent)
+    assert.equal(
+      await streamableToText(responseStreamable),
+      testContent)
 
     let requestHead = new RequestHead({
       headers: {
@@ -78,15 +79,14 @@ describe('http compress test', () => {
       }
     })
 
-    ;[responseHead, responseStreamable] = 
-      yield handler(requestHead, emptyStreamable())
+    ;[responseHead, responseStreamable] =
+      await handler(requestHead, emptyStreamable())
 
-    responseHead.getHeader('content-encoding')
-      .should.equal('gzip')
+    assert.equal(responseHead.getHeader('content-encoding'), 'gzip')
 
-    const buffer = yield streamableToBuffer(responseStreamable)
+    const buffer = await streamableToBuffer(responseStreamable)
 
-    should.equal(Buffer.compare(
+    assert.equal(Buffer.compare(
       buffer, compressed), 0)
 
     requestHead = new RequestHead({
@@ -95,15 +95,14 @@ describe('http compress test', () => {
       }
     })
 
-    ;[responseHead, responseStreamable] = 
-      yield handler(requestHead, emptyStreamable())
+    ;[responseHead, responseStreamable] =
+      await handler(requestHead, emptyStreamable())
 
-    should.not.exist(responseHead.getHeader(
-      'content-encoding'))
+    assert.notOk(responseHead.getHeader('content-encoding'))
 
-    yield streamableToText(responseStreamable)
-      .should.eventually.equal(testContent)
-
+    assert.equal(
+      await streamableToText(responseStreamable),
+      testContent)
 
     requestHead = new RequestHead({
       headers: {
@@ -111,7 +110,8 @@ describe('http compress test', () => {
       }
     })
 
-    yield handler(requestHead, emptyStreamable())
-      .should.be.rejected
-  }))
+    await assert::rejected(handler(requestHead, emptyStreamable()))
+
+    assert.end()
+  })
 })

@@ -1,12 +1,8 @@
-import { error } from 'quiver/error'
+import { error } from 'quiver-core/util/error'
+import { argsFilter } from 'quiver-core/component/constructor'
 
 import {
-  argsFilter
-} from 'quiver/component'
-
-import { 
-  extractStreamHead,
-  headerExtractFilter,
+  extractStreamHead, headerExtractFilter
 } from 'quiver-stream-component'
 
 const invalidCharacters = /[^\s\x20-\x7E]/
@@ -74,16 +70,18 @@ export const parseHttpHeaders = headerText => {
 
 const headerSeparator = new Buffer('\r\n\r\n')
 
-export const extractHttpHeaders = (readStream, options) =>
-  extractStreamHead(readStream, headerSeparator, options)
-  .then(([headBuffer, readStream]) =>
-    ([parseHttpHeaders(headBuffer.toString()), readStream]))
+export const extractHttpHeaders = async (readStream, options) => {
+  const [headBuffer, restStream] = await extractStreamHead(
+    readStream, headerSeparator, options)
+
+  return [parseHttpHeaders(headBuffer.toString()), restStream]
+}
 
 export const httpHeaderFilter = argsFilter(
-args => {
-  const { header } = args
-  args.httpHeaders = parseHttpHeaders(header)
-  return args
-})
-.middleware(headerExtractFilter(headerSeparator))
-.factory()
+  args => {
+    const header = args.get('header')
+    const httpHeaders = parseHttpHeaders(header)
+    return args.set('httpHeaders', httpHeaders)
+  })
+  .addMiddleware(headerExtractFilter(headerSeparator))
+  .export()

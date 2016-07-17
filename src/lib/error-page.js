@@ -1,7 +1,7 @@
 import http from 'http'
-import { ResponseHead } from 'quiver/http'
-import { httpFilter } from 'quiver/component'
-import { textToStreamable } from 'quiver/stream-util'
+import { ResponseHead } from 'quiver-core/http-head'
+import { httpFilter } from 'quiver-core/component/constructor'
+import { textToStreamable } from 'quiver-core/stream-util'
 
 const statusTable = http.STATUS_CODES
 
@@ -16,10 +16,10 @@ export const basicErrorPageFilter = httpFilter(
       const errorCode = err.errorCode || 500
       const statusMessage = statusTable[errorCode] || 'Unknown'
 
-      const errorTrace = devMode ? 
+      const errorTrace = devMode ?
         `<pre>${err.stack}</pre>` : ''
 
-      const errorPage = 
+      const errorPage =
 `<h1>${errorCode} ${statusMessage}</h1>
 ${errorTrace}`
 
@@ -38,5 +38,4 @@ ${errorTrace}`
     })
 })
 
-export const makeBasicErrorPageFilter = basicErrorPageFilter
-  .factory()
+export const makeBasicErrorPageFilter = basicErrorPageFilter.export()

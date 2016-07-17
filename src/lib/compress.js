@@ -1,8 +1,7 @@
-import { error } from 'quiver/error'
-import { async } from 'quiver/promise'
-import { httpFilter } from 'quiver/component'
+import { error } from 'quiver-core/util/error'
+import { extract } from 'quiver-core/util/immutable'
+import { httpFilter } from 'quiver-core/component/constructor'
 import { compressStreamable } from 'quiver-stream-component'
-import { parseSubheaders } from './header'
 
 const acceptRegex = /^\s*([a-zA-Z]+|\*)(?:\s*;q=(\d(?:\.\d)?))?\s*$/
 
@@ -26,13 +25,13 @@ export const selectAcceptEncoding = header => {
         fields[encoding] = accepted
     })
 
-  if(fields.gzip || 
-    (fields['*'] && fields.gzip !== false)) 
+  if(fields.gzip ||
+    (fields['*'] && fields.gzip !== false))
   {
     return 'gzip'
   }
 
-  if(fields.identity || 
+  if(fields.identity ||
     (fields['*'] !== false && fields.identity !== false))
   {
     return 'identity'
@@ -43,13 +42,13 @@ export const selectAcceptEncoding = header => {
 
 export const httpCompressFilter = httpFilter(
 (config, handler) => {
-  const { httpCompressionThreshold=1024 } = config
+  const { httpCompressionThreshold=1024 } = config::extract()
 
-  return async(function*(requestHead, requestStreamable) {
+  return async (requestHead, requestStreamable) => {
     const acceptEncoding = requestHead.getHeader(
       'accept-encoding')
 
-    const response = yield handler(
+    const response = await handler(
       requestHead, requestStreamable)
 
     if(!acceptEncoding) return response
@@ -65,21 +64,21 @@ export const httpCompressFilter = httpFilter(
 
     const contentLength = responseHead.getHeader('content-length')
 
-    if(contentLength && 
+    if(contentLength &&
       parseInt(contentLength) < httpCompressionThreshold)
     {
       return response
     }
 
-    const compressedStreamable = yield compressStreamable('gzip',
+    const compressedStreamable = await compressStreamable('gzip',
       responseStreamable)
 
     responseHead.setHeader('content-encoding', 'gzip')
     responseHead.removeHeader('content-length')
 
     return [responseHead, compressedStreamable]
-  })
+  }
 })
 
-export const makeHttpCompressFilter = 
-  httpCompressFilter.factory()
+export const makeHttpCompressFilter =
+  httpCompressFilter.export()

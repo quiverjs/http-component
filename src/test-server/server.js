@@ -1,18 +1,10 @@
-import { startServer } from 'quiver/http'
+import { startServer } from 'quiver-core/http'
 
-import {
-  router,
-  simpleHandler
-} from 'quiver/component'
+import { createConfig } from 'quiver-core/component/util'
+import { router, simpleHandler } from 'quiver-core/component/constructor'
+import { fileHandler, singleFileHandler } from 'quiver-file-component/constructor'
 
-import {
-  fileHandler,
-  singleFileHandler
-} from 'quiver-file-component'
-
-import {
-  buffersToStream
-} from 'quiver/stream-util'
+import { buffersToStream } from 'quiver-core/stream-util'
 
 import {
   byteRangeFilter,
@@ -21,7 +13,7 @@ import {
   headRequestFilter,
   chunkedResponseFilter,
   basicErrorPageFilter
-} from '../lib/http-component.js'
+} from '../lib'
 
 import { formHandler } from './multipart.js'
 import { adminHandler } from './auth.js'
@@ -33,32 +25,35 @@ const compressHandler = fileHandler()
   .addMiddleware(httpCompressFilter())
 
 const chunkHandler = simpleHandler(
-  args => 
+  args =>
     buffersToStream([
       'Hello world. ',
       'This content is chunked ',
       'manually in Quiver.'
-    ]),
-  'void', 'stream')
+    ])
+  , {
+    inputType: 'empty',
+    outputType: 'stream'
+  })
   .addMiddleware(chunkedResponseFilter())
 
 const main = router()
-  .staticRoute('/form', singleFileHandler())
-  .staticRoute('/submit', formHandler)
-  .staticRoute('/admin', adminHandler)
-  .paramRoute('/chunk', chunkHandler)
-  .paramRoute('/range/:restpath', rangeHandler)
-  .paramRoute('/compress/:restpath', compressHandler)
-  .middleware(headRequestFilter())
-  .middleware(basicErrorPageFilter())
-  .middleware(requestLoggerFilter())
+  .addStaticRoute('/form', singleFileHandler())
+  .addStaticRoute('/submit', formHandler)
+  .addStaticRoute('/admin', adminHandler)
+  .addParamRoute('/chunk', chunkHandler)
+  .addParamRoute('/range/:restpath', rangeHandler)
+  .addParamRoute('/compress/:restpath', compressHandler)
+  .addMiddleware(headRequestFilter())
+  .addMiddleware(basicErrorPageFilter())
+  .addMiddleware(requestLoggerFilter())
 
-const config = {
+const config = createConfig({
   dirPath: 'test-content',
   filePath: 'test-content/form.html'
-}
+})
 
-startServer(main, config)
+startServer(config, main)
 .then(server => {
   console.log('HTTP test server running at port 8080...')
 })

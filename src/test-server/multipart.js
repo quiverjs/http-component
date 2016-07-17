@@ -1,17 +1,14 @@
-import {
-  simpleHandler
-} from 'quiver/component'
-
-import {
-  checksumHandler
-} from 'quiver-stream-component'
+import { extract } from 'quiver-core/util/immutable'
+import { overrideConfig } from 'quiver-core/component/method'
+import { simpleHandler } from 'quiver-core/component/constructor'
+import { checksumHandler } from 'quiver-stream-component'
 
 import {
   multipartSerializeFilter
-} from '../lib/http-component.js'
+} from '../lib'
 
 const serializerHandler = checksumHandler()
-  .configOverride({
+  ::overrideConfig({
     checksumAlgorithm: 'sha1'
   })
 
@@ -22,7 +19,7 @@ export const formHandler = simpleHandler(
   args => {
     const {
       formData, serializedParts
-    } = args
+    } = args::extract()
 
     return `
 You have submitted the following form data:
@@ -33,5 +30,8 @@ and your uploaded files have following SHA1 checksum:
 
 ${ JSON.stringify(serializedParts) }`
 
-  }, 'void', 'text')
-  .middleware(multipartFilter)
+  }, {
+    inputType: 'empty',
+    outputType: 'text'
+  })
+  .addMiddleware(multipartFilter)

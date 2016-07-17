@@ -1,95 +1,96 @@
-import { error } from 'quiver/error'
-import { async } from 'quiver/promise'
-import { RequestHead } from 'quiver/http'
+import test from 'tape'
+import { asyncTest } from 'quiver-core/util/tape'
+import { extract } from 'quiver-core/util/immutable'
 
-import { 
-  simpleHandler,
-  loadHttpHandler
-} from 'quiver/component'
+import { error } from 'quiver-core/util/error'
+import { RequestHead } from 'quiver-core/http-head'
+
+import { implement } from 'quiver-core/component/method'
+import { simpleHandler, streamHandler, streamToHttpHandler } from 'quiver-core/component/constructor'
+import { createConfig, loadHandler, httpHandlerLoader } from 'quiver-core/component/util'
 
 import {
-  emptyStreamable,
-  streamableToText,
-} from 'quiver/stream-util'
+  emptyStreamable, streamableToText
+} from 'quiver-core/stream-util'
 
-import { basicAuthFilter } from '../lib/http-component'
-
-import chai from 'chai'
-import chaiAsPromised from 'chai-as-promised'
-
-chai.use(chaiAsPromised)
-const should = chai.should()
+import { basicAuthFilter } from '../lib'
 
 const authHeaderRegex = /^Basic realm=".+"$/
 
-describe('http basic auth test', () => {
-  it('basic test', async(function*() {
+test('http basic auth test', assert => {
+  assert::asyncTest('basic test', async assert => {
     const authHandler = simpleHandler(
       args => {
-        const { username, password } = args
+        const { username, password } = args::extract()
 
         if(username=='Aladdin' && password=='open sesame') {
           return 'genie'
         }
 
         throw error(401, 'Unauthorized')
-      }, 'void', 'text')
+      }, {
+        inputType: 'empty',
+        outputType: 'text'
+      })
 
     const authFilter = basicAuthFilter()
-      .implement({ authHandler })
 
-    const main = simpleHandler(
-      args => {
-        args.userId.should.equal('genie')
+    authFilter::implement({ authHandler })
+
+    const main = streamToHttpHandler(
+      simpleHandler(args => {
+        assert.equal(args.get('userId'), 'genie')
 
         return 'secret content'
-      }, 'void', 'text')
-    .middleware(authFilter)
-    .setLoader(loadHttpHandler)
+      }, {
+        inputType: 'empty',
+        outputType: 'text'
+      })
+    )
+    .addMiddleware(authFilter)
 
-    const handler = yield main.loadHandler({})
+    const handler = await loadHandler(createConfig(), main)
 
-    let [responseHead, responseStreamable] = 
-      yield handler(new RequestHead(), emptyStreamable())
+    let [responseHead, responseStreamable] =
+      await handler(new RequestHead(), emptyStreamable())
 
-    responseHead.statusCode.should.equal(401)
+    assert.equal(responseHead.status, '401')
 
     let authHeader = responseHead.getHeader('www-authenticate')
-    should.exist(authHeader)
-    authHeaderRegex.test(authHeader).should.equal(true)
+    assert.ok(authHeader)
+    assert.ok(authHeaderRegex.test(authHeader))
 
-    yield streamableToText(responseStreamable)
-      .should.eventually.equal('<h1>401 Unauthorized</h1>')
+    assert.equal(
+      await streamableToText(responseStreamable),
+      '<h1>401 Unauthorized</h1>')
 
-    let requestHead = new RequestHead({
-      headers: {
-        authorization: 'Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=='
-      }
-    })
+    let requestHead = new RequestHead()
+      .setHeader('authorization', 'Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==')
 
-    ;[responseHead, responseStreamable] = 
-      yield handler(requestHead, emptyStreamable())
+    ;[responseHead, responseStreamable] =
+      await handler(requestHead, emptyStreamable())
 
-    responseHead.statusCode.should.equal(200)
+    assert.equal(responseHead.status, '200')
 
-    yield streamableToText(responseStreamable)
-      .should.eventually.equal('secret content')
+    assert.equal(
+      await streamableToText(responseStreamable),
+      'secret content',
+      'should be able to retrieve secret content')
 
     const invalidCredentials = new Buffer(
       'admin:password').toString('base64')
 
-    requestHead = new RequestHead({
-      headers: {
-        authorization: 'Basic ' + invalidCredentials
-      }
-    })
+    requestHead = new RequestHead()
+      .setHeader('authorization', `Basic ${invalidCredentials}`)
 
-    ;[responseHead, responseStreamable] = 
-      yield handler(requestHead, emptyStreamable())
+    ;[responseHead, responseStreamable] =
+      await handler(requestHead, emptyStreamable())
 
-    responseHead.statusCode.should.equal(401)
+    assert.equal(responseHead.status, '401')
 
     authHeader = responseHead.getHeader('www-authenticate')
-    should.exist(authHeader)
-  }))
+    assert.ok(authHeader)
+
+    assert.end()
+  })
 })

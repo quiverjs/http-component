@@ -1,10 +1,9 @@
-import { async } from 'quiver/promise'
-import { RequestHead } from 'quiver/http'
+import test from 'tape'
+import { asyncTest } from 'quiver-core/util/tape'
 
-import { 
-  simpleHandler,
-  loadHttpHandler
-} from 'quiver/component'
+import { RequestHead } from 'quiver-core/http-head'
+import { simpleHandler } from 'quiver-core/component/constructor'
+import { loadHttpHandler } from 'quiver-core/component/util'
 
 import {
   textToStream,
@@ -13,70 +12,64 @@ import {
   buffersToStream,
   streamableToText,
   buffersToStreamable,
-} from 'quiver/stream-util'
+} from 'quiver-core/stream-util'
 
 import {
   byteRangeStream,
   byteRangeFilter
 } from '../lib/byte-range'
 
-import chai from 'chai'
-import chaiAsPromised from 'chai-as-promised'
-
-chai.use(chaiAsPromised)
-const should = chai.should()
-
-describe('byte range test', () => {
+test('byte range test', assert => {
   const testContent = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
   const expectedSlice = 'dolor sit amet'
   const start = 12
   const end = 26
 
-  const testRangeStream = readStream => {
+  const rangeEquals = async function(readStream) {
     const rangeStream = byteRangeStream(readStream, start, end)
 
-    return streamToText(rangeStream)
-      .should.eventually.equal(expectedSlice)
+    const textResult = await streamToText(rangeStream)
+    this.equal(textResult, expectedSlice)
   }
 
-  it('basic range test', async(function*() {
-    yield testRangeStream(textToStream(testContent))
+  assert::asyncTest('basic range test', async assert => {
+    await assert::rangeEquals(textToStream(testContent))
 
     // sliced buffers
-    yield testRangeStream(buffersToStream([
+    await assert::rangeEquals(buffersToStream([
       'Lorem ip', 'sum dol',
       'or sit a', 'met, consectetur',
       ' adipiscing elit.'
     ]))
 
     // exact start
-    yield testRangeStream(buffersToStream([
+    await assert::rangeEquals(buffersToStream([
       'Lorem ', 'ipsum ', 'dolor sit',
       ' amet, consec', 'tetur adipiscing elit.'
     ]))
 
     // exact end
-    yield testRangeStream(buffersToStream([
+    await assert::rangeEquals(buffersToStream([
       'Lorem ip', 'sum dol',
       'or sit ', 'amet',
       ', consectetur ', 'adipiscing elit.'
     ]))
 
     // exact start end
-    yield testRangeStream(buffersToStream([
+    await assert::rangeEquals(buffersToStream([
       'Lorem ', 'ipsum ', 'dolor sit',
-      ' amet', ', consectetur ', 
+      ' amet', ', consectetur ',
       'adipiscing elit.'
     ]))
 
     // overflow
-    yield testRangeStream(buffersToStream([
+    await assert::rangeEquals(buffersToStream([
       'Lorem ', 'ipsum dolor sit amet, consec',
       'tetur adip', 'iscing elit.'
     ]))
-  }))
+  })
 
-  it('test range filter', async(function*() {
+  assert::asyncTest('test range filter', async assert => {
     const component = simpleHandler(
       args => {
         const streamable = buffersToStreamable([
@@ -87,61 +80,63 @@ describe('byte range test', () => {
 
         streamable.contentLength = testContent.length
         return streamable
-      }, 'void', 'streamable')
+      }, {
+        inputType: 'empty',
+        outputType: 'streamable'
+      })
     .middleware(byteRangeFilter)
     .setLoader(loadHttpHandler)
 
-    const handler = yield component.loadHandler({})
+    const handler = await component.loadHandler({})
 
-    let [responseHead, responseStreamable] = 
-      yield handler(new RequestHead(), emptyStreamable())
+    let [responseHead, responseStreamable] =
+      await handler(new RequestHead(), emptyStreamable())
 
-    responseHead.statusCode.should.equal(200)
+    assert.equal(responseHead.status, '200')
 
-    responseHead.getHeader('content-length')
-      .should.equal(''+testContent.length)
+    assert.equal(
+      responseHead.getHeader('content-length'),
+      `${testContent.length}`)
 
-    should.not.exist(responseHead.getHeader(
-      'accept-ranges'))
+    assert.notOk(responseHead.getHeader('accept-ranges'))
 
-    yield streamableToText(responseStreamable)
-      .should.eventually.equal(testContent)
+    assert.equal(await streamableToText(responseStreamable), testContent)
 
     let requestHead = new RequestHead({
       headers: {
-        range: 'bytes=' + start + '-' + (end-1)
+        range: `bytes=${start}-${end-1}`
       }
     })
 
-    ;[responseHead, responseStreamable] = 
-      yield handler(requestHead, emptyStreamable())
+    ;[responseHead, responseStreamable] =
+      await handler(requestHead, emptyStreamable())
 
-    responseHead.statusCode.should.equal(206)
+    assert.equal(responseHead.status, '206')
 
-    responseHead.getHeader('content-length')
-      .should.equal(''+expectedSlice.length)
+    assert.equal(
+      responseHead.getHeader('content-length'),
+      `${expectedSlice.length}`)
 
-    responseHead.getHeader('content-range')
-      .should.equal('bytes ' + start + '-' + 
-        (end-1) + '/' + testContent.length)
+    assert.equal(
+      responseHead.getHeader('content-range'),
+      `bytes ${start}-${end-1}/${testContent.length}`)
 
-    yield streamableToText(responseStreamable)
-      .should.eventually.equal(expectedSlice)
+    assert.equal(
+      await streamableToText(responseStreamable),
+      expectedSlice)
 
-    requestHead = new RequestHead({
-      headers: {
-        range: 'bytes=' + start + '-' + 
-          (testContent.length+10)
-      }
-    })
+    requestHead = new RequestHead()
+      .setHeader('range', `bytes=${start}-${testContent.length+10}`)
 
     try {
-      ;[responseHead, responseStreamable] = 
-        yield handler(requestHead, emptyStreamable())
+      ;[responseHead, responseStreamable] =
+        await handler(requestHead, emptyStreamable())
 
       throw new Error('should not reach')
     } catch(err) {
-      err.errorCode.should.equal(416)
+      assert.equal(err.code, 416)
     }
-  }))
+
+    assert.end()
+  })
 })

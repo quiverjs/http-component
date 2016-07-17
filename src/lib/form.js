@@ -1,36 +1,33 @@
-import { error } from 'quiver/error'
-import { streamFilter } from 'quiver/component'
-import { async, reject } from 'quiver/promise'
-import { 
-  streamableToText,
-  emptyStreamable
-} from 'quiver/stream-util'
+import { error } from 'quiver-core/util/error'
+import { streamFilter } from 'quiver-core/component/constructor'
+import {
+  streamableToText, emptyStreamable
+} from 'quiver-core/stream-util'
 
-import querystring from 'querystring'
-const { parse: parseQuery } = querystring
+import { parse as parseQuery }  from 'querystring'
 
 const streamableToFormData = streamable =>
   streamableToText(streamable).then(parseQuery)
 
 export const formDataFilter = streamFilter(
 (config, handler) =>
-  (args, streamable) => {
-    if(args.requestHead && args.requestHead.method != 'POST')
-      return reject(error(405, 'Method Not Allowed'))
+  async (args, streamable) => {
+    const requestHead = args.get('requestHead')
+    if(requestHead && requestHead.method != 'POST')
+      throw error(405, 'Method Not Allowed')
 
     const { contentType } = streamable
-    if(contentType && contentType != 
+    if(contentType && contentType !=
       'application/x-www-form-urlencoded')
     {
       return handler(args, streamable)
     }
 
-    return streamableToFormData(streamable)
-    .then(formData => {
-      args.formData = formData
+    const formData = await streamableToFormData(streamable)
 
-      return handler(args, emptyStreamable())
-    })
+    const inArgs = args.set('formData', formData)
+
+    return handler(inArgs, emptyStreamable())
   })
 
-export const makeFormDataFilter = formDataFilter.factory()
+export const makeFormDataFilter = formDataFilter.export()

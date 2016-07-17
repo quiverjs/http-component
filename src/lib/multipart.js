@@ -1,43 +1,32 @@
-import { error } from 'quiver/error'
-import { 
-  async, createPromise, timeout 
-} from 'quiver/promise'
-
-import { 
+import { error } from 'quiver-core/util/error'
+import {
   streamFilter,
   abstractHandler,
-  simpleHandlerLoader,
-  inputHandlerMiddleware,
-} from 'quiver/component'
+} from 'quiver-core/component/constructor'
+
+import { inputHandlers } from 'quiver-core/component/method'
+import { simpleHandlerLoader } from 'quiver-core/component/util'
 
 import {
-  pipeStream,
   streamToText,
-  createChannel,
-  pushbackStream,
   emptyStreamable,
   streamableToJson,
   streamableToText,
-  streamToStreamable,
-} from 'quiver/stream-util'
+} from 'quiver-core/stream-util'
 
 import {
-  extractStreamHead
-} from 'quiver-stream-component'
-
-import { 
-  parseSubheaders 
+  parseSubheaders
 } from './header'
 
-import { 
-  extractAllMultipart 
+import {
+  extractAllMultipart
 } from './multipart-stream'
 
 const multipartType = /^multipart\/form-data/
 
 const parseBoundary = contentType => {
   const [, { boundary }] = parseSubheaders(contentType)
-  if(!boundary) throw errror(400, 'no boundary specified')
+  if(!boundary) throw error(400, 'no boundary specified')
 
   return boundary
 }
@@ -53,7 +42,7 @@ const formatStreamable = streamable => {
 const parseMultipartHeaders = headers => {
   const dispositionHeader = headers['content-disposition']
 
-  if(!dispositionHeader) throw error(400, 
+  if(!dispositionHeader) throw error(400,
     'missing Content-Disposition header')
 
   const [disposition, dispositionHeaders] = parseSubheaders(
@@ -62,9 +51,9 @@ const parseMultipartHeaders = headers => {
   const contentTypeHeader = headers['content-type']
 
   let contentType, contentTypeHeaders
-  
+
   if(contentTypeHeader) {
-    ;([contentType, contentTypeHeaders]) = parseSubheaders(
+    ;[contentType, contentTypeHeaders] = parseSubheaders(
       contentTypeHeader)
 
   } else {
@@ -80,13 +69,12 @@ const parseMultipartHeaders = headers => {
   }
 }
 
-const serializeMultipart = async(
-function*(serializerHandler, readStream, boundary) {
+const serializeMultipart = async (serializerHandler, readStream, boundary) => {
   const formData = { }
   const serializedParts = {}
 
   const mixedPartHandler = name =>
-  async(function*(headers, partStream) {
+  async (headers, partStream) => {
     const {
       disposition,
       dispositionHeaders,
@@ -102,14 +90,13 @@ function*(serializerHandler, readStream, boundary) {
     if(!filename)
       throw error(400, 'Missing upload file name')
 
-    return serializerHandler({ 
-      name, filename, contentType 
+    return serializerHandler({
+      name, filename, contentType
     }, partStream)
     .then(formatStreamable)
-  })
+  }
 
-  const handlePartStream = async(
-  function*(headers, partStream) {
+  const handlePartStream = async (headers, partStream) => {
     const {
       disposition,
       dispositionHeaders,
@@ -125,7 +112,7 @@ function*(serializerHandler, readStream, boundary) {
     if(!name)
       throw error(400, 'Missing name field in Content-Disposition')
 
-    if(formData[name]) 
+    if(formData[name])
       throw error(400, 'duplicate multipart field')
 
     if(contentType=='multipart/mixed') {
@@ -134,12 +121,12 @@ function*(serializerHandler, readStream, boundary) {
       if(!boundary)
         throw error(400, 'Missing multipart boundary')
 
-      serializedParts[name] = yield extractAllMultipart(
+      serializedParts[name] = await extractAllMultipart(
         partStream, boundary, mixedPartHandler(name))
 
     } else {
       if(filename) {
-        const serialized = yield serializerHandler(
+        const serialized = await serializerHandler(
           { name, filename, contentType }, partStream)
           .then(formatStreamable)
 
@@ -154,26 +141,25 @@ function*(serializerHandler, readStream, boundary) {
         }
 
       } else {
-        formData[name] = yield streamToText(partStream)
+        formData[name] = await streamToText(partStream)
       }
     }
-  })
+  }
 
-  yield extractAllMultipart(readStream, 
+  await extractAllMultipart(readStream,
     boundary, handlePartStream)
 
   return [formData, serializedParts]
-})
+}
 
 const serializerHandler = abstractHandler('serializerHandler')
   .setLoader(simpleHandlerLoader('stream', 'streamable'))
 
-export const multipartSerializeFilter =
-streamFilter((config, handler) => {
-  const { serializerHandler } = config
+export const multipartSerializeFilter = streamFilter((config, handler) => {
+  const serializerHandler = config.get('serializerHandler')
 
-  return async(function*(args, streamable) {
-    const { requestHead } = args
+  return async (args, streamable) => {
+    const requestHead = args.get('requestHead')
     const { contentType } = streamable
 
     if(!contentType || !multipartType.test(contentType))
@@ -186,19 +172,20 @@ streamFilter((config, handler) => {
 
     const boundary = parseBoundary(contentType)
 
-    const readStream = yield streamable.toStream()
+    const readStream = await streamable.toStream()
 
     const [ formData, serializedParts ]
-      = yield serializeMultipart(
+      = await serializeMultipart(
         serializerHandler, readStream, boundary)
 
-    args.formData = formData
-    args.serializedParts = serializedParts
+    const inArgs = args
+      .set('formData', formData)
+      .set('serializedParts', serializedParts)
 
-    return handler(args, emptyStreamable())
-  })
+    return handler(inArgs, emptyStreamable())
+  }
 })
-.inputHandlers({ serializerHandler })
+::inputHandlers({ serializerHandler })
 
-export const makeMultipartSerializeFilter = 
-  multipartSerializeFilter.factory()
+export const makeMultipartSerializeFilter =
+  multipartSerializeFilter.export()

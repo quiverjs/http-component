@@ -1,13 +1,21 @@
 import crypto from 'crypto'
-import { ResponseHead } from 'quiver/http'
-import { async, promisify } from 'quiver/promise'
-import { textToStreamable } from 'quiver/stream-util'
-import { 
-  httpFilter, 
-  abstractHandler,
-  simpleHandlerLoader,
-  inputHandlerMiddleware
-} from 'quiver/component'
+import { ResponseHead } from 'quiver-core/http'
+import { extract } from 'quiver-core/util/immutable'
+import { promisify } from 'quiver-core/util/promise'
+import { textToStreamable } from 'quiver-core/stream-util'
+import { createArgs } from 'quiver-core/component/util'
+
+import {
+  httpFilter, abstractHandler
+} from 'quiver-core/component/constructor'
+
+import {
+  simpleHandlerLoader
+} from 'quiver-core/component/util'
+
+import {
+  inputHandlers
+} from 'quiver-core/component/method'
 
 const randomBytes = promisify(crypto.randomBytes)
 
@@ -29,64 +37,62 @@ const randomRealm = () =>
     buffer.toString('base64'))
 
 const authHandler = abstractHandler('authHandler')
-  .setLoader(simpleHandlerLoader('void', 'text'))
+  .setLoader(simpleHandlerLoader('empty', 'text'))
 
 export const basicAuthFilter = httpFilter(
-async(function*(config, handler) {
-  const {
-    authHandler,
-    userField='userId',
-    strictAuthenticate = true,
-    authenticationRealm = yield randomRealm()
-  } = config
+  async (config, handler) => {
+    const {
+      authHandler,
+      userField='userId',
+      strictAuthenticate = true,
+      authenticationRealm = await randomRealm()
+    } = config::extract()
 
-  const wwwAuthenticate = 'Basic realm="' + 
-    authenticationRealm + '"'
+    const wwwAuthenticate = 'Basic realm="' +
+      authenticationRealm + '"'
 
-  const unauthorizedResponse = () => {
-    const message = '<h1>401 Unauthorized</h1>'
+    const unauthorizedResponse = () => {
+      const message = '<h1>401 Unauthorized</h1>'
 
-    const responseHead = new ResponseHead({
-      statusCode: 401,
-      headers: {
-        'www-authenticate': wwwAuthenticate,
-        'content-type': 'text/html',
-        'content-length': ''+message.length
-      }
-    })
-    
-    const responseStreamable = textToStreamable(message)
-    
-    return [responseHead, responseStreamable]
-  }
+      const responseHead = new ResponseHead()
+        .setStatus(401)
+        .setHeader('www-authenticate', wwwAuthenticate)
+        .setHeader('content-type',  'text/html')
+        .setHeader('content-length', `${message.length}`)
 
-  return async(function*(requestHead, requestStreamable) {
-    const unauthorized = strictAuthenticate ?
-      unauthorizedResponse :
-      () => handler(requestHead, requestStreamable)
+      const responseStreamable = textToStreamable(message)
 
-    const authHeader = requestHead.getHeader('authorization')
-    if(!authHeader) return unauthorized()
-
-    const basicToken = authHeader.slice(0, 6)
-    if(basicToken != 'Basic ') return unauthorized()
-
-    const credentials = authHeader.slice(6).trim()
-    const [username, password] = decodeCredentials(credentials)
-
-    let userId
-    try {
-      userId = yield authHandler({ username, password })
-    } catch(err) {
-      if(err.errorCode == 401) return unauthorized()
-      throw err
+      return [responseHead, responseStreamable]
     }
 
-    requestHead.setArgs(userField, userId)
+    return async (requestHead, requestStreamable) => {
+      const unauthorized = strictAuthenticate ?
+        unauthorizedResponse :
+        () => handler(requestHead, requestStreamable)
 
-    return handler(requestHead, requestStreamable)
+      const authHeader = requestHead.getHeader('authorization')
+      if(!authHeader) return unauthorized()
+
+      const basicToken = authHeader.slice(0, 6)
+      if(basicToken != 'Basic ') return unauthorized()
+
+      const credentials = authHeader.slice(6).trim()
+      const [username, password] = decodeCredentials(credentials)
+
+      let userId
+      try {
+        const args = createArgs({ username, password })
+        userId = await authHandler(args)
+      } catch(err) {
+        if(err.code == 401) return unauthorized()
+        throw err
+      }
+
+      const requestHead2 = requestHead.setArgsKey(userField, userId)
+
+      return handler(requestHead2, requestStreamable)
+    }
   })
-}))
-.inputHandlers({ authHandler })
+  ::inputHandlers({ authHandler })
 
-export const makeBasicAuthFilter = basicAuthFilter.factory()
+export const makeBasicAuthFilter = basicAuthFilter.export()

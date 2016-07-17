@@ -1,15 +1,14 @@
-import { error } from 'quiver/error'
-import { async } from 'quiver/promise'
-import { 
-  createChannel, pushbackStream 
-} from 'quiver/stream-util'
+import { error } from 'quiver-core/util/error'
+import {
+  createChannel, pushbackStream
+} from 'quiver-core/stream-util'
 
 import {
   extractStreamHead, extractFixedStreamHead
 } from 'quiver-stream-component'
 
-import { 
-  extractHttpHeaders, 
+import {
+  extractHttpHeaders,
 } from './header'
 
 // Naive approach of matching boundary
@@ -35,7 +34,7 @@ export const createBufferQueue = boundaryLength => {
   }
 
   const pushBuffer = buffer => {
-    if(!Buffer.isBuffer(buffer)) 
+    if(!Buffer.isBuffer(buffer))
       buffer = new Buffer(buffer)
 
     buffers.push(buffer)
@@ -107,18 +106,17 @@ export const createBufferQueue = boundaryLength => {
   }
 }
 
-export const pipeMultipart = async(
-function*(readStream, writeStream, boundary) {
+export const pipeMultipart = async (readStream, writeStream, boundary) => {
   try {
     if(!Buffer.isBuffer(boundary)) boundary = new Buffer(boundary)
     const boundaryLength = boundary.length
 
     const bufferQueue = createBufferQueue(boundaryLength)
 
-    yield writeStream.prepareWrite()
+    await writeStream.prepareWrite()
 
     while(true) {
-      const { closed, data } = yield readStream.read()
+      const { closed, data } = await readStream.read()
       if(closed) throw error(400, 'malformed multipart stream')
 
       bufferQueue.pushBuffer(data)
@@ -131,7 +129,7 @@ function*(readStream, writeStream, boundary) {
       if(index == -1) {
         if(bufferQueue.canPop()) {
           writeStream.write(bufferQueue.popBuffer())
-          yield writeStream.prepareWrite()
+          await writeStream.prepareWrite()
         }
       } else {
         const [lastBuffers, nextBuffers] = bufferQueue.sliceBoundary(index)
@@ -154,22 +152,22 @@ function*(readStream, writeStream, boundary) {
 
     throw err
   }
-})
+}
 
 export const handleMultipart = (wholeStream, boundary, partHandler) => {
   const {
-    readStream: partStream, 
+    readStream: partStream,
     writeStream
   } = createChannel()
 
-  const handlePart = async(function*() {
+  const handlePart = async () => {
     try {
-      return yield partHandler(partStream)
+      return await partHandler(partStream)
     } catch(err) {
       partStream.closeRead(err)
       throw err
     }
-  })
+  }
 
   return Promise.all([
     handlePart(),
@@ -179,18 +177,17 @@ export const handleMultipart = (wholeStream, boundary, partHandler) => {
 
 const newLineBuffer = new Buffer('\r\n')
 
-export const extractMultipart = async(
-function*(readStream, startBoundary, partHandler) {
+export const extractMultipart = async (readStream, startBoundary, partHandler) => {
   let headers, partContent, endBuffer
 
-  ;[headers, readStream] = yield extractHttpHeaders(
+  ;[headers, readStream] = await extractHttpHeaders(
     readStream)
 
-  ;[partContent, readStream] = yield handleMultipart(
+  ;[partContent, readStream] = await handleMultipart(
     readStream, startBoundary, partStream =>
       partHandler(headers, partStream))
 
-  ;[endBuffer, readStream] = yield extractFixedStreamHead(
+  ;[endBuffer, readStream] = await extractFixedStreamHead(
     readStream, 2)
 
   const ending = endBuffer.toString()
@@ -202,7 +199,7 @@ function*(readStream, startBoundary, partHandler) {
   if(ending != '\r\n') {
     readStream = pushbackStream(readStream, [endBuffer])
 
-    const [headBuffer, readStream] = yield extractStreamHead(
+    const [headBuffer, readStream] = await extractStreamHead(
       readStream, newLineBuffer)
 
     const ending = headBuffer.toString().trim()
@@ -211,26 +208,24 @@ function*(readStream, startBoundary, partHandler) {
   }
 
   return [partContent, readStream, false]
-})
+}
 
-export const extractAllMultipart = async(
-function*(readStream, boundary, partHandler) {
+export const extractAllMultipart = async (readStream, boundary, partHandler) => {
   try {
-    let head
     const parts = []
 
     const firstBoundary = new Buffer('--' + boundary + '\r\n')
     const startBoundary = new Buffer('\r\n--' + boundary)
-    
+
     // eat the first boundary
-    ;[head, readStream] = yield extractStreamHead(
+    ;[head, readStream] = await extractStreamHead(
       readStream, firstBoundary)
 
     while(true) {
       let partContent, ended
 
       ;[partContent, readStream, ended]
-        = yield extractMultipart(readStream, 
+        = await extractMultipart(readStream,
             startBoundary, partHandler)
 
       parts.push(partContent)
@@ -240,4 +235,4 @@ function*(readStream, boundary, partHandler) {
     readStream.closeRead(err)
     throw err
   }
-})
+}

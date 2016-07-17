@@ -1,8 +1,8 @@
 import { error } from 'quiver/error'
 
-import { 
+import {
   simpleHandler,
-} from 'quiver/component'
+} from 'quiver-core/component/constructor'
 
 import { basicAuthFilter } from '../lib/http-component.js'
 
@@ -15,7 +15,10 @@ const authHandler = simpleHandler(
     }
 
     throw error(401, 'Unauthorized')
-  }, 'void', 'text')
+  }, {
+    inputType: 'empty',
+    outputType: 'text'
+  })
 
 const authFilter = basicAuthFilter()
   .implement({ authHandler })
@@ -23,5 +26,8 @@ const authFilter = basicAuthFilter()
 export const adminHandler = simpleHandler(
   args => {
     return 'Hello Administrator. Nobody else can access this area'
-  }, 'void', 'text')
-.middleware(authFilter)
+  }, {
+    inputType: 'empty',
+    outputType: 'text'
+  })
+.addMiddleware(authFilter)

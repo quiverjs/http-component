@@ -1,80 +1,72 @@
-import { async } from 'quiver/promise'
+import test from 'tape'
+import { asyncTest } from 'quiver-core/util/tape'
 
 import {
   streamToText,
-  createChannel,
   buffersToStream,
-} from 'quiver/stream-util'
+} from 'quiver-core/stream-util'
 
-import { 
-  pipeMultipart, handleMultipart
-} from '../lib/multipart-stream'
+import { handleMultipart } from '../lib/multipart-stream'
 
-import chai from 'chai'
-import chaiAsPromised from 'chai-as-promised'
-
-chai.use(chaiAsPromised)
-const should = chai.should()
-
-describe('multipart stream test', () => {
-  it('simple boundary', async(function*() {
+test('multipart stream test', assert => {
+  assert::asyncTest('simple boundary', async assert => {
     const boundary = new Buffer('--boundary--')
 
-    const testBoundary = async(
-    function*(testBuffers, expectedContent, restContent) {
+    const testBoundary = async (testBuffers, expectedContent, restContent) => {
       const wholeStream = buffersToStream(testBuffers)
 
-      const [partContent, restStream] = yield handleMultipart(
+      const [partContent, restStream] = await handleMultipart(
         wholeStream, boundary, streamToText)
 
-      partContent.should.equal(expectedContent)
+      assert.equal(partContent, expectedContent)
 
-      yield streamToText(restStream)
-        .should.eventually.equal(restContent)
-    })
+      assert.equal(await streamToText(restStream), restContent)
+    }
 
-    yield testBoundary([
+    await testBoundary([
       'hello',
       '--boundary--',
       'goodbye'
     ], 'hello', 'goodbye')
 
-    yield testBoundary([
+    await testBoundary([
       'hello--b',
       'oundar',
       'y--goodbye'
     ], 'hello', 'goodbye')
 
-    yield testBoundary([
+    await testBoundary([
       'he', 'll',
       'o--boundary--g',
       'ood', 'bye'
     ], 'hello', 'goodbye')
 
-    yield testBoundary([
+    await testBoundary([
       'he', 'll',
       'o--b', 'oun', 'dary--g',
       'ood', 'bye'
     ], 'hello', 'goodbye')
 
-    yield testBoundary([
+    await testBoundary([
       '--boundary--',
       'goodbye'
     ], '', 'goodbye')
 
-    yield testBoundary([
+    await testBoundary([
       '--b', 'oundar', 'y--go',
       'odbye'
     ], '', 'goodbye')
 
-    yield testBoundary([
+    await testBoundary([
       'hello',
       '--boundary--',
     ], 'hello', '')
-    
-    yield testBoundary([
+
+    await testBoundary([
       'hel',
       'lo--b', 'ound', 'ary--',
     ], 'hello', '')
-  }))
+
+    assert.end()
+  })
 })

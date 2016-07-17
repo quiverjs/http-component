@@ -1,6 +1,5 @@
-import { async } from 'quiver/promise'
-import { httpFilter } from 'quiver/component'
-import { emptyStreamable } from 'quiver/stream-util'
+import { httpFilter } from 'quiver-core/component/constructor'
+import { emptyStreamable } from 'quiver-core/stream-util'
 
 import crypto from 'crypto'
 
@@ -12,17 +11,17 @@ const checksumBuffer = buffer =>
     .update(buffer)
     .digest('hex')
 
-const etagStreamable = async(function*(streamable) {
-  if(streamable.etag) 
+const etagStreamable = async streamable => {
+  if(streamable.etag)
     return streamable.etag
 
-  if(streamable[checksumField]) 
+  if(streamable[checksumField])
     return streamable[checksumField]
 
-  if(!streamable.toBuffer) 
+  if(!streamable.toBuffer)
     return null
 
-  const buffer = yield streamable.toBuffer()
+  const buffer = await streamable.toBuffer()
 
   const etag = checksumBuffer(buffer)
 
@@ -30,25 +29,25 @@ const etagStreamable = async(function*(streamable) {
   streamable[checksumField] = etag
 
   return etag
-})
+}
 
 export const etagFilter = httpFilter(
 (config, handler) =>
-  async(function*(requestHead, requestStreamable) {
+  async (requestHead, requestStreamable) => {
     const noneMatch = requestHead.getHeader('if-none-match')
 
-    const response = yield handler(
+    const response = await handler(
       requestHead, requestStreamable)
 
     const [responseHead, responseStreamable] = response
 
     if(responseHead.statusCode != 200) return response
 
-    const etag = yield etagStreamable(responseStreamable)
+    const etag = await etagStreamable(responseStreamable)
     if(!etag) return response
 
     const etagField = '"' + etag + '"'
-    
+
     if(noneMatch && noneMatch == etagField) {
       responseHead.statusCode = 304
       responseHead.statusMessage = 'Not Modified'
@@ -58,6 +57,6 @@ export const etagFilter = httpFilter(
 
     responseHead.setHeader('etag', etagField)
     return [responseHead, responseStreamable]
-  }))
+  })
 
-export const makeEtagFilter = etagFilter.factory()
+export const makeEtagFilter = etagFilter.export()

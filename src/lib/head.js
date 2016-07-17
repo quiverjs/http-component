@@ -1,29 +1,25 @@
-import { httpFilter } from 'quiver/component'
-import { 
-  closeStreamable,
-  emptyStreamable
-} from 'quiver/stream-util'
+import { httpFilter } from 'quiver-core/component/constructor'
+import {
+  closeStreamable, emptyStreamable
+} from 'quiver-core/stream-util'
 
 export const headRequestFilter = httpFilter(
 (config, handler) =>
-  (requestHead, requestStreamable) => {
+  async (requestHead, requestStreamable) => {
     const { method='GET' } = requestHead
 
     if(method != 'HEAD') return handler(
       requestHead, requestStreamable)
 
-    requestHead.method = 'GET'
+    const inRequestHead = requestHead.setMethod('GET')
 
-    return handler(requestHead, requestStreamable)
-    .then(([responseHead, responseStreamable]) => {
-      // Set method back to HEAD for upstream middleware
-      requestHead.method = 'HEAD'
-      
-      closeStreamable(responseStreamable)
+    const response = await handler(inRequestHead, requestStreamable)
 
-      return [responseHead, emptyStreamable()]
-    })
+    const [responseHead, responseStreamable] = response
+
+    closeStreamable(responseStreamable)
+
+    return [responseHead, emptyStreamable()]
   })
 
-export const makeHeadRequestFilter = 
-  headRequestFilter.factory()
+export const makeHeadRequestFilter = headRequestFilter.export()
