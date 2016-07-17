@@ -2,8 +2,8 @@ import test from 'tape'
 import { asyncTest } from 'quiver-core/util/tape'
 
 import { RequestHead } from 'quiver-core/http-head'
-import { simpleHandler } from 'quiver-core/component/constructor'
-import { loadHttpHandler } from 'quiver-core/component/util'
+import { simpleHandler, streamToHttpHandler } from 'quiver-core/component/constructor'
+import { createConfig, loadHandler, httpHandlerLoader } from 'quiver-core/component/util'
 
 import {
   textToStream,
@@ -67,10 +67,12 @@ test('byte range test', assert => {
       'Lorem ', 'ipsum dolor sit amet, consec',
       'tetur adip', 'iscing elit.'
     ]))
+
+    assert.end()
   })
 
   assert::asyncTest('test range filter', async assert => {
-    const component = simpleHandler(
+    const component = streamToHttpHandler(simpleHandler(
       args => {
         const streamable = buffersToStreamable([
           'Lorem ip', 'sum dol',
@@ -83,11 +85,11 @@ test('byte range test', assert => {
       }, {
         inputType: 'empty',
         outputType: 'streamable'
-      })
-    .middleware(byteRangeFilter)
-    .setLoader(loadHttpHandler)
+      }))
+    .addMiddleware(byteRangeFilter)
+    .setLoader(httpHandlerLoader)
 
-    const handler = await component.loadHandler({})
+    const handler = await loadHandler(createConfig(), component)
 
     let [responseHead, responseStreamable] =
       await handler(new RequestHead(), emptyStreamable())
@@ -100,13 +102,11 @@ test('byte range test', assert => {
 
     assert.notOk(responseHead.getHeader('accept-ranges'))
 
-    assert.equal(await streamableToText(responseStreamable), testContent)
+    assert.equal(await streamableToText(responseStreamable), testContent,
+      'should receive full content')
 
-    let requestHead = new RequestHead({
-      headers: {
-        range: `bytes=${start}-${end-1}`
-      }
-    })
+    let requestHead = new RequestHead()
+      .setHeader('range', `bytes=${start}-${end-1}`)
 
     ;[responseHead, responseStreamable] =
       await handler(requestHead, emptyStreamable())

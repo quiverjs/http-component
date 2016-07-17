@@ -94,11 +94,11 @@ export const byteRangeFilter = httpFilter(
 
       const response = await handler(requestHead, requestStreamable)
 
-      const [
+      let [
         responseHead, responseStreamable
       ] = response
 
-      if(responseHead.statusCode != 200)
+      if(responseHead.status !== '200')
         return response
 
       if(responseHead.getHeader('content-range'))
@@ -112,7 +112,7 @@ export const byteRangeFilter = httpFilter(
       if(!contentLength) return response
 
       if(toByteRangeStream) {
-        responseHead.setHeader('accept-ranges', 'bytes')
+        responseHead = responseHead.setHeader('accept-ranges', 'bytes')
       }
 
       if(!rangeHeader) return response
@@ -138,11 +138,10 @@ export const byteRangeFilter = httpFilter(
       const contentRange = 'bytes ' + start + '-' + (end-1) +
         '/' + contentLength
 
-      responseHead.statusCode = 206
-      responseHead.statusMessage = 'Partial Content'
-
-      responseHead.setHeader('content-range', contentRange)
-      responseHead.setHeader('content-length', ''+(end-start))
+      responseHead = responseHead
+        .setStatus(206)
+        .setHeader('content-range', contentRange)
+        .setHeader('content-length', ''+(end-start))
 
       return [responseHead, rangeStreamable]
     }
