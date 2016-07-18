@@ -8,7 +8,7 @@ export const chunkedResponseFilter = httpFilter(
       const response = await handler(
         requestHead, requestStreamable)
 
-      const [responseHead, responseStreamable] = response
+      let [responseHead, responseStreamable] = response
 
       if(responseHead.getHeader('content-length') ||
          responseHead.getHeader('transfer-encoding'))
@@ -20,7 +20,7 @@ export const chunkedResponseFilter = httpFilter(
       const chunkedStream = streamToChunkedStream(readStream)
       const chunkedStreamable = streamToStreamable(chunkedStream)
 
-      responseHead.setHeader('transfer-encoding', 'chunked')
+      responseHead = responseHead.setHeader('transfer-encoding', 'chunked')
 
       return [responseHead, chunkedStreamable]
     })

@@ -5,7 +5,7 @@ import {
 } from 'quiver-core/component/constructor'
 
 import { inputHandlers } from 'quiver-core/component/method'
-import { simpleHandlerLoader } from 'quiver-core/component/util'
+import { createArgs, simpleHandlerLoader } from 'quiver-core/component/util'
 
 import {
   streamToText,
@@ -90,9 +90,11 @@ const serializeMultipart = async (serializerHandler, readStream, boundary) => {
     if(!filename)
       throw error(400, 'Missing upload file name')
 
-    return serializerHandler({
+    const inArgs = createArgs({
       name, filename, contentType
-    }, partStream)
+    })
+
+    return serializerHandler(inArgs, partStream)
     .then(formatStreamable)
   }
 
@@ -126,8 +128,9 @@ const serializeMultipart = async (serializerHandler, readStream, boundary) => {
 
     } else {
       if(filename) {
+        const inArgs = createArgs({ name, filename, contentType })
         const serialized = await serializerHandler(
-          { name, filename, contentType }, partStream)
+          inArgs, partStream)
           .then(formatStreamable)
 
         const field = serializedParts[name]

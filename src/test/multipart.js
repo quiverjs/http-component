@@ -4,6 +4,8 @@ import { extract } from 'quiver-core/util/immutable'
 
 import { simpleHandler } from 'quiver-core/component/constructor'
 
+import { implement } from 'quiver-core/component/method'
+
 import {
   createConfig, createArgs,
   loadHandler, streamHandlerLoader
@@ -40,10 +42,11 @@ test('multipart test', assert => {
       })
 
     const multipartFilter = multipartSerializeFilter()
-      .implement({ serializerHandler })
+
+    multipartFilter::implement({ serializerHandler })
 
     const main = simpleHandler(args => {
-      const { formData, serializedParts } = args
+      const { formData, serializedParts } = args::extract()
 
       assert.equal(formData.username, 'john')
       assert.equal(serializedParts.files.name, 'hello.txt')
@@ -63,6 +66,8 @@ test('multipart test', assert => {
     streamable.contentType = 'multipart/form-data; boundary=AaB03x'
 
     await handler(createArgs(), streamable)
+
+    assert.end()
   })
 
   assert::asyncTest('multipart/mixed files test', async assert => {
@@ -86,7 +91,8 @@ test('multipart test', assert => {
     })
 
     const multipartFilter = multipartSerializeFilter()
-      .implement({ serializerHandler })
+
+    multipartFilter::implement({ serializerHandler })
 
     const main = simpleHandler(args => {
       const { formData, serializedParts } = args::extract()
@@ -113,5 +119,7 @@ test('multipart test', assert => {
     streamable.contentType = 'multipart/form-data; boundary=AaB03x'
 
     await handler(createArgs(), streamable)
+
+    assert.end()
   })
 })

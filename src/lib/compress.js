@@ -57,7 +57,7 @@ export const httpCompressFilter = httpFilter(
 
     if(encoding != 'gzip') return response
 
-    const [responseHead, responseStreamable] = response
+    let [responseHead, responseStreamable] = response
 
     if(responseHead.getHeader('content-encoding'))
       return response
@@ -73,8 +73,11 @@ export const httpCompressFilter = httpFilter(
     const compressedStreamable = await compressStreamable('gzip',
       responseStreamable)
 
-    responseHead.setHeader('content-encoding', 'gzip')
-    responseHead.removeHeader('content-length')
+    responseHead = responseHead
+      .setHeader('content-encoding', 'gzip')
+      .deleteHeader('content-length')
+
+    console.log('returning new compressed response', responseHead.headerObject())
 
     return [responseHead, compressedStreamable]
   }

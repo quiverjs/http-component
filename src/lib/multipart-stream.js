@@ -217,6 +217,8 @@ export const extractAllMultipart = async (readStream, boundary, partHandler) => 
     const firstBoundary = new Buffer('--' + boundary + '\r\n')
     const startBoundary = new Buffer('\r\n--' + boundary)
 
+    let head
+    
     // eat the first boundary
     ;[head, readStream] = await extractStreamHead(
       readStream, firstBoundary)

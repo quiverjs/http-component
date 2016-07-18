@@ -6,7 +6,7 @@ import zlib from 'zlib'
 import { promisify } from 'quiver-core/util/promise'
 import { RequestHead } from 'quiver-core/http-head'
 
-import { simpleHandler } from 'quiver-core/component/constructor'
+import { simpleHandler, streamToHttpHandler } from 'quiver-core/component/constructor'
 
 import {
   createConfig, httpHandlerLoader, loadHandler
@@ -53,12 +53,12 @@ test('http compress test', assert => {
   assert::asyncTest('basic test', async assert => {
     const compressed = await gzip(testContent)
 
-    const component = simpleHandler(
+    const component = streamToHttpHandler(simpleHandler(
       args => testContent,
       {
         inputType: 'empty',
         outputType: 'text'
-      })
+      }))
     .addMiddleware(httpCompressFilter)
     .setLoader(httpHandlerLoader)
 
@@ -73,27 +73,22 @@ test('http compress test', assert => {
       await streamableToText(responseStreamable),
       testContent)
 
-    let requestHead = new RequestHead({
-      headers: {
-        'accept-encoding': 'gzip'
-      }
-    })
+    let requestHead = new RequestHead()
+      .setHeader('accept-encoding', 'gzip')
 
     ;[responseHead, responseStreamable] =
       await handler(requestHead, emptyStreamable())
 
-    assert.equal(responseHead.getHeader('content-encoding'), 'gzip')
+    assert.equal(responseHead.getHeader('content-encoding'), 'gzip',
+      'response should be gzip compressed')
 
     const buffer = await streamableToBuffer(responseStreamable)
 
     assert.equal(Buffer.compare(
       buffer, compressed), 0)
 
-    requestHead = new RequestHead({
-      headers: {
-        'accept-encoding': 'gzip;q=0, identity;q=0.5, *;q=0'
-      }
-    })
+    requestHead = new RequestHead()
+      .setHeader('accept-encoding', 'gzip;q=0, identity;q=0.5, *;q=0')
 
     ;[responseHead, responseStreamable] =
       await handler(requestHead, emptyStreamable())
@@ -104,11 +99,8 @@ test('http compress test', assert => {
       await streamableToText(responseStreamable),
       testContent)
 
-    requestHead = new RequestHead({
-      headers: {
-        'accept-encoding': 'identity;q=0'
-      }
-    })
+    requestHead = new RequestHead()
+      .setHeader('accept-encoding', 'identity;q=0')
 
     await assert::rejected(handler(requestHead, emptyStreamable()))
 

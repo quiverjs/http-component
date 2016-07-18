@@ -3,7 +3,7 @@ import { asyncTest } from 'quiver-core/util/tape'
 
 import { RequestHead } from 'quiver-core/http-head'
 
-import { simpleHandler } from 'quiver-core/component/constructor'
+import { simpleHandler, streamToHttpHandler } from 'quiver-core/component/constructor'
 
 import {
   createConfig, httpHandlerLoader, loadHandler
@@ -28,12 +28,12 @@ test('chunked http filter test', assert => {
         '1b\r\njavascript definitely rocks\r\n' +
         '0\r\n\r\n'
 
-    const component = simpleHandler(
+    const component = streamToHttpHandler(simpleHandler(
       args => buffersToStream(testBuffers),
       {
         inputType: 'empty',
         outputType: 'stream'
-      })
+      }))
     .addMiddleware(chunkedResponseFilter)
     .setLoader(httpHandlerLoader)
 
@@ -49,17 +49,19 @@ test('chunked http filter test', assert => {
     assert.equal(
       await streamableToText(responseStreamable),
       testChunkedContent)
+
+    assert.end()
   })
 
   assert::asyncTest('skip when content-length set', async assert => {
     const testContent = 'Hello World'
 
-    const component = simpleHandler(
+    const component = streamToHttpHandler(simpleHandler(
       args => testContent,
       {
         inputType: 'empty',
         outputType: 'text'
-      })
+      }))
     .addMiddleware(chunkedResponseFilter)
     .setLoader(httpHandlerLoader)
 
