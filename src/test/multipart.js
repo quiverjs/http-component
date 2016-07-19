@@ -17,7 +17,7 @@ import {
 
 import { fileStreamable } from 'quiver-core/file-stream'
 
-import { multipartSerializeFilter } from '../lib'
+import { multipartSerializeFilter } from '../lib/constructor'
 
 test('multipart test', assert => {
   const sizeWindowStreamable = streamable =>

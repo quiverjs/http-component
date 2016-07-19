@@ -13,7 +13,7 @@ import {
   emptyStreamable, streamableToText
 } from 'quiver-core/stream-util'
 
-import { basicAuthFilter } from '../lib'
+import { basicAuthFilter } from '../lib/constructor'
 
 const authHeaderRegex = /^Basic realm=".+"$/
 

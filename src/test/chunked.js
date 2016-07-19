@@ -15,7 +15,7 @@ import {
 
 import {
   chunkedResponseFilter
-} from '../lib/chunked'
+} from '../lib/constructor'
 
 test('chunked http filter test', assert => {
   assert::asyncTest('basic chunked test', async assert => {
@@ -34,7 +34,7 @@ test('chunked http filter test', assert => {
         inputType: 'empty',
         outputType: 'stream'
       }))
-    .addMiddleware(chunkedResponseFilter)
+    .addMiddleware(chunkedResponseFilter())
     .setLoader(httpHandlerLoader)
 
     const handler = await loadHandler(createConfig(), component)
@@ -62,7 +62,7 @@ test('chunked http filter test', assert => {
         inputType: 'empty',
         outputType: 'text'
       }))
-    .addMiddleware(chunkedResponseFilter)
+    .addMiddleware(chunkedResponseFilter())
     .setLoader(httpHandlerLoader)
 
     const handler = await loadHandler(createConfig(), component)

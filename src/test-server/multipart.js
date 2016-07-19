@@ -5,7 +5,7 @@ import { checksumHandler } from 'quiver-stream-component'
 
 import {
   multipartSerializeFilter
-} from '../lib'
+} from '../lib/constructor'
 
 const serializerHandler = checksumHandler()
   ::overrideConfig({

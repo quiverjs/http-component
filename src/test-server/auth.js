@@ -6,7 +6,7 @@ import {
   simpleHandler, streamToHttpHandler
 } from 'quiver-core/component/constructor'
 
-import { basicAuthFilter } from '../lib'
+import { basicAuthFilter } from '../lib/constructor'
 
 const authHandler = simpleHandler(
   args => {

@@ -18,10 +18,8 @@ import {
   streamableToBuffer,
 } from 'quiver-core/stream-util'
 
-import {
-  httpCompressFilter,
-  selectAcceptEncoding
-} from '../lib/compress'
+import { selectAcceptEncoding } from '../lib/compress'
+import { httpCompressFilter } from '../lib/constructor'
 
 const gzip = promisify(zlib.gzip)
 
@@ -59,7 +57,7 @@ test('http compress test', assert => {
         inputType: 'empty',
         outputType: 'text'
       }))
-    .addMiddleware(httpCompressFilter)
+    .addMiddleware(httpCompressFilter())
     .setLoader(httpHandlerLoader)
 
     const handler = await loadHandler(createConfig(), component)

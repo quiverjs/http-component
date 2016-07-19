@@ -14,10 +14,8 @@ import {
   buffersToStreamable,
 } from 'quiver-core/stream-util'
 
-import {
-  byteRangeStream,
-  byteRangeFilter
-} from '../lib/byte-range'
+import { byteRangeFilter } from '../lib/constructor'
+import { byteRangeStream } from '../lib/byte-range'
 
 test('byte range test', assert => {
   const testContent = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
@@ -86,7 +84,7 @@ test('byte range test', assert => {
         inputType: 'empty',
         outputType: 'streamable'
       }))
-    .addMiddleware(byteRangeFilter)
+    .addMiddleware(byteRangeFilter())
     .setLoader(httpHandlerLoader)
 
     const handler = await loadHandler(createConfig(), component)

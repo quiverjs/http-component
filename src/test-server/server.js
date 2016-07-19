@@ -13,7 +13,7 @@ import {
   headRequestFilter,
   chunkedResponseFilter,
   basicErrorPageFilter
-} from '../lib'
+} from '../lib/constructor'
 
 import { formHandler } from './multipart.js'
 import { adminHandler } from './auth.js'
