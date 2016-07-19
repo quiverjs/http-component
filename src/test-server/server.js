@@ -1,7 +1,7 @@
 import { startServer } from 'quiver-core/http'
 
 import { createConfig } from 'quiver-core/component/util'
-import { router, simpleHandler } from 'quiver-core/component/constructor'
+import { httpRouter, simpleHandler, streamToHttpHandler } from 'quiver-core/component/constructor'
 import { fileHandler, singleFileHandler } from 'quiver-file-component/constructor'
 
 import { buffersToStream } from 'quiver-core/stream-util'
@@ -18,13 +18,13 @@ import {
 import { formHandler } from './multipart.js'
 import { adminHandler } from './auth.js'
 
-const rangeHandler = fileHandler()
+const rangeHandler = streamToHttpHandler(fileHandler())
   .addMiddleware(byteRangeFilter())
 
-const compressHandler = fileHandler()
+const compressHandler = streamToHttpHandler(fileHandler())
   .addMiddleware(httpCompressFilter())
 
-const chunkHandler = simpleHandler(
+const chunkHandler = streamToHttpHandler(simpleHandler(
   args =>
     buffersToStream([
       'Hello world. ',
@@ -34,10 +34,10 @@ const chunkHandler = simpleHandler(
   , {
     inputType: 'empty',
     outputType: 'stream'
-  })
+  }))
   .addMiddleware(chunkedResponseFilter())
 
-const main = router()
+const main = httpRouter()
   .addStaticRoute('/form', singleFileHandler())
   .addStaticRoute('/submit', formHandler)
   .addStaticRoute('/admin', adminHandler)

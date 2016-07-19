@@ -77,8 +77,6 @@ export const httpCompressFilter = httpFilter(
       .setHeader('content-encoding', 'gzip')
       .deleteHeader('content-length')
 
-    console.log('returning new compressed response', responseHead.headerObject())
-
     return [responseHead, compressedStreamable]
   }
 })

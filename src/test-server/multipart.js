@@ -1,6 +1,6 @@
 import { extract } from 'quiver-core/util/immutable'
-import { overrideConfig } from 'quiver-core/component/method'
-import { simpleHandler } from 'quiver-core/component/constructor'
+import { implement, overrideConfig } from 'quiver-core/component/method'
+import { simpleHandler, streamToHttpHandler } from 'quiver-core/component/constructor'
 import { checksumHandler } from 'quiver-stream-component'
 
 import {
@@ -13,7 +13,8 @@ const serializerHandler = checksumHandler()
   })
 
 const multipartFilter = multipartSerializeFilter()
-  .implement({ serializerHandler })
+
+multipartFilter::implement({ serializerHandler })
 
 export const formHandler = simpleHandler(
   args => {

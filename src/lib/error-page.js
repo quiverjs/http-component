@@ -8,12 +8,12 @@ const statusTable = http.STATUS_CODES
 export const basicErrorPageFilter = httpFilter(
 (config, handler) => {
   const { env='development' } = config
-  const devMode = env == 'development'
+  const devMode = env === 'development'
 
   return (requestHead, streamable) =>
     handler(requestHead, streamable)
     .catch(err => {
-      const errorCode = err.errorCode || 500
+      const errorCode = err.code || 500
       const statusMessage = statusTable[errorCode] || 'Unknown'
 
       const errorTrace = devMode ?

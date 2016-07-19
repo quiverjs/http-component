@@ -1,14 +1,16 @@
-import { error } from 'quiver/error'
+import { error } from 'quiver-core/util/error'
+import { extract } from 'quiver-core/util/immutable'
+import { implement } from 'quiver-core/component/method'
 
 import {
-  simpleHandler,
+  simpleHandler, streamToHttpHandler
 } from 'quiver-core/component/constructor'
 
-import { basicAuthFilter } from '../lib/http-component.js'
+import { basicAuthFilter } from '../lib'
 
 const authHandler = simpleHandler(
   args => {
-    const { username, password } = args
+    const { username, password } = args::extract()
 
     if(username=='admin' && password=='password') {
       return 'admin'
@@ -21,13 +23,14 @@ const authHandler = simpleHandler(
   })
 
 const authFilter = basicAuthFilter()
-  .implement({ authHandler })
 
-export const adminHandler = simpleHandler(
+authFilter::implement({ authHandler })
+
+export const adminHandler = streamToHttpHandler(simpleHandler(
   args => {
     return 'Hello Administrator. Nobody else can access this area'
   }, {
     inputType: 'empty',
     outputType: 'text'
-  })
+  }))
 .addMiddleware(authFilter)

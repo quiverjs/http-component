@@ -13,7 +13,7 @@ const parseRange = header => {
   if(!matches) return [0, -1]
 
   const start = parseInt(matches[1])
-  const end = parseInt(matches[2])+1
+  let end = parseInt(matches[2])+1
   if(isNaN(end)) end = -1
 
   return [start, end]
@@ -117,7 +117,7 @@ export const byteRangeFilter = httpFilter(
 
       if(!rangeHeader) return response
 
-      const [start, end] = parseRange(rangeHeader)
+      let [start, end] = parseRange(rangeHeader)
       if(end==-1) end = contentLength
       if(start==0 && end==contentLength) return response
 
