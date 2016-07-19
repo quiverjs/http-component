@@ -119,7 +119,6 @@ export const byteRangeFilter = httpFilter(
 
       let [start, end] = parseRange(rangeHeader)
       if(end==-1) end = contentLength
-      if(start==0 && end==contentLength) return response
 
       if(end > contentLength) throw error(416,
         'Requested Range Not Satisfiable')

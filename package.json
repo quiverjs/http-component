@@ -6,7 +6,7 @@
   },
   "name": "quiver-http-component",
   "desription": "Components for processing HTTP requests",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "homepage": "https://github.com/quiverjs/quiver-http-component",
   "repository": {
     "url": "git@github.com:quiverjs/quiver-http-component.git"
