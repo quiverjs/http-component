@@ -11,7 +11,7 @@ const commonLogFormatter = info => {
   } = info
 
   const {
-    url='/',
+    path='/',
     method = 'GET',
     httpVersion = '1.1',
   } = requestHead
@@ -32,7 +32,7 @@ const commonLogFormatter = info => {
 
   const date = new Date().toUTCString()
 
-  return `${clientAddress} - ${userId} [${date}] "${method} ${url} HTTP/${httpVersion}" ${statusCode} ${responseTime}`
+  return `${clientAddress} - ${userId} [${date}] "${method} ${path} HTTP/${httpVersion}" ${statusCode} ${responseTime}`
 }
 
 export const requestLoggerFilter = httpFilter(
