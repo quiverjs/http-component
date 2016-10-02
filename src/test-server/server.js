@@ -18,6 +18,10 @@ import {
 import { formHandler } from './multipart.js'
 import { adminHandler } from './auth.js'
 
+process.on('unhandledRejection', err => {
+  console.error('unhandled rejection:', err)
+})
+
 const rangeHandler = streamToHttpHandler(fileHandler())
   .addMiddleware(byteRangeFilter())
 
